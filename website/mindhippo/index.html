@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <!-- GitHub Pages cannot set response headers, so the CSP rides in a meta tag.
+       No inline or executable scripts on any page — every script below is
+       same-origin — while inline STYLES need 'unsafe-inline' because each hippo
+       sets its own accent through a style="--brand:…" attribute.
+       frame-src names the hippo sites the preview embeds, and nothing else.
+       NO frame-ancestors: the spec IGNORES it (along with report-uri and
+       sandbox) when the policy arrives in a meta element, so it would protect
+       nothing and log a console error on every page load. Clickjacking cover
+       needs a real response header, which Pages cannot send — better to not
+       claim it than to ship a directive the browser throws away unread. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; frame-src https://resthippo.com https://chiphippo.com https://jumphippo.com https://keephippo.com; object-src 'none'; base-uri 'self'; form-action 'none'" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#D946A6" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <meta name="description" content="Tensors, autodiff, neural networks and an inference server — written in pure Go against the standard library. No framework, no GPU, no cgo, and no hosted model behind any of it." />
+  <title>Mind Hippo — ML runtime, from scratch · Hippo Herd</title>
+  <link rel="canonical" href="https://hippoherd.com/mindhippo/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Hippo Herd" />
+  <meta property="og:title" content="Mind Hippo — ML runtime, from scratch · Hippo Herd" />
+  <meta property="og:description" content="Tensors, autodiff, neural networks and an inference server — written in pure Go against the standard library. No framework, no GPU, no cgo, and no hosted model behind any of it." />
+  <meta property="og:url" content="https://hippoherd.com/mindhippo/" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Mind Hippo — ML runtime, from scratch · Hippo Herd" />
+  <meta name="twitter:description" content="Tensors, autodiff, neural networks and an inference server — written in pure Go against the standard library. No framework, no GPU, no cgo, and no hosted model behind any of it." />
+  <link rel="stylesheet" href="/site.css" />
+</head>
+<body data-hippo-page="mindhippo" style="--brand:#D946A6">
+
+<nav class="site">
+  <a class="nav-logo" href="/">
+    <span class="logo-mark"><img src="/favicon.svg" width="32" height="32" alt=""></span>
+    <span class="nav-wordmark">Hippo Herd</span>
+  </a>
+  <div class="nav-right">
+    <details class="nav-dropdown">
+      <summary class="nav-link nav-dropdown-summary">
+        The Hippos
+        <svg class="nav-dropdown-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+      </summary>
+      <div class="nav-dropdown-menu">
+        <a class="nav-dropdown-item" href="/resthippo/"><img src="/marks/resthippo.svg" width="16" height="16" alt=""> Rest Hippo</a>
+        <a class="nav-dropdown-item" href="/chiphippo/"><img src="/marks/chiphippo.svg" width="16" height="16" alt=""> Chip Hippo</a>
+        <a class="nav-dropdown-item" href="/jumphippo/"><img src="/marks/jumphippo.svg" width="16" height="16" alt=""> Jump Hippo</a>
+        <a class="nav-dropdown-item" href="/keephippo/"><img src="/marks/keephippo.svg" width="16" height="16" alt=""> Keep Hippo</a>
+        <a class="nav-dropdown-item" href="/mindhippo/" aria-current="page"><img src="/marks/mindhippo.svg" width="16" height="16" alt=""> Mind Hippo</a>
+        <a class="nav-dropdown-item" href="/rollhippo/"><img src="/marks/rollhippo.svg" width="16" height="16" alt=""> Roll Hippo</a>
+      </div>
+    </details>
+    <a class="nav-link" href="https://github.com/jfigge" rel="noopener noreferrer">GitHub</a>
+    <a class="nav-link" href="https://github.com/sponsors/jfigge" rel="noopener noreferrer">Donate</a>
+    <a class="btn btn-primary" href="#downloads">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Download
+    </a>
+  </div>
+</nav>
+
+<div class="hero">
+  <img class="hero-mark" src="/marks/mindhippo.svg" width="84" height="84" alt="" />
+  <div class="hero-badge">
+    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><circle cx="12" cy="12" r="9"/></svg> In development · <span data-version-tag>—</span>
+  </div>
+  <h1>Mind Hippo</h1>
+  <p class="hero-desc">Mind Hippo is a machine-learning runtime with nothing underneath it. Every tensor operation, every derivative, every layer, every optimiser is first-party code written against the Go standard library — no PyTorch, no TensorFlow, no BLAS binding, no cgo, and <strong>no model provider anywhere in it</strong>. It trains its own small models on a laptop CPU and serves them over HTTP with an embedded console: draw a digit with the mouse and watch the network decide what it is. When it answers <em>“that's a 7”</em>, you can follow the arithmetic that produced the answer all the way down — through the softmax, through the matrix multiplications, to the 784 pixel values you drew.</p>
+  <div class="hero-actions">
+    <a class="btn btn-primary" href="#downloads"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> Release status</a>
+    <a class="btn btn-ghost" href="/#herd"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg> Back to the herd</a>
+  </div>
+  <p class="hero-platforms">macOS · Linux · Windows &nbsp;·&nbsp; Go · no dependencies &nbsp;·&nbsp; Apache-2.0</p>
+</div>
+
+<section class="section section-alt">
+  <div class="section-inner">
+    <p class="section-tag">What it does</p>
+    <h2 class="section-title">ML runtime, from scratch</h2>
+    <p class="section-body">Tensors, autodiff, neural networks and an inference server — written in pure Go against the standard library. No framework, no GPU, no cgo, and no hosted model behind any of it.</p>
+    <div class="callout">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      <p><strong>In development.</strong> Mind Hippo is being built in stages and has no tagged release yet. The point is not to beat anyone's benchmark — it will be slower than PyTorch by a wide margin, on purpose. Clarity is the design goal.</p>
+    </div>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="feature-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></div>
+        <h3>Tensors & autodiff</h3>
+        <p>An n-dimensional array type with broadcasting, and reverse-mode automatic differentiation built on it — the graph, the backward pass, and the chain rule, written out.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="5" r="3"/><circle cx="5" cy="19" r="3"/><circle cx="19" cy="19" r="3"/><path d="M12 8v3M10 13l-3 3M14 13l3 3"/></svg></div>
+        <h3>Networks & optimisers</h3>
+        <p>Dense layers, activations, losses and the optimisers that train them, composed the way the maths composes rather than the way a framework's API does.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M9 2v2M15 2v2M9 20v2M15 20v2M2 9h2M2 15h2M20 9h2M20 15h2"/></svg></div>
+        <h3>CPU only, on purpose</h3>
+        <p>No GPU and no accelerator. Models small enough to train on a laptop are models small enough to understand, which is the entire argument.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg></div>
+        <h3>Inference server & console</h3>
+        <p>Trained models are served over HTTP with an embedded web console. Draw a digit; watch the probabilities move as you draw it.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+        <h3>Nothing hidden</h3>
+        <p>No hosted model is called at any point. Whatever it answers, it computed — and the computation is in the repository.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div>
+        <h3>Honest about the limits</h3>
+        <p>The small transformer produces text that is grammatically shaped and semantically thin, and the docs show real, unretouched samples of exactly that.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section section-deep" id="downloads">
+  <div class="section-inner">
+    <p class="section-tag">Downloads</p>
+    <h2 class="section-title">Not out yet</h2>
+    <p class="section-body">Mind Hippo is still being built, and its repository is private for now. There is nothing to install and nothing to watch yet — this page will carry the downloads, and the link to the source, as soon as either exists.</p>
+
+  </div>
+</section>
+
+
+
+<section class="section">
+  <div class="section-inner">
+    <p class="section-tag">Where to go next</p>
+    <h2 class="section-title">Mind Hippo, everywhere else</h2>
+    <p class="section-body">The herd page is the introduction. These are the places the project actually lives.</p>
+    <div class="link-row">
+      <a class="link-card" href="/#herd">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        <span>The rest of the herd<small>Five more hippos</small></span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<div class="herd-nav">
+  <a href="/keephippo/">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+    <img src="/marks/keephippo.svg" width="32" height="32" alt="" />
+    <span><small>Previous</small>Keep Hippo</span>
+  </a>
+  <a href="/rollhippo/">
+    <span style="text-align:right"><small>Next</small>Roll Hippo</span>
+    <img src="/marks/rollhippo.svg" width="32" height="32" alt="" />
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+  </a>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo">
+      <span class="logo-mark"><img src="/favicon.svg" width="28" height="28" alt=""></span>
+      <span class="footer-name">Hippo Herd</span>
+    </div>
+    <p style="margin-bottom:14px">
+      <a href="/resthippo/">Rest Hippo</a>
+      &nbsp;·&nbsp;
+      <a href="/chiphippo/">Chip Hippo</a>
+      &nbsp;·&nbsp;
+      <a href="/jumphippo/">Jump Hippo</a>
+      &nbsp;·&nbsp;
+      <a href="/keephippo/">Keep Hippo</a>
+      &nbsp;·&nbsp;
+      <a href="/mindhippo/">Mind Hippo</a>
+      &nbsp;·&nbsp;
+      <a href="/rollhippo/">Roll Hippo</a>
+    </p>
+    <p style="margin-bottom:14px">
+      <a href="https://github.com/jfigge" rel="noopener noreferrer">GitHub</a>
+      &nbsp;·&nbsp;
+      <a href="https://github.com/sponsors/jfigge" rel="noopener noreferrer">Donate</a>
+      &nbsp;·&nbsp;
+      <a href="/privacy.html">Privacy</a>
+    </p>
+    <p>Copyright &copy; 2026 Jason Figge. Every hippo is free and open source.<br>
+    No telemetry, no accounts, no tracking — on the apps or on this site.</p>
+    <p style="margin-top:14px">Crafted with <a class="cc-referral" href="https://claude.ai/code" rel="noopener noreferrer">Claude&nbsp;Code</a>.</p>
+  </div>
+</footer>
+
+<script src="/herd.js" defer></script>
+<script src="/nav.js" defer></script>
+</body>
+</html>

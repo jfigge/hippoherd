@@ -1,0 +1,495 @@
+{
+  "generatedAt": "2026-08-05T16:22:32.672Z",
+  "hippos": {
+    "resthippo": {
+      "repo": "jfigge/resthippo",
+      "latest": "1.1.5",
+      "tag": "v1.1.5",
+      "url": "https://github.com/jfigge/resthippo/releases/tag/v1.1.5",
+      "publishedAt": "2026-07-30T18:31:41Z",
+      "prerelease": false,
+      "assets": [
+        {
+          "name": "Rest-Hippo-1.1.5-arm64.AppImage",
+          "size": 127451039,
+          "url": "https://github.com/jfigge/resthippo/releases/download/v1.1.5/Rest-Hippo-1.1.5-arm64.AppImage",
+          "platform": "linux",
+          "arch": "arm64",
+          "kind": "appimage",
+          "label": "AppImage"
+        },
+        {
+          "name": "Rest-Hippo-1.1.5-arm64.dmg",
+          "size": 120030130,
+          "url": "https://github.com/jfigge/resthippo/releases/download/v1.1.5/Rest-Hippo-1.1.5-arm64.dmg",
+          "platform": "mac",
+          "arch": "arm64",
+          "kind": "dmg",
+          "label": "Disk Image"
+        },
+        {
+          "name": "Rest-Hippo-1.1.5-x64.dmg",
+          "size": 128208404,
+          "url": "https://github.com/jfigge/resthippo/releases/download/v1.1.5/Rest-Hippo-1.1.5-x64.dmg",
+          "platform": "mac",
+          "arch": "x64",
+          "kind": "dmg",
+          "label": "Disk Image"
+        },
+        {
+          "name": "Rest-Hippo-1.1.5-x86_64.AppImage",
+          "size": 126691668,
+          "url": "https://github.com/jfigge/resthippo/releases/download/v1.1.5/Rest-Hippo-1.1.5-x86_64.AppImage",
+          "platform": "linux",
+          "arch": "x64",
+          "kind": "appimage",
+          "label": "AppImage"
+        },
+        {
+          "name": "Rest-Hippo-Setup-1.1.5-arm64.exe",
+          "size": 106800036,
+          "url": "https://github.com/jfigge/resthippo/releases/download/v1.1.5/Rest-Hippo-Setup-1.1.5-arm64.exe",
+          "platform": "win",
+          "arch": "arm64",
+          "kind": "exe",
+          "label": "Installer"
+        },
+        {
+          "name": "Rest-Hippo-Setup-1.1.5-x64.exe",
+          "size": 105265792,
+          "url": "https://github.com/jfigge/resthippo/releases/download/v1.1.5/Rest-Hippo-Setup-1.1.5-x64.exe",
+          "platform": "win",
+          "arch": "x64",
+          "kind": "exe",
+          "label": "Installer"
+        },
+        {
+          "name": "Rest-Hippo-Setup-1.1.5.exe",
+          "size": 211536412,
+          "url": "https://github.com/jfigge/resthippo/releases/download/v1.1.5/Rest-Hippo-Setup-1.1.5.exe",
+          "platform": "win",
+          "arch": "universal",
+          "kind": "exe",
+          "label": "Installer"
+        },
+        {
+          "name": "Rest-Hippo-1.1.5-amd64.deb",
+          "size": 98963616,
+          "url": "https://github.com/jfigge/resthippo/releases/download/v1.1.5/Rest-Hippo-1.1.5-amd64.deb",
+          "platform": "linux",
+          "arch": "x64",
+          "kind": "deb",
+          "label": "Debian Package"
+        },
+        {
+          "name": "Rest-Hippo-1.1.5-arm64.deb",
+          "size": 93731164,
+          "url": "https://github.com/jfigge/resthippo/releases/download/v1.1.5/Rest-Hippo-1.1.5-arm64.deb",
+          "platform": "linux",
+          "arch": "arm64",
+          "kind": "deb",
+          "label": "Debian Package"
+        },
+        {
+          "name": "Rest-Hippo-1.1.5-arm64.exe",
+          "size": 106634549,
+          "url": "https://github.com/jfigge/resthippo/releases/download/v1.1.5/Rest-Hippo-1.1.5-arm64.exe",
+          "platform": "win",
+          "arch": "arm64",
+          "kind": "portable",
+          "label": "Portable"
+        },
+        {
+          "name": "Rest-Hippo-1.1.5-x64.exe",
+          "size": 105099874,
+          "url": "https://github.com/jfigge/resthippo/releases/download/v1.1.5/Rest-Hippo-1.1.5-x64.exe",
+          "platform": "win",
+          "arch": "x64",
+          "kind": "portable",
+          "label": "Portable"
+        },
+        {
+          "name": "Rest-Hippo-1.1.5.exe",
+          "size": 211370902,
+          "url": "https://github.com/jfigge/resthippo/releases/download/v1.1.5/Rest-Hippo-1.1.5.exe",
+          "platform": "win",
+          "arch": "universal",
+          "kind": "portable",
+          "label": "Portable"
+        },
+        {
+          "name": "Rest-Hippo-1.1.5-arm64.zip",
+          "size": 115615672,
+          "url": "https://github.com/jfigge/resthippo/releases/download/v1.1.5/Rest-Hippo-1.1.5-arm64.zip",
+          "platform": "mac",
+          "arch": "arm64",
+          "kind": "zip",
+          "label": "ZIP Archive"
+        },
+        {
+          "name": "Rest-Hippo-1.1.5-x64.zip",
+          "size": 123748116,
+          "url": "https://github.com/jfigge/resthippo/releases/download/v1.1.5/Rest-Hippo-1.1.5-x64.zip",
+          "platform": "mac",
+          "arch": "x64",
+          "kind": "zip",
+          "label": "ZIP Archive"
+        }
+      ]
+    },
+    "chiphippo": {
+      "repo": "jfigge/chiphippo",
+      "latest": "1.0.0",
+      "tag": "v1.0.0",
+      "url": "https://github.com/jfigge/chiphippo/releases/tag/v1.0.0",
+      "publishedAt": "2026-08-04T18:26:14Z",
+      "prerelease": false,
+      "assets": [
+        {
+          "name": "Chip-Hippo-1.0.0-arm64.AppImage",
+          "size": 138007012,
+          "url": "https://github.com/jfigge/chiphippo/releases/download/v1.0.0/Chip-Hippo-1.0.0-arm64.AppImage",
+          "platform": "linux",
+          "arch": "arm64",
+          "kind": "appimage",
+          "label": "AppImage"
+        },
+        {
+          "name": "Chip-Hippo-1.0.0-arm64.dmg",
+          "size": 129382244,
+          "url": "https://github.com/jfigge/chiphippo/releases/download/v1.0.0/Chip-Hippo-1.0.0-arm64.dmg",
+          "platform": "mac",
+          "arch": "arm64",
+          "kind": "dmg",
+          "label": "Disk Image"
+        },
+        {
+          "name": "Chip-Hippo-1.0.0-x64.dmg",
+          "size": 132224440,
+          "url": "https://github.com/jfigge/chiphippo/releases/download/v1.0.0/Chip-Hippo-1.0.0-x64.dmg",
+          "platform": "mac",
+          "arch": "x64",
+          "kind": "dmg",
+          "label": "Disk Image"
+        },
+        {
+          "name": "Chip-Hippo-1.0.0-x86_64.AppImage",
+          "size": 138651790,
+          "url": "https://github.com/jfigge/chiphippo/releases/download/v1.0.0/Chip-Hippo-1.0.0-x86_64.AppImage",
+          "platform": "linux",
+          "arch": "x64",
+          "kind": "appimage",
+          "label": "AppImage"
+        },
+        {
+          "name": "Chip-Hippo-Setup-1.0.0-arm64.exe",
+          "size": 115463757,
+          "url": "https://github.com/jfigge/chiphippo/releases/download/v1.0.0/Chip-Hippo-Setup-1.0.0-arm64.exe",
+          "platform": "win",
+          "arch": "arm64",
+          "kind": "exe",
+          "label": "Installer"
+        },
+        {
+          "name": "Chip-Hippo-Setup-1.0.0-x64.exe",
+          "size": 115884822,
+          "url": "https://github.com/jfigge/chiphippo/releases/download/v1.0.0/Chip-Hippo-Setup-1.0.0-x64.exe",
+          "platform": "win",
+          "arch": "x64",
+          "kind": "exe",
+          "label": "Installer"
+        },
+        {
+          "name": "Chip-Hippo-Setup-1.0.0.exe",
+          "size": 230770576,
+          "url": "https://github.com/jfigge/chiphippo/releases/download/v1.0.0/Chip-Hippo-Setup-1.0.0.exe",
+          "platform": "win",
+          "arch": "universal",
+          "kind": "exe",
+          "label": "Installer"
+        },
+        {
+          "name": "Chip-Hippo-1.0.0-amd64.deb",
+          "size": 109810336,
+          "url": "https://github.com/jfigge/chiphippo/releases/download/v1.0.0/Chip-Hippo-1.0.0-amd64.deb",
+          "platform": "linux",
+          "arch": "x64",
+          "kind": "deb",
+          "label": "Debian Package"
+        },
+        {
+          "name": "Chip-Hippo-1.0.0-arm64.deb",
+          "size": 103709108,
+          "url": "https://github.com/jfigge/chiphippo/releases/download/v1.0.0/Chip-Hippo-1.0.0-arm64.deb",
+          "platform": "linux",
+          "arch": "arm64",
+          "kind": "deb",
+          "label": "Debian Package"
+        },
+        {
+          "name": "Chip-Hippo-1.0.0-arm64.exe",
+          "size": 115240787,
+          "url": "https://github.com/jfigge/chiphippo/releases/download/v1.0.0/Chip-Hippo-1.0.0-arm64.exe",
+          "platform": "win",
+          "arch": "arm64",
+          "kind": "portable",
+          "label": "Portable"
+        },
+        {
+          "name": "Chip-Hippo-1.0.0-x64.exe",
+          "size": 115661462,
+          "url": "https://github.com/jfigge/chiphippo/releases/download/v1.0.0/Chip-Hippo-1.0.0-x64.exe",
+          "platform": "win",
+          "arch": "x64",
+          "kind": "portable",
+          "label": "Portable"
+        },
+        {
+          "name": "Chip-Hippo-1.0.0.exe",
+          "size": 230547426,
+          "url": "https://github.com/jfigge/chiphippo/releases/download/v1.0.0/Chip-Hippo-1.0.0.exe",
+          "platform": "win",
+          "arch": "universal",
+          "kind": "portable",
+          "label": "Portable"
+        },
+        {
+          "name": "Chip-Hippo-1.0.0-arm64.zip",
+          "size": 125197114,
+          "url": "https://github.com/jfigge/chiphippo/releases/download/v1.0.0/Chip-Hippo-1.0.0-arm64.zip",
+          "platform": "mac",
+          "arch": "arm64",
+          "kind": "zip",
+          "label": "ZIP Archive"
+        },
+        {
+          "name": "Chip-Hippo-1.0.0-x64.zip",
+          "size": 128093646,
+          "url": "https://github.com/jfigge/chiphippo/releases/download/v1.0.0/Chip-Hippo-1.0.0-x64.zip",
+          "platform": "mac",
+          "arch": "x64",
+          "kind": "zip",
+          "label": "ZIP Archive"
+        }
+      ]
+    },
+    "jumphippo": {
+      "repo": "jfigge/jumphippo",
+      "latest": "0.10.0",
+      "tag": "v0.10.0",
+      "url": "https://github.com/jfigge/jumphippo/releases/tag/v0.10.0",
+      "publishedAt": "2026-07-23T15:51:12Z",
+      "prerelease": false,
+      "assets": [
+        {
+          "name": "Jump-Hippo-0.10.0-arm64.AppImage",
+          "size": 132291879,
+          "url": "https://github.com/jfigge/jumphippo/releases/download/v0.10.0/Jump-Hippo-0.10.0-arm64.AppImage",
+          "platform": "linux",
+          "arch": "arm64",
+          "kind": "appimage",
+          "label": "AppImage"
+        },
+        {
+          "name": "Jump-Hippo-0.10.0-arm64.dmg",
+          "size": 125394121,
+          "url": "https://github.com/jfigge/jumphippo/releases/download/v0.10.0/Jump-Hippo-0.10.0-arm64.dmg",
+          "platform": "mac",
+          "arch": "arm64",
+          "kind": "dmg",
+          "label": "Disk Image"
+        },
+        {
+          "name": "Jump-Hippo-0.10.0-x64.dmg",
+          "size": 130153535,
+          "url": "https://github.com/jfigge/jumphippo/releases/download/v0.10.0/Jump-Hippo-0.10.0-x64.dmg",
+          "platform": "mac",
+          "arch": "x64",
+          "kind": "dmg",
+          "label": "Disk Image"
+        },
+        {
+          "name": "Jump-Hippo-0.10.0-x86_64.AppImage",
+          "size": 132499957,
+          "url": "https://github.com/jfigge/jumphippo/releases/download/v0.10.0/Jump-Hippo-0.10.0-x86_64.AppImage",
+          "platform": "linux",
+          "arch": "x64",
+          "kind": "appimage",
+          "label": "AppImage"
+        },
+        {
+          "name": "Jump-Hippo-Setup-0.10.0-arm64.exe",
+          "size": 96450661,
+          "url": "https://github.com/jfigge/jumphippo/releases/download/v0.10.0/Jump-Hippo-Setup-0.10.0-arm64.exe",
+          "platform": "win",
+          "arch": "arm64",
+          "kind": "exe",
+          "label": "Installer"
+        },
+        {
+          "name": "Jump-Hippo-Setup-0.10.0-x64.exe",
+          "size": 103818716,
+          "url": "https://github.com/jfigge/jumphippo/releases/download/v0.10.0/Jump-Hippo-Setup-0.10.0-x64.exe",
+          "platform": "win",
+          "arch": "x64",
+          "kind": "exe",
+          "label": "Installer"
+        },
+        {
+          "name": "Jump-Hippo-Setup-0.10.0.exe",
+          "size": 199587587,
+          "url": "https://github.com/jfigge/jumphippo/releases/download/v0.10.0/Jump-Hippo-Setup-0.10.0.exe",
+          "platform": "win",
+          "arch": "universal",
+          "kind": "exe",
+          "label": "Installer"
+        },
+        {
+          "name": "Jump-Hippo-0.10.0-amd64.deb",
+          "size": 104116408,
+          "url": "https://github.com/jfigge/jumphippo/releases/download/v0.10.0/Jump-Hippo-0.10.0-amd64.deb",
+          "platform": "linux",
+          "arch": "x64",
+          "kind": "deb",
+          "label": "Debian Package"
+        },
+        {
+          "name": "Jump-Hippo-0.10.0-arm64.deb",
+          "size": 98258076,
+          "url": "https://github.com/jfigge/jumphippo/releases/download/v0.10.0/Jump-Hippo-0.10.0-arm64.deb",
+          "platform": "linux",
+          "arch": "arm64",
+          "kind": "deb",
+          "label": "Debian Package"
+        },
+        {
+          "name": "Jump-Hippo-0.10.0-arm64.exe",
+          "size": 96210080,
+          "url": "https://github.com/jfigge/jumphippo/releases/download/v0.10.0/Jump-Hippo-0.10.0-arm64.exe",
+          "platform": "win",
+          "arch": "arm64",
+          "kind": "portable",
+          "label": "Portable"
+        },
+        {
+          "name": "Jump-Hippo-0.10.0-x64.exe",
+          "size": 103577721,
+          "url": "https://github.com/jfigge/jumphippo/releases/download/v0.10.0/Jump-Hippo-0.10.0-x64.exe",
+          "platform": "win",
+          "arch": "x64",
+          "kind": "portable",
+          "label": "Portable"
+        },
+        {
+          "name": "Jump-Hippo-0.10.0.exe",
+          "size": 199346962,
+          "url": "https://github.com/jfigge/jumphippo/releases/download/v0.10.0/Jump-Hippo-0.10.0.exe",
+          "platform": "win",
+          "arch": "universal",
+          "kind": "portable",
+          "label": "Portable"
+        },
+        {
+          "name": "Jump-Hippo-0.10.0-arm64.zip",
+          "size": 123851136,
+          "url": "https://github.com/jfigge/jumphippo/releases/download/v0.10.0/Jump-Hippo-0.10.0-arm64.zip",
+          "platform": "mac",
+          "arch": "arm64",
+          "kind": "zip",
+          "label": "ZIP Archive"
+        },
+        {
+          "name": "Jump-Hippo-0.10.0-x64.zip",
+          "size": 128651130,
+          "url": "https://github.com/jfigge/jumphippo/releases/download/v0.10.0/Jump-Hippo-0.10.0-x64.zip",
+          "platform": "mac",
+          "arch": "x64",
+          "kind": "zip",
+          "label": "ZIP Archive"
+        }
+      ]
+    },
+    "keephippo": {
+      "repo": "jfigge/keephippo",
+      "latest": "0.4.0",
+      "tag": "v0.4.0",
+      "url": "https://github.com/jfigge/keephippo/releases/tag/v0.4.0",
+      "publishedAt": "2026-07-06T17:24:57Z",
+      "prerelease": false,
+      "assets": [
+        {
+          "name": "keephippo_0.4.0_darwin_amd64.tar.gz",
+          "size": 5462648,
+          "url": "https://github.com/jfigge/keephippo/releases/download/v0.4.0/keephippo_0.4.0_darwin_amd64.tar.gz",
+          "platform": "mac",
+          "arch": "x64",
+          "kind": "tarball",
+          "label": "Tarball"
+        },
+        {
+          "name": "keephippo_0.4.0_darwin_arm64.tar.gz",
+          "size": 5041787,
+          "url": "https://github.com/jfigge/keephippo/releases/download/v0.4.0/keephippo_0.4.0_darwin_arm64.tar.gz",
+          "platform": "mac",
+          "arch": "arm64",
+          "kind": "tarball",
+          "label": "Tarball"
+        },
+        {
+          "name": "keephippo_0.4.0_linux_amd64.tar.gz",
+          "size": 5312053,
+          "url": "https://github.com/jfigge/keephippo/releases/download/v0.4.0/keephippo_0.4.0_linux_amd64.tar.gz",
+          "platform": "linux",
+          "arch": "x64",
+          "kind": "tarball",
+          "label": "Tarball"
+        },
+        {
+          "name": "keephippo_0.4.0_linux_arm64.tar.gz",
+          "size": 4897504,
+          "url": "https://github.com/jfigge/keephippo/releases/download/v0.4.0/keephippo_0.4.0_linux_arm64.tar.gz",
+          "platform": "linux",
+          "arch": "arm64",
+          "kind": "tarball",
+          "label": "Tarball"
+        },
+        {
+          "name": "keephippo_0.4.0_windows_amd64.zip",
+          "size": 5433386,
+          "url": "https://github.com/jfigge/keephippo/releases/download/v0.4.0/keephippo_0.4.0_windows_amd64.zip",
+          "platform": "win",
+          "arch": "x64",
+          "kind": "zip",
+          "label": "ZIP Archive"
+        },
+        {
+          "name": "keephippo_0.4.0_windows_arm64.zip",
+          "size": 4961724,
+          "url": "https://github.com/jfigge/keephippo/releases/download/v0.4.0/keephippo_0.4.0_windows_arm64.zip",
+          "platform": "win",
+          "arch": "arm64",
+          "kind": "zip",
+          "label": "ZIP Archive"
+        }
+      ]
+    },
+    "mindhippo": {
+      "repo": "jfigge/mindhippo",
+      "latest": null,
+      "tag": null,
+      "url": "https://github.com/jfigge/mindhippo/releases",
+      "publishedAt": null,
+      "prerelease": false,
+      "assets": []
+    },
+    "rollhippo": {
+      "repo": "jfigge/rollhippo",
+      "latest": null,
+      "tag": null,
+      "url": "https://github.com/jfigge/rollhippo/releases",
+      "publishedAt": null,
+      "prerelease": false,
+      "assets": []
+    }
+  }
+}

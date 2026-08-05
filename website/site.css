@@ -1,0 +1,1184 @@
+/* Hippo Herd — hippoherd.com
+ *
+ * One stylesheet for every page. The sibling sites each inline their CSS in a
+ * single index.html, which is right for a one-page site and wrong for a
+ * seven-page one: this would have been the same 700 lines copied seven times,
+ * and the seventh copy would drift from the first within a month.
+ *
+ * The palette is the family's (Chip Hippo's, which the others follow), with one
+ * addition: --brand. Every page sets --brand to the hippo it is about, and the
+ * accented parts of the layout read from it, so a hippo page arrives in its own
+ * colour without a single per-hippo rule below. The herd's own teal is the
+ * default, used by index.html and anything else that is about the herd rather
+ * than about one of its members.
+ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg: #1c1c1c;
+  --mantle: #161616;
+  --crust: #101010;
+  --surface-0: #2a2a2a;
+  --surface-1: #383838;
+  --surface-2: #484848;
+  --overlay-0: #686868;
+  --text: #e8e8e8;
+  --subtext: #b0b0b0;
+  --yellow: #d4b060;
+
+  /* The herd's own colour. Deliberately in the one region of the wheel none of
+     the six hippos occupies (Rest violet, Chip green, Jump blue, Keep amber,
+     Mind magenta, Roll red), so the umbrella never reads as one of the members
+     and never fights the card it sits beside. */
+  --herd: #2bc4b0;
+  --brand: var(--herd);
+
+  /* Text ON a brand-coloured fill. Every brand in the family is a mid-to-light
+     saturated colour, so the readable pairing is dark-on-brand, not white. */
+  --on-brand: var(--crust);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+}
+
+img {
+  max-width: 100%;
+}
+
+/* Visually hidden, still announced. Used for link text that the surrounding
+   graphic already conveys to a sighted visitor. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ── Nav ──────────────────────────────────────────────────────────────────── */
+
+nav.site {
+  background: var(--mantle);
+  border-bottom: 1px solid var(--surface-0);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  padding: 0 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 58px;
+}
+
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+
+.logo-mark {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.nav-wordmark {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.5px;
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.nav-link {
+  color: var(--subtext);
+  text-decoration: none;
+  font-size: 0.875rem;
+  transition: color 0.15s;
+}
+.nav-link:hover {
+  color: var(--text);
+}
+
+/* ── The Hippos dropdown (native <details>, no JS — CSP-safe) ─────────────── */
+
+.nav-dropdown {
+  position: relative;
+}
+
+.nav-dropdown-summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+}
+.nav-dropdown-summary::-webkit-details-marker {
+  display: none;
+}
+.nav-dropdown-summary::marker {
+  content: "";
+}
+.nav-dropdown-summary:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+.nav-dropdown-chevron {
+  transition: transform 0.15s;
+}
+.nav-dropdown[open] .nav-dropdown-summary {
+  color: var(--text);
+}
+.nav-dropdown[open] .nav-dropdown-chevron {
+  transform: rotate(180deg);
+}
+
+.nav-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 12px);
+  right: 0;
+  min-width: 178px;
+  background: var(--mantle);
+  border: 1px solid var(--surface-1);
+  border-radius: 10px;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.55);
+  z-index: 200;
+}
+
+.nav-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 9px 12px;
+  border-radius: 7px;
+  color: var(--subtext);
+  text-decoration: none;
+  font-size: 0.85rem;
+  white-space: nowrap;
+  transition:
+    background 0.15s,
+    color 0.15s;
+}
+.nav-dropdown-item:hover {
+  background: var(--surface-0);
+  color: var(--text);
+}
+.nav-dropdown-item svg {
+  flex-shrink: 0;
+}
+.nav-dropdown-item[aria-current="page"] {
+  background: var(--surface-0);
+  color: var(--text);
+}
+
+/* ── Buttons ──────────────────────────────────────────────────────────────── */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 18px;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  border: none;
+  transition:
+    transform 0.15s,
+    background 0.15s,
+    box-shadow 0.15s;
+  line-height: 1;
+}
+
+.btn-primary {
+  background: var(--brand);
+  color: var(--on-brand);
+}
+.btn-primary:hover {
+  background: color-mix(in srgb, var(--brand) 82%, white);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--brand) 30%, transparent);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--subtext);
+  border: 1px solid var(--surface-1);
+}
+.btn-ghost:hover {
+  background: var(--surface-0);
+  color: var(--text);
+}
+
+/* ── Hero ─────────────────────────────────────────────────────────────────── */
+
+.hero {
+  text-align: center;
+  padding: 92px 2rem 64px;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: color-mix(in srgb, var(--brand) 12%, transparent);
+  color: var(--brand);
+  border: 1px solid color-mix(in srgb, var(--brand) 28%, transparent);
+  border-radius: 100px;
+  padding: 5px 14px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  margin-bottom: 28px;
+}
+
+.hero h1 {
+  font-size: clamp(2.6rem, 6vw, 4.3rem);
+  font-weight: 900;
+  letter-spacing: -2px;
+  line-height: 1.1;
+  margin-bottom: 24px;
+}
+
+.hero h1 .accent {
+  color: var(--brand);
+}
+
+.hero-desc {
+  font-size: 1.15rem;
+  color: var(--subtext);
+  max-width: 620px;
+  margin: 0 auto 40px;
+  line-height: 1.75;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.hero-actions .btn {
+  padding: 13px 28px;
+  font-size: 0.975rem;
+}
+
+.hero-platforms {
+  font-size: 0.78rem;
+  color: var(--overlay-0);
+}
+
+/* The hippo's own mark, above the headline on a hippo page. */
+.hero-mark {
+  width: 84px;
+  height: 84px;
+  border-radius: 20px;
+  margin: 0 auto 24px;
+  display: block;
+}
+
+/* ── Sections ─────────────────────────────────────────────────────────────── */
+
+.section {
+  padding: 84px 2rem;
+}
+
+.section-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.section-tag {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--brand);
+  margin-bottom: 12px;
+}
+
+.section-title {
+  font-size: clamp(1.8rem, 3vw, 2.6rem);
+  font-weight: 800;
+  letter-spacing: -1px;
+  margin-bottom: 14px;
+}
+
+.section-body {
+  color: var(--subtext);
+  font-size: 1.05rem;
+  max-width: 640px;
+  line-height: 1.75;
+}
+
+.section-alt {
+  background: var(--mantle);
+  border-top: 1px solid var(--surface-0);
+  border-bottom: 1px solid var(--surface-0);
+}
+
+.section-deep {
+  background: var(--crust);
+  border-top: 1px solid var(--surface-0);
+}
+
+/* ── Detected-platform strip ──────────────────────────────────────────────── */
+
+/* Hidden until herd.js has actually resolved a platform. It is populated from
+   navigator data that may never arrive (a browser that answers nothing useful,
+   or JS off entirely), and a strip reading "Detected: your machine" with an
+   empty slot after it is worse than no strip. */
+.detected {
+  display: none;
+  align-items: center;
+  gap: 12px 14px;
+  flex-wrap: wrap;
+  /* Left-aligned, not centred: it sits directly under a left-aligned section
+     heading and body, and a centred pill under left-aligned prose reads as a
+     stray element rather than as part of the section. */
+  margin: 28px 0 0;
+  padding: 11px 16px;
+  width: fit-content;
+  max-width: 100%;
+  background: color-mix(in srgb, var(--brand) 8%, var(--mantle));
+  border: 1px solid color-mix(in srgb, var(--brand) 24%, transparent);
+  border-radius: 12px;
+  font-size: 0.85rem;
+  color: var(--subtext);
+}
+.detected[data-resolved="true"] {
+  display: flex;
+}
+.detected strong {
+  color: var(--text);
+  font-weight: 700;
+}
+.detected svg {
+  color: var(--brand);
+  flex-shrink: 0;
+}
+.detected-switch {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: var(--brand);
+  text-decoration: underline dotted;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+.detected-switch:hover {
+  color: var(--text);
+}
+
+/* ── Herd grid (index) ────────────────────────────────────────────────────── */
+
+.herd-grid {
+  margin-top: 48px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 22px;
+}
+
+/* Each card carries its hippo's colour on --brand (set inline in the markup),
+   so everything accented inside it — the tag, the link, the hover border —
+   picks it up without a per-hippo rule. */
+.hippo-card {
+  background: var(--bg);
+  border: 1px solid var(--surface-0);
+  border-radius: 16px;
+  padding: 26px;
+  display: flex;
+  flex-direction: column;
+  transition:
+    border-color 0.2s,
+    transform 0.2s;
+}
+.hippo-card:hover {
+  border-color: color-mix(in srgb, var(--brand) 45%, transparent);
+  transform: translateY(-2px);
+}
+
+.hippo-card-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.hippo-card-mark {
+  width: 46px;
+  height: 46px;
+  border-radius: 11px;
+  flex-shrink: 0;
+}
+
+.hippo-card-name {
+  font-size: 1.1rem;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+}
+.hippo-card-name a {
+  color: var(--text);
+  text-decoration: none;
+}
+.hippo-card-name a:hover {
+  color: var(--brand);
+}
+
+.hippo-card-tagline {
+  font-size: 0.8rem;
+  color: var(--brand);
+  font-weight: 600;
+}
+
+.hippo-card p.blurb {
+  font-size: 0.885rem;
+  color: var(--subtext);
+  line-height: 1.7;
+  flex: 1;
+}
+
+.hippo-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+  font-size: 0.72rem;
+  color: var(--overlay-0);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  border-radius: 100px;
+  background: var(--surface-0);
+  color: var(--subtext);
+  font-size: 0.7rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.chip-brand {
+  background: color-mix(in srgb, var(--brand) 14%, transparent);
+  color: var(--brand);
+  border: 1px solid color-mix(in srgb, var(--brand) 26%, transparent);
+}
+.chip-muted {
+  background: transparent;
+  border: 1px solid var(--surface-1);
+  color: var(--overlay-0);
+}
+
+.hippo-card-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid var(--surface-0);
+}
+.hippo-card-actions .btn {
+  padding: 9px 15px;
+  font-size: 0.82rem;
+}
+
+/* ── Downloads ────────────────────────────────────────────────────────────── */
+
+.os-grid {
+  margin-top: 48px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+}
+
+.os-card {
+  background: var(--mantle);
+  border: 1px solid var(--surface-0);
+  border-radius: 16px;
+  padding: 26px;
+}
+
+/* The card for the platform the visitor is actually on, lit in the brand
+   colour so the right one is obvious without reordering the grid (which would
+   move macOS out of first place for everyone and confuse the two-thirds of
+   visitors whose platform was never detected). */
+.os-card[data-current="true"] {
+  border-color: color-mix(in srgb, var(--brand) 45%, transparent);
+  background: color-mix(in srgb, var(--brand) 5%, var(--mantle));
+}
+
+.os-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-bottom: 18px;
+  margin-bottom: 18px;
+  border-bottom: 1px solid var(--surface-0);
+}
+
+.os-icon {
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+}
+.os-name {
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+.os-req {
+  font-size: 0.78rem;
+  color: var(--overlay-0);
+  margin-top: 2px;
+}
+
+.dl-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.dl-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 14px;
+  background: var(--bg);
+  border: 1px solid var(--surface-0);
+  border-radius: 10px;
+  text-decoration: none;
+  color: var(--text);
+  transition:
+    border-color 0.15s,
+    background 0.15s,
+    transform 0.15s;
+}
+.dl-row:hover {
+  border-color: var(--brand);
+  background: color-mix(in srgb, var(--brand) 6%, var(--bg));
+  transform: translateX(3px);
+  color: var(--brand);
+}
+.dl-row:hover .dl-meta {
+  color: color-mix(in srgb, var(--brand) 60%, transparent);
+}
+
+.dl-icon {
+  color: var(--brand);
+  flex-shrink: 0;
+  display: flex;
+}
+.dl-info {
+  flex: 1;
+  min-width: 0;
+}
+.dl-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+.dl-meta {
+  font-size: 0.75rem;
+  color: var(--overlay-0);
+  overflow-wrap: anywhere;
+}
+
+.dl-arch {
+  font-size: 0.67rem;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 4px;
+  background: var(--surface-0);
+  color: var(--subtext);
+  flex-shrink: 0;
+}
+
+.dl-sep {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--overlay-0);
+  padding: 6px 2px 2px;
+}
+
+.dl-note {
+  font-size: 0.8rem;
+  color: var(--overlay-0);
+  line-height: 1.7;
+  margin-top: 26px;
+  max-width: 640px;
+}
+.dl-note a {
+  color: var(--brand);
+  text-decoration: none;
+}
+.dl-note a:hover {
+  text-decoration: underline;
+}
+
+/* Store badge row — a real store listing outranks a raw GitHub asset for the
+   platform it covers, so it sits above the download grid, not inside it. */
+.store-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 26px;
+}
+
+.store-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 11px;
+  padding: 10px 18px 10px 15px;
+  border-radius: 10px;
+  background: var(--mantle);
+  border: 1px solid var(--surface-1);
+  text-decoration: none;
+  color: var(--text);
+  transition:
+    border-color 0.15s,
+    background 0.15s;
+}
+.store-badge:hover {
+  border-color: var(--brand);
+  background: color-mix(in srgb, var(--brand) 7%, var(--mantle));
+}
+.store-badge svg {
+  flex-shrink: 0;
+  color: var(--text);
+}
+.store-badge-sub {
+  font-size: 0.66rem;
+  color: var(--overlay-0);
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  line-height: 1.4;
+}
+.store-badge-name {
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+/* ── Live site preview ────────────────────────────────────────────────────── */
+
+/* The real site, in an iframe, drawn at 1440px wide and scaled down to fit —
+   so it reads as a screenshot that can never go stale, because it IS the site.
+   preview.js measures the frame and writes --preview-scale.
+   .preview-cover sits over the whole thing: it makes the preview a single link
+   to the real site AND it is what stops the iframe from being interactive, so
+   a scroll over it scrolls THIS page rather than the framed one. */
+.preview {
+  max-width: 1000px;
+  margin: 0 auto;
+  border: 1px solid var(--surface-0);
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--mantle);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.55);
+}
+
+.preview-chrome {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 16px;
+  background: var(--surface-0);
+  border-bottom: 1px solid var(--surface-1);
+}
+
+.preview-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--surface-2);
+  flex-shrink: 0;
+}
+
+.preview-url {
+  flex: 1;
+  text-align: center;
+  font-size: 0.78rem;
+  color: var(--subtext);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.preview-viewport {
+  --preview-scale: 0.5;
+  position: relative;
+  /* 1440x860 of the real site, at whatever scale it lands on. Fixed by ratio
+     rather than by height so the frame never letterboxes. */
+  aspect-ratio: 1440 / 860;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+.preview-viewport iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1440px;
+  height: 860px;
+  border: 0;
+  transform: scale(var(--preview-scale));
+  transform-origin: 0 0;
+  /* Belt and braces with .preview-cover: the frame is decoration, and nothing
+     in it should ever take a click or a tab stop. */
+  pointer-events: none;
+}
+
+.preview-cover {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 18px;
+  text-decoration: none;
+  /* Transparent until hovered — the point is to see the site, not a scrim. */
+  background: linear-gradient(
+    to bottom,
+    transparent 55%,
+    color-mix(in srgb, var(--crust) 75%, transparent)
+  );
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.preview-cover:hover,
+.preview-cover:focus-visible {
+  opacity: 1;
+}
+.preview-cover:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: -2px;
+}
+
+.preview-cover span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 20px;
+  border-radius: 8px;
+  background: var(--brand);
+  color: var(--on-brand);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+/* Shown until the iframe loads, and left in place for good if it never does. */
+.preview-placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 24px;
+  text-align: center;
+  color: var(--overlay-0);
+  font-size: 0.85rem;
+}
+.preview-placeholder a {
+  color: var(--brand);
+}
+
+.preview-caption {
+  text-align: center;
+  font-size: 0.78rem;
+  color: var(--overlay-0);
+  margin-top: 14px;
+}
+
+/* What stands in for the preview on a phone, where the preview is dropped.
+   Hidden here, shown by the max-width rule at the bottom of this file — the
+   two are a pair and neither is correct without the other. */
+.preview-fallback {
+  display: none;
+}
+
+/* ── Feature list ─────────────────────────────────────────────────────────── */
+
+.feature-grid {
+  margin-top: 46px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.feature-card {
+  background: var(--bg);
+  border: 1px solid var(--surface-0);
+  border-radius: 14px;
+  padding: 22px;
+  transition:
+    border-color 0.2s,
+    transform 0.2s;
+}
+.feature-card:hover {
+  border-color: color-mix(in srgb, var(--brand) 40%, transparent);
+  transform: translateY(-2px);
+}
+
+.feature-icon {
+  width: 40px;
+  height: 40px;
+  background: color-mix(in srgb, var(--brand) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--brand) 20%, transparent);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 14px;
+  color: var(--brand);
+}
+
+.feature-card h3 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.feature-card p {
+  font-size: 0.85rem;
+  color: var(--subtext);
+  line-height: 1.65;
+}
+
+code {
+  font-size: 0.85em;
+  background: var(--surface-0);
+  padding: 1px 5px;
+  border-radius: 3px;
+  color: var(--brand);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+/* ── Callout ──────────────────────────────────────────────────────────────── */
+
+.callout {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  max-width: 720px;
+  margin-top: 32px;
+  padding: 18px 20px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--yellow) 9%, var(--mantle));
+  border: 1px solid color-mix(in srgb, var(--yellow) 28%, transparent);
+  font-size: 0.875rem;
+  color: var(--subtext);
+  line-height: 1.7;
+}
+.callout svg {
+  color: var(--yellow);
+  flex-shrink: 0;
+  margin-top: 3px;
+}
+.callout strong {
+  color: var(--yellow);
+}
+.callout a {
+  color: var(--yellow);
+}
+
+/* ── Links row ────────────────────────────────────────────────────────────── */
+
+.link-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 34px;
+}
+
+.link-card {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 13px 17px;
+  border-radius: 11px;
+  background: var(--mantle);
+  border: 1px solid var(--surface-0);
+  text-decoration: none;
+  color: var(--text);
+  font-size: 0.875rem;
+  font-weight: 600;
+  transition:
+    border-color 0.15s,
+    background 0.15s,
+    transform 0.15s;
+}
+.link-card:hover {
+  border-color: var(--brand);
+  background: color-mix(in srgb, var(--brand) 6%, var(--mantle));
+  transform: translateY(-2px);
+}
+.link-card svg {
+  color: var(--brand);
+  flex-shrink: 0;
+}
+.link-card small {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 400;
+  color: var(--overlay-0);
+}
+
+/* ── Prev / next hippo ────────────────────────────────────────────────────── */
+
+.herd-nav {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 48px 2rem;
+  border-top: 1px solid var(--surface-0);
+}
+
+.herd-nav a {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  text-decoration: none;
+  color: var(--subtext);
+  font-size: 0.875rem;
+  transition: color 0.15s;
+}
+.herd-nav a:hover {
+  color: var(--text);
+}
+.herd-nav small {
+  display: block;
+  font-size: 0.7rem;
+  color: var(--overlay-0);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.herd-nav img,
+.herd-nav svg.mark {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+}
+
+/* ── Footer ───────────────────────────────────────────────────────────────── */
+
+footer {
+  background: var(--crust);
+  border-top: 1px solid var(--surface-0);
+  padding: 46px 2rem;
+  text-align: center;
+}
+
+.footer-inner {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.footer-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.footer-name {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--text);
+}
+
+footer p {
+  color: var(--overlay-0);
+  font-size: 0.83rem;
+  line-height: 1.85;
+}
+footer a {
+  color: var(--brand);
+  text-decoration: none;
+}
+footer a:hover {
+  text-decoration: underline;
+}
+
+.cc-referral {
+  color: var(--subtext);
+  text-decoration: underline dotted var(--overlay-0);
+  text-underline-offset: 3px;
+  transition: color 0.15s;
+}
+.cc-referral:hover {
+  color: var(--brand);
+}
+
+/* ── Long-form pages (privacy, 404) ───────────────────────────────────────── */
+
+.prose {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 72px 2rem 84px;
+}
+.prose h1 {
+  font-size: clamp(2rem, 4vw, 2.8rem);
+  font-weight: 800;
+  letter-spacing: -1px;
+  margin-bottom: 10px;
+}
+.prose h2 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin: 34px 0 10px;
+}
+.prose p,
+.prose li {
+  color: var(--subtext);
+  font-size: 0.95rem;
+  line-height: 1.8;
+}
+.prose p {
+  margin-bottom: 14px;
+}
+.prose ul {
+  margin: 0 0 14px 1.2rem;
+}
+.prose li {
+  margin-bottom: 6px;
+}
+.prose a {
+  color: var(--brand);
+}
+.prose .lede {
+  color: var(--overlay-0);
+  font-size: 0.82rem;
+  margin-bottom: 30px;
+}
+
+/* ── Responsive ───────────────────────────────────────────────────────────── */
+
+@media (max-width: 720px) {
+  /* The nav wraps onto a second row rather than hiding links behind a
+     hamburger: nothing is removed, nothing is duplicated in the markup, and
+     there is no third state to get wrong. It also stops being sticky, because
+     a two-row header pinned to a 667px phone is a fifth of the screen spent on
+     navigation. */
+  nav.site {
+    position: static;
+    height: auto;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    padding: 10px 1rem;
+  }
+  .nav-right {
+    width: 100%;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px 1.1rem;
+  }
+  .nav-link {
+    font-size: 0.82rem;
+  }
+  .nav-right .btn {
+    padding: 7px 14px;
+  }
+  /* The card is anchored to its summary, which is now somewhere in the middle
+     of a centred row — pin it to the viewport instead of letting it hang off
+     an edge. */
+  .nav-dropdown-menu {
+    right: auto;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .hero {
+    padding: 56px 1rem 44px;
+  }
+  .section {
+    padding: 56px 1rem;
+  }
+  .herd-nav {
+    padding: 36px 1rem;
+  }
+  .os-grid {
+    grid-template-columns: 1fr;
+  }
+  .prose {
+    padding: 48px 1rem 64px;
+  }
+
+  /* A 1440px page scaled into a 390px phone is 0.27 — unreadable, and a whole
+     other website's worth of someone's data plan to render it. The preview is
+     dropped, and so is the caption that pointed at it ("click anywhere on the
+     preview" with no preview to click is worse than saying nothing). A plain
+     button takes their place, so the section still ends in a way out.
+     Dropping the preview also stops it LOADING: preview.js mounts on
+     intersection, and a display:none element never intersects. */
+  .preview,
+  .preview-caption {
+    display: none;
+  }
+
+  .preview-fallback {
+    display: inline-flex;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .hippo-card:hover,
+  .feature-card:hover,
+  .link-card:hover,
+  .dl-row:hover,
+  .btn-primary:hover {
+    transform: none;
+  }
+}

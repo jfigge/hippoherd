@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <!-- GitHub Pages cannot set response headers, so the CSP rides in a meta tag.
+       No inline or executable scripts on any page — every script below is
+       same-origin — while inline STYLES need 'unsafe-inline' because each hippo
+       sets its own accent through a style="--brand:…" attribute.
+       frame-src names the hippo sites the preview embeds, and nothing else.
+       NO frame-ancestors: the spec IGNORES it (along with report-uri and
+       sandbox) when the policy arrives in a meta element, so it would protect
+       nothing and log a console error on every page load. Clickjacking cover
+       needs a real response header, which Pages cannot send — better to not
+       claim it than to ship a directive the browser throws away unread. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; frame-src https://resthippo.com https://chiphippo.com https://jumphippo.com https://keephippo.com; object-src 'none'; base-uri 'self'; form-action 'none'" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#2BC4B0" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <meta name="description" content="hippoherd.com collects nothing: no analytics, no cookies, no third-party requests, and no telemetry in any of the apps." />
+  <title>Privacy — Hippo Herd</title>
+  <link rel="canonical" href="https://hippoherd.com/privacy.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Hippo Herd" />
+  <meta property="og:title" content="Privacy — Hippo Herd" />
+  <meta property="og:description" content="hippoherd.com collects nothing: no analytics, no cookies, no third-party requests, and no telemetry in any of the apps." />
+  <meta property="og:url" content="https://hippoherd.com/privacy.html" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Privacy — Hippo Herd" />
+  <meta name="twitter:description" content="hippoherd.com collects nothing: no analytics, no cookies, no third-party requests, and no telemetry in any of the apps." />
+  <link rel="stylesheet" href="/site.css" />
+</head>
+<body style="--brand:#2BC4B0">
+
+<nav class="site">
+  <a class="nav-logo" href="/">
+    <span class="logo-mark"><img src="/favicon.svg" width="32" height="32" alt=""></span>
+    <span class="nav-wordmark">Hippo Herd</span>
+  </a>
+  <div class="nav-right">
+    <details class="nav-dropdown">
+      <summary class="nav-link nav-dropdown-summary">
+        The Hippos
+        <svg class="nav-dropdown-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+      </summary>
+      <div class="nav-dropdown-menu">
+        <a class="nav-dropdown-item" href="/resthippo/"><img src="/marks/resthippo.svg" width="16" height="16" alt=""> Rest Hippo</a>
+        <a class="nav-dropdown-item" href="/chiphippo/"><img src="/marks/chiphippo.svg" width="16" height="16" alt=""> Chip Hippo</a>
+        <a class="nav-dropdown-item" href="/jumphippo/"><img src="/marks/jumphippo.svg" width="16" height="16" alt=""> Jump Hippo</a>
+        <a class="nav-dropdown-item" href="/keephippo/"><img src="/marks/keephippo.svg" width="16" height="16" alt=""> Keep Hippo</a>
+        <a class="nav-dropdown-item" href="/mindhippo/"><img src="/marks/mindhippo.svg" width="16" height="16" alt=""> Mind Hippo</a>
+        <a class="nav-dropdown-item" href="/rollhippo/"><img src="/marks/rollhippo.svg" width="16" height="16" alt=""> Roll Hippo</a>
+      </div>
+    </details>
+    <a class="nav-link" href="https://github.com/jfigge" rel="noopener noreferrer">GitHub</a>
+    <a class="nav-link" href="https://github.com/sponsors/jfigge" rel="noopener noreferrer">Donate</a>
+    <a class="btn btn-primary" href="#herd">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Meet the herd
+    </a>
+  </div>
+</nav>
+
+<div class="prose">
+  <h1>Privacy</h1>
+  <p class="lede">hippoherd.com · last updated 5 August 2026</p>
+
+  <p>
+    This site collects nothing. There is no analytics script, no tag manager, no
+    pixel, no cookie, no local storage, and no form to submit. The site is static
+    HTML served by GitHub Pages, and nothing on it identifies you.
+  </p>
+
+  <h2>What the pages load</h2>
+  <p>
+    Every stylesheet, script, and image on this site is served from
+    hippoherd.com itself. There is no CDN, no web font service, and no third-party
+    request made on your behalf — the site's Content-Security-Policy is written
+    to forbid them, so a change that introduced one would break rather than run.
+  </p>
+  <p>
+    Each hippo's page shows a live preview of that project's own website in a
+    frame — resthippo.com, chiphippo.com, jumphippo.com or keephippo.com. Those
+    are also static sites of ours, hosted the same way and collecting the same
+    nothing, but loading one does mean your browser makes a request to that
+    domain. If you would rather it didn't, the previews only load when you scroll
+    to them, and blocking frames stops them entirely without breaking the page.
+  </p>
+
+  <h2>What GitHub sees</h2>
+  <p>
+    GitHub Pages serves this site and GitHub Releases serves the downloads.
+    GitHub logs requests to its own infrastructure, including your IP address, as
+    described in
+    <a href="https://docs.github.com/site-policy/privacy-policies/github-privacy-statement" rel="noopener noreferrer">GitHub's privacy statement</a>.
+    That is between you and GitHub; we receive none of it and have no analytics
+    dashboard of any kind.
+  </p>
+
+  <h2>What the apps do</h2>
+  <p>
+    Every hippo is offline software. None of them has an account, a licence
+    check, an update beacon, or a telemetry channel, and none of them sends your
+    data anywhere. Each project states its own position in its repository, and
+    the ones with their own sites carry their own privacy pages.
+  </p>
+
+  <h2>Getting in touch</h2>
+  <p>
+    Questions belong in the relevant project's
+    <a href="https://github.com/jfigge" rel="noopener noreferrer">GitHub issues</a>,
+    where the answer is useful to everyone rather than to one inbox.
+  </p>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo">
+      <span class="logo-mark"><img src="/favicon.svg" width="28" height="28" alt=""></span>
+      <span class="footer-name">Hippo Herd</span>
+    </div>
+    <p style="margin-bottom:14px">
+      <a href="/resthippo/">Rest Hippo</a>
+      &nbsp;·&nbsp;
+      <a href="/chiphippo/">Chip Hippo</a>
+      &nbsp;·&nbsp;
+      <a href="/jumphippo/">Jump Hippo</a>
+      &nbsp;·&nbsp;
+      <a href="/keephippo/">Keep Hippo</a>
+      &nbsp;·&nbsp;
+      <a href="/mindhippo/">Mind Hippo</a>
+      &nbsp;·&nbsp;
+      <a href="/rollhippo/">Roll Hippo</a>
+    </p>
+    <p style="margin-bottom:14px">
+      <a href="https://github.com/jfigge" rel="noopener noreferrer">GitHub</a>
+      &nbsp;·&nbsp;
+      <a href="https://github.com/sponsors/jfigge" rel="noopener noreferrer">Donate</a>
+      &nbsp;·&nbsp;
+      <a href="/privacy.html">Privacy</a>
+    </p>
+    <p>Copyright &copy; 2026 Jason Figge. Every hippo is free and open source.<br>
+    No telemetry, no accounts, no tracking — on the apps or on this site.</p>
+    <p style="margin-top:14px">Crafted with <a class="cc-referral" href="https://claude.ai/code" rel="noopener noreferrer">Claude&nbsp;Code</a>.</p>
+  </div>
+</footer>
+
+<script src="/herd.js" defer></script>
+<script src="/nav.js" defer></script>
+</body>
+</html>

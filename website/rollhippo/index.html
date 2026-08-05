@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <!-- GitHub Pages cannot set response headers, so the CSP rides in a meta tag.
+       No inline or executable scripts on any page — every script below is
+       same-origin — while inline STYLES need 'unsafe-inline' because each hippo
+       sets its own accent through a style="--brand:…" attribute.
+       frame-src names the hippo sites the preview embeds, and nothing else.
+       NO frame-ancestors: the spec IGNORES it (along with report-uri and
+       sandbox) when the policy arrives in a meta element, so it would protect
+       nothing and log a console error on every page load. Clickjacking cover
+       needs a real response header, which Pages cannot send — better to not
+       claim it than to ship a directive the browser throws away unread. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; frame-src https://resthippo.com https://chiphippo.com https://jumphippo.com https://keephippo.com; object-src 'none'; base-uri 'self'; form-action 'none'" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#D7263D" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <meta name="description" content="The herd's first mobile app. Set your dice up once, and after that the phone is the tray — hold it upright, shake it, set it down, read the result." />
+  <title>Roll Hippo — Shake-to-roll dice tray · Hippo Herd</title>
+  <link rel="canonical" href="https://hippoherd.com/rollhippo/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Hippo Herd" />
+  <meta property="og:title" content="Roll Hippo — Shake-to-roll dice tray · Hippo Herd" />
+  <meta property="og:description" content="The herd's first mobile app. Set your dice up once, and after that the phone is the tray — hold it upright, shake it, set it down, read the result." />
+  <meta property="og:url" content="https://hippoherd.com/rollhippo/" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Roll Hippo — Shake-to-roll dice tray · Hippo Herd" />
+  <meta name="twitter:description" content="The herd's first mobile app. Set your dice up once, and after that the phone is the tray — hold it upright, shake it, set it down, read the result." />
+  <link rel="stylesheet" href="/site.css" />
+</head>
+<body data-hippo-page="rollhippo" style="--brand:#D7263D">
+
+<nav class="site">
+  <a class="nav-logo" href="/">
+    <span class="logo-mark"><img src="/favicon.svg" width="32" height="32" alt=""></span>
+    <span class="nav-wordmark">Hippo Herd</span>
+  </a>
+  <div class="nav-right">
+    <details class="nav-dropdown">
+      <summary class="nav-link nav-dropdown-summary">
+        The Hippos
+        <svg class="nav-dropdown-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+      </summary>
+      <div class="nav-dropdown-menu">
+        <a class="nav-dropdown-item" href="/resthippo/"><img src="/marks/resthippo.svg" width="16" height="16" alt=""> Rest Hippo</a>
+        <a class="nav-dropdown-item" href="/chiphippo/"><img src="/marks/chiphippo.svg" width="16" height="16" alt=""> Chip Hippo</a>
+        <a class="nav-dropdown-item" href="/jumphippo/"><img src="/marks/jumphippo.svg" width="16" height="16" alt=""> Jump Hippo</a>
+        <a class="nav-dropdown-item" href="/keephippo/"><img src="/marks/keephippo.svg" width="16" height="16" alt=""> Keep Hippo</a>
+        <a class="nav-dropdown-item" href="/mindhippo/"><img src="/marks/mindhippo.svg" width="16" height="16" alt=""> Mind Hippo</a>
+        <a class="nav-dropdown-item" href="/rollhippo/" aria-current="page"><img src="/marks/rollhippo.svg" width="16" height="16" alt=""> Roll Hippo</a>
+      </div>
+    </details>
+    <a class="nav-link" href="https://github.com/jfigge" rel="noopener noreferrer">GitHub</a>
+    <a class="nav-link" href="https://github.com/sponsors/jfigge" rel="noopener noreferrer">Donate</a>
+    <a class="btn btn-primary" href="#downloads">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Download
+    </a>
+  </div>
+</nav>
+
+<div class="hero">
+  <img class="hero-mark" src="/marks/rollhippo.svg" width="84" height="84" alt="" />
+  <div class="hero-badge">
+    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><circle cx="12" cy="12" r="9"/></svg> Planned · <span data-version-tag>—</span>
+  </div>
+  <h1>Roll Hippo</h1>
+  <p class="hero-desc">Roll Hippo is a dice tray for tabletop play, and the interaction is deliberately physical: you build your dice groups once on the Setup screen, and from then on the phone <em>is</em> the tray. Hold it upright, shake, set it down. The dice tumble on a 60fps accelerometer-driven rigid-body simulation and settle where they settle. Two screens, no account, no network call, no analytics, no ads — it works with the SIM removed, and the tray shows nothing but dice.</p>
+  <div class="hero-actions">
+    <a class="btn btn-primary" href="https://github.com/jfigge/rollhippo" rel="noopener noreferrer"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/></svg> View the source</a>
+    <a class="btn btn-ghost" href="/#herd"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg> Back to the herd</a>
+  </div>
+  <p class="hero-platforms">iOS · Android &nbsp;·&nbsp; Flutter · Dart &nbsp;·&nbsp; Apache-2.0</p>
+</div>
+
+<section class="section section-alt">
+  <div class="section-inner">
+    <p class="section-tag">What it does</p>
+    <h2 class="section-title">Shake-to-roll dice tray</h2>
+    <p class="section-body">The herd's first mobile app. Set your dice up once, and after that the phone is the tray — hold it upright, shake it, set it down, read the result.</p>
+    <div class="callout">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      <p><strong>The honesty rule.</strong> The tumbling is <strong>presentation</strong>. The values are drawn from a uniform random number generator at settle time and are never derived from the physics state. A dice app that is coy about its randomness has no business asking for your trust, so this is said in the app, the guide, and here.</p>
+    </div>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="feature-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="5 9 2 12 5 15"/><polyline points="9 5 12 2 15 5"/><polyline points="15 19 12 22 9 19"/><polyline points="19 9 22 12 19 15"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="12" y1="2" x2="12" y2="22"/></svg></div>
+        <h3>Shake to roll</h3>
+        <p>The accelerometer drives a real rigid-body simulation at 60fps. Hold the phone upright, shake it, and set it down — no button, no gesture to learn.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.6" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/><circle cx="15.5" cy="15.5" r="1.6" fill="currentColor" stroke="none"/></svg></div>
+        <h3>Dice groups, set once</h3>
+        <p>Build the sets you actually roll on the Setup screen. The tray then holds exactly those, and nothing else: no log, no running total, no re-roll button.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg></div>
+        <h3>One codebase, both stores</h3>
+        <p>Flutter and Dart, shipping to the App Store and Google Play from a single source tree — the family's first mobile application.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="2" y1="2" x2="22" y2="22"/><path d="M8.5 16.5a5 5 0 0 1 7 0"/><path d="M2 8.82a15 15 0 0 1 4.17-2.65"/><path d="M10.66 5c4.01-.36 8.14.9 11.34 3.76"/><path d="M16.85 11.25a10 10 0 0 1 2.22 1.68"/><path d="M5 12.86a10 10 0 0 1 5.17-2.7"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg></div>
+        <h3>Completely offline</h3>
+        <p>No account, no network call, no telemetry. Nothing the app knows about you ever leaves the device, because nothing ever leaves the device.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg></div>
+        <h3>Honest randomness</h3>
+        <p>Values come from a uniform RNG at settle time. The simulation decides how the dice look, never what they say.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+        <h3>Not a gambling app</h3>
+        <p>A utility that produces uniform random integers with a physical interaction. No wagering, no casino, no simulated stakes.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section section-deep" id="downloads">
+  <div class="section-inner">
+    <p class="section-tag">Downloads</p>
+    <h2 class="section-title">Not out yet</h2>
+    <p class="section-body">Roll Hippo is heading for the App Store and Google Play. There is nothing to install today — the repository is the place to watch, and this page will carry the store links the moment they exist.</p>
+
+    <div class="link-row">
+      <a class="link-card" href="https://github.com/jfigge/rollhippo" rel="noopener noreferrer">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/></svg>
+        <span>jfigge/rollhippo<small>Source, plans and progress</small></span>
+      </a>
+      <a class="link-card" href="https://github.com/jfigge/rollhippo/releases" rel="noopener noreferrer" data-release-link>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <span>Releases<small><span data-version-tag>No release yet</span></small></span>
+      </a>
+    </div>
+  </div>
+</section>
+
+
+
+<section class="section">
+  <div class="section-inner">
+    <p class="section-tag">Where to go next</p>
+    <h2 class="section-title">Roll Hippo, everywhere else</h2>
+    <p class="section-body">The herd page is the introduction. These are the places the project actually lives.</p>
+    <div class="link-row">
+      <a class="link-card" href="https://github.com/jfigge/rollhippo" rel="noopener noreferrer">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/></svg>
+        <span>jfigge/rollhippo<small>Source, issues and releases</small></span>
+      </a>
+      <a class="link-card" href="https://github.com/jfigge/rollhippo#readme" rel="noopener noreferrer">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+        <span>README<small>The short version, on GitHub</small></span>
+      </a>
+      <a class="link-card" href="/#herd">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        <span>The rest of the herd<small>Five more hippos</small></span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<div class="herd-nav">
+  <a href="/mindhippo/">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+    <img src="/marks/mindhippo.svg" width="32" height="32" alt="" />
+    <span><small>Previous</small>Mind Hippo</span>
+  </a>
+  <a href="/resthippo/">
+    <span style="text-align:right"><small>Next</small>Rest Hippo</span>
+    <img src="/marks/resthippo.svg" width="32" height="32" alt="" />
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+  </a>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo">
+      <span class="logo-mark"><img src="/favicon.svg" width="28" height="28" alt=""></span>
+      <span class="footer-name">Hippo Herd</span>
+    </div>
+    <p style="margin-bottom:14px">
+      <a href="/resthippo/">Rest Hippo</a>
+      &nbsp;·&nbsp;
+      <a href="/chiphippo/">Chip Hippo</a>
+      &nbsp;·&nbsp;
+      <a href="/jumphippo/">Jump Hippo</a>
+      &nbsp;·&nbsp;
+      <a href="/keephippo/">Keep Hippo</a>
+      &nbsp;·&nbsp;
+      <a href="/mindhippo/">Mind Hippo</a>
+      &nbsp;·&nbsp;
+      <a href="/rollhippo/">Roll Hippo</a>
+    </p>
+    <p style="margin-bottom:14px">
+      <a href="https://github.com/jfigge" rel="noopener noreferrer">GitHub</a>
+      &nbsp;·&nbsp;
+      <a href="https://github.com/sponsors/jfigge" rel="noopener noreferrer">Donate</a>
+      &nbsp;·&nbsp;
+      <a href="/privacy.html">Privacy</a>
+    </p>
+    <p>Copyright &copy; 2026 Jason Figge. Every hippo is free and open source.<br>
+    No telemetry, no accounts, no tracking — on the apps or on this site.</p>
+    <p style="margin-top:14px">Crafted with <a class="cc-referral" href="https://claude.ai/code" rel="noopener noreferrer">Claude&nbsp;Code</a>.</p>
+  </div>
+</footer>
+
+<script src="/herd.js" defer></script>
+<script src="/nav.js" defer></script>
+</body>
+</html>

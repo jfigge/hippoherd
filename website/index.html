@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <!-- GitHub Pages cannot set response headers, so the CSP rides in a meta tag.
+       No inline or executable scripts on any page — every script below is
+       same-origin — while inline STYLES need 'unsafe-inline' because each hippo
+       sets its own accent through a style="--brand:…" attribute.
+       frame-src names the hippo sites the preview embeds, and nothing else.
+       NO frame-ancestors: the spec IGNORES it (along with report-uri and
+       sandbox) when the policy arrives in a meta element, so it would protect
+       nothing and log a console error on every page load. Clickjacking cover
+       needs a real response header, which Pages cannot send — better to not
+       claim it than to ship a directive the browser throws away unread. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; frame-src https://resthippo.com https://chiphippo.com https://jumphippo.com https://keephippo.com; object-src 'none'; base-uri 'self'; form-action 'none'" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#2BC4B0" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <meta name="description" content="The hippo herd: Rest Hippo, Chip Hippo, Jump Hippo, Keep Hippo, Mind Hippo and Roll Hippo. Free, open-source tools that run on your machine, with no accounts and no telemetry." />
+  <title>Hippo Herd — free, offline, open-source tools</title>
+  <link rel="canonical" href="https://hippoherd.com/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Hippo Herd" />
+  <meta property="og:title" content="Hippo Herd — free, offline, open-source tools" />
+  <meta property="og:description" content="The hippo herd: Rest Hippo, Chip Hippo, Jump Hippo, Keep Hippo, Mind Hippo and Roll Hippo. Free, open-source tools that run on your machine, with no accounts and no telemetry." />
+  <meta property="og:url" content="https://hippoherd.com/" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Hippo Herd — free, offline, open-source tools" />
+  <meta name="twitter:description" content="The hippo herd: Rest Hippo, Chip Hippo, Jump Hippo, Keep Hippo, Mind Hippo and Roll Hippo. Free, open-source tools that run on your machine, with no accounts and no telemetry." />
+  <link rel="stylesheet" href="/site.css" />
+</head>
+<body style="--brand:#2BC4B0">
+
+<nav class="site">
+  <a class="nav-logo" href="/">
+    <span class="logo-mark"><img src="/favicon.svg" width="32" height="32" alt=""></span>
+    <span class="nav-wordmark">Hippo Herd</span>
+  </a>
+  <div class="nav-right">
+    <details class="nav-dropdown">
+      <summary class="nav-link nav-dropdown-summary">
+        The Hippos
+        <svg class="nav-dropdown-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+      </summary>
+      <div class="nav-dropdown-menu">
+        <a class="nav-dropdown-item" href="/resthippo/"><img src="/marks/resthippo.svg" width="16" height="16" alt=""> Rest Hippo</a>
+        <a class="nav-dropdown-item" href="/chiphippo/"><img src="/marks/chiphippo.svg" width="16" height="16" alt=""> Chip Hippo</a>
+        <a class="nav-dropdown-item" href="/jumphippo/"><img src="/marks/jumphippo.svg" width="16" height="16" alt=""> Jump Hippo</a>
+        <a class="nav-dropdown-item" href="/keephippo/"><img src="/marks/keephippo.svg" width="16" height="16" alt=""> Keep Hippo</a>
+        <a class="nav-dropdown-item" href="/mindhippo/"><img src="/marks/mindhippo.svg" width="16" height="16" alt=""> Mind Hippo</a>
+        <a class="nav-dropdown-item" href="/rollhippo/"><img src="/marks/rollhippo.svg" width="16" height="16" alt=""> Roll Hippo</a>
+      </div>
+    </details>
+    <a class="nav-link" href="https://github.com/jfigge" rel="noopener noreferrer">GitHub</a>
+    <a class="nav-link" href="https://github.com/sponsors/jfigge" rel="noopener noreferrer">Donate</a>
+    <a class="btn btn-primary" href="#herd">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Meet the herd
+    </a>
+  </div>
+</nav>
+
+<div class="hero">
+  <img class="hero-mark" src="/favicon.svg" width="84" height="84" alt="" />
+  <div class="hero-badge">
+    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+    Six hippos, one herd
+  </div>
+  <h1>Welcome to the<br><span class="accent">hippo herd</span></h1>
+  <p class="hero-desc">
+    A small family of free, open-source tools that run on your machine and keep
+    to themselves. No accounts, no telemetry, no cloud waiting to be configured
+    — just software that works when the wifi doesn't.
+  </p>
+  <div class="hero-actions">
+    <a class="btn btn-primary" href="#herd">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      Meet the herd
+    </a>
+    <a class="btn btn-ghost" href="https://github.com/jfigge" rel="noopener noreferrer">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/></svg>
+      View on GitHub
+    </a>
+  </div>
+  <p class="hero-platforms">macOS · Windows · Linux &nbsp;·&nbsp; iOS &amp; Android soon &nbsp;·&nbsp; Free &amp; open source</p>
+</div>
+
+<section class="section section-alt" id="herd">
+  <div class="section-inner">
+    <p class="section-tag">The herd</p>
+    <h2 class="section-title">Every hippo, and what it's for</h2>
+    <p class="section-body">
+      Each one solves a problem its author had, properly rather than broadly.
+      They share a look, a licence, and a refusal to talk to anything you
+      didn't ask them to.
+    </p>
+
+    <div class="detected" data-detected>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+      <span>Detected <strong data-detected-label></strong> — download buttons below are picked to match.</span>
+      <span data-detected-note></span>
+    </div>
+
+    <div class="herd-grid">
+      <article class="hippo-card" data-hippo="resthippo" style="--brand:#6C5CE7">
+        <div class="hippo-card-head">
+          <img class="hippo-card-mark" src="/marks/resthippo.svg" width="46" height="46" alt="" />
+          <div>
+            <h3 class="hippo-card-name"><a href="/resthippo/">Rest Hippo</a></h3>
+            <p class="hippo-card-tagline">REST API client</p>
+          </div>
+        </div>
+        <p class="blurb">A free, offline alternative to Postman and Insomnia. Collections are plain files on your disk, HTTP runs outside the browser so nothing is subject to CORS, and there is no account to make.</p>
+        <div class="hippo-card-meta">
+          <span class="chip chip-brand" data-version-chip>—</span>
+          
+          <span class="chip">Electron · Vanilla JS</span>
+          <span class="chip">macOS · Windows · Linux</span>
+        </div>
+        <div class="hippo-card-actions">
+          <a class="btn btn-primary" href="/resthippo/">Learn more</a>
+          <a class="btn btn-ghost" data-card-dl href="https://github.com/jfigge/resthippo/releases/latest" rel="noopener noreferrer">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <span data-card-dl-label>Latest release</span>
+      </a>
+        </div>
+      </article>
+
+      <article class="hippo-card" data-hippo="chiphippo" style="--brand:#2F855A">
+        <div class="hippo-card-head">
+          <img class="hippo-card-mark" src="/marks/chiphippo.svg" width="46" height="46" alt="" />
+          <div>
+            <h3 class="hippo-card-name"><a href="/chiphippo/">Chip Hippo</a></h3>
+            <p class="hippo-card-tagline">TTL breadboard simulator</p>
+          </div>
+        </div>
+        <p class="blurb">A desktop playground for 74xx TTL logic. Drop chips on an infinite breadboard, wire them up, hit Run — and watch electricity ripple through every net until the circuit settles.</p>
+        <div class="hippo-card-meta">
+          <span class="chip chip-brand" data-version-chip>—</span>
+          
+          <span class="chip">Electron · Vanilla JS</span>
+          <span class="chip">macOS · Windows · Linux</span>
+        </div>
+        <div class="hippo-card-actions">
+          <a class="btn btn-primary" href="/chiphippo/">Learn more</a>
+          <a class="btn btn-ghost" data-card-dl href="https://github.com/jfigge/chiphippo/releases/latest" rel="noopener noreferrer">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <span data-card-dl-label>Latest release</span>
+      </a>
+        </div>
+      </article>
+
+      <article class="hippo-card" data-hippo="jumphippo" style="--brand:#4785F0">
+        <div class="hippo-card-head">
+          <img class="hippo-card-mark" src="/marks/jumphippo.svg" width="46" height="46" alt="" />
+          <div>
+            <h3 class="hippo-card-name"><a href="/jumphippo/">Jump Hippo</a></h3>
+            <p class="hippo-card-tagline">On-demand SSH tunnels</p>
+          </div>
+        </div>
+        <p class="blurb">Bind a local port and the SSH tunnel opens the moment something touches it — through a chain of jump hosts if you need one — then tears itself down once the port goes idle.</p>
+        <div class="hippo-card-meta">
+          <span class="chip chip-brand" data-version-chip>—</span>
+          
+          <span class="chip">Electron · Vanilla JS</span>
+          <span class="chip">macOS · Windows · Linux</span>
+        </div>
+        <div class="hippo-card-actions">
+          <a class="btn btn-primary" href="/jumphippo/">Learn more</a>
+          <a class="btn btn-ghost" data-card-dl href="https://github.com/jfigge/jumphippo/releases/latest" rel="noopener noreferrer">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <span data-card-dl-label>Latest release</span>
+      </a>
+        </div>
+      </article>
+
+      <article class="hippo-card" data-hippo="keephippo" style="--brand:#F5A623">
+        <div class="hippo-card-head">
+          <img class="hippo-card-mark" src="/marks/keephippo.svg" width="46" height="46" alt="" />
+          <div>
+            <h3 class="hippo-card-name"><a href="/keephippo/">Keep Hippo</a></h3>
+            <p class="hippo-card-tagline">Vault-compatible secrets manager</p>
+          </div>
+        </div>
+        <p class="blurb">A from-scratch secrets manager that speaks HashiCorp Vault's HTTP API, so the Vault clients you already have keep working. Server, CLI and web console in one Go binary.</p>
+        <div class="hippo-card-meta">
+          <span class="chip chip-brand" data-version-chip>—</span>
+          <span class="chip chip-muted">Pre-release</span>
+          <span class="chip">Go · single binary</span>
+          <span class="chip">macOS · Linux · Windows</span>
+        </div>
+        <div class="hippo-card-actions">
+          <a class="btn btn-primary" href="/keephippo/">Learn more</a>
+          <a class="btn btn-ghost" data-card-dl href="https://github.com/jfigge/keephippo/releases/latest" rel="noopener noreferrer">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <span data-card-dl-label>Latest release</span>
+      </a>
+        </div>
+      </article>
+
+      <article class="hippo-card" data-hippo="mindhippo" style="--brand:#D946A6">
+        <div class="hippo-card-head">
+          <img class="hippo-card-mark" src="/marks/mindhippo.svg" width="46" height="46" alt="" />
+          <div>
+            <h3 class="hippo-card-name"><a href="/mindhippo/">Mind Hippo</a></h3>
+            <p class="hippo-card-tagline">ML runtime, from scratch</p>
+          </div>
+        </div>
+        <p class="blurb">Tensors, autodiff, neural networks and an inference server — written in pure Go against the standard library. No framework, no GPU, no cgo, and no hosted model behind any of it.</p>
+        <div class="hippo-card-meta">
+          <span class="chip chip-brand" data-version-chip>—</span>
+          <span class="chip chip-muted">In development</span>
+          <span class="chip">Go · no dependencies</span>
+          <span class="chip">macOS · Linux · Windows</span>
+        </div>
+        <div class="hippo-card-actions">
+          <a class="btn btn-primary" href="/mindhippo/">Learn more</a>
+          
+        </div>
+      </article>
+
+      <article class="hippo-card" data-hippo="rollhippo" style="--brand:#D7263D">
+        <div class="hippo-card-head">
+          <img class="hippo-card-mark" src="/marks/rollhippo.svg" width="46" height="46" alt="" />
+          <div>
+            <h3 class="hippo-card-name"><a href="/rollhippo/">Roll Hippo</a></h3>
+            <p class="hippo-card-tagline">Shake-to-roll dice tray</p>
+          </div>
+        </div>
+        <p class="blurb">The herd's first mobile app. Set your dice up once, and after that the phone is the tray — hold it upright, shake it, set it down, read the result.</p>
+        <div class="hippo-card-meta">
+          <span class="chip chip-brand" data-version-chip>—</span>
+          <span class="chip chip-muted">Planned</span>
+          <span class="chip">Flutter · Dart</span>
+          <span class="chip">iOS · Android</span>
+        </div>
+        <div class="hippo-card-actions">
+          <a class="btn btn-primary" href="/rollhippo/">Learn more</a>
+          <a class="btn btn-ghost" href="https://github.com/jfigge/rollhippo" rel="noopener noreferrer">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/></svg>
+        Watch the repo
+      </a>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-inner">
+    <p class="section-tag">In common</p>
+    <h2 class="section-title">What every hippo agrees on</h2>
+    <p class="section-body">Different problems, same principles — and they are not marketing lines, they are constraints the code is written under.</p>
+
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="feature-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="2" y1="2" x2="22" y2="22"/><path d="M8.5 16.5a5 5 0 0 1 7 0"/><path d="M2 8.82a15 15 0 0 1 4.17-2.65"/><path d="M10.66 5c4.01-.36 8.14.9 11.34 3.76"/><path d="M16.85 11.25a10 10 0 0 1 2.22 1.68"/><path d="M5 12.86a10 10 0 0 1 5.17-2.7"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg></div>
+        <h3>Offline first, and offline last</h3>
+        <p>Every hippo does its whole job with the network unplugged. Anything that does reach out — an SSH tunnel, an HTTP request — reaches where you pointed it and nowhere else.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg></div>
+        <h3>No accounts, no telemetry</h3>
+        <p>Nothing to sign into, nothing phoning home, no analytics, no crash beacon, no update ping. There is no server to hold your data because there is no server.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></div>
+        <h3>Your data stays yours</h3>
+        <p>Files in directories you can see, back up, and read without the app that made them. Nothing is locked in a proprietary store you have to export from.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></div>
+        <h3>Open source, free forever</h3>
+        <p>Apache 2.0 across the herd, MPL 2.0 for Keep Hippo. Every line is on GitHub — read it, fork it, build it yourself if you'd rather not trust a binary.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
+        <h3>Native on all three desktops</h3>
+        <p>macOS, Windows and Linux, on Intel and on ARM, built from the same source with the same features. No platform is the afterthought.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div>
+        <h3>Documented properly</h3>
+        <p>Each hippo ships a real user guide written alongside it, hosted and in-repo from one source, so the two cannot disagree.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo">
+      <span class="logo-mark"><img src="/favicon.svg" width="28" height="28" alt=""></span>
+      <span class="footer-name">Hippo Herd</span>
+    </div>
+    <p style="margin-bottom:14px">
+      <a href="/resthippo/">Rest Hippo</a>
+      &nbsp;·&nbsp;
+      <a href="/chiphippo/">Chip Hippo</a>
+      &nbsp;·&nbsp;
+      <a href="/jumphippo/">Jump Hippo</a>
+      &nbsp;·&nbsp;
+      <a href="/keephippo/">Keep Hippo</a>
+      &nbsp;·&nbsp;
+      <a href="/mindhippo/">Mind Hippo</a>
+      &nbsp;·&nbsp;
+      <a href="/rollhippo/">Roll Hippo</a>
+    </p>
+    <p style="margin-bottom:14px">
+      <a href="https://github.com/jfigge" rel="noopener noreferrer">GitHub</a>
+      &nbsp;·&nbsp;
+      <a href="https://github.com/sponsors/jfigge" rel="noopener noreferrer">Donate</a>
+      &nbsp;·&nbsp;
+      <a href="/privacy.html">Privacy</a>
+    </p>
+    <p>Copyright &copy; 2026 Jason Figge. Every hippo is free and open source.<br>
+    No telemetry, no accounts, no tracking — on the apps or on this site.</p>
+    <p style="margin-top:14px">Crafted with <a class="cc-referral" href="https://claude.ai/code" rel="noopener noreferrer">Claude&nbsp;Code</a>.</p>
+  </div>
+</footer>
+
+<script src="/herd.js" defer></script>
+<script src="/nav.js" defer></script>
+</body>
+</html>
