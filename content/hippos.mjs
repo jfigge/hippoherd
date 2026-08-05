@@ -276,7 +276,11 @@ export const HERD = [
   {
     slug: "mindhippo",
     name: "Mind Hippo",
-    color: "#D946A6",
+    // Go's own brand cyan. Mind Hippo is pure Go against the standard library
+    // with no framework under it, so the language IS the identity here in a
+    // way it is not for Keep Hippo (also Go, but amber — what that one is
+    // about is Vault compatibility, not the language it happens to be in).
+    color: "#00ADD8",
     tagline: "ML runtime, from scratch",
     domain: null,
     docs: null,

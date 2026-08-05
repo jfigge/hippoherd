@@ -92,10 +92,13 @@ touching.
   bundle id. Until the URLs are filled into `MAS(...)` in
   `content/hippos.mjs`, those pages print a sentence saying the app is on the
   store rather than a badge that goes somewhere wrong.
-- **Mind Hippo's brand colour** (`#D946A6`) and its three-node snout motif are
-  proposed here, not inherited: it is the one hippo with no published mark of
-  its own. If it gets a different one later, change it in
-  `scripts/make-marks.mjs` and `content/hippos.mjs`.
+- **Mind Hippo's mark was settled here**, not inherited — it is the one hippo
+  with no published mark of its own. Its colour is Go's brand cyan
+  (`#00ADD8`), for a project that is pure Go against the standard library, and
+  its snout carries a three-node network. It lives in two places that must
+  agree: `content/hippos.mjs` (the page) and `scripts/make-marks.mjs` (the
+  mark). If `jfigge/mindhippo` ever publishes its own mark, that becomes the
+  source and this copies it.
 
 ## Deployment
 

@@ -53,8 +53,12 @@ const nostrils = (c) =>
 // The four that have their own website carry the motif that site already
 // publishes, character for character, so the herd's copy and the project's own
 // are the same drawing. Mind and Roll are the two without a live site: Roll's
-// comes from its brand plan (features/20-brand-and-app-icons.md), Mind's is
-// proposed here — see the note in README.md.
+// comes from its brand plan (features/20-brand-and-app-icons.md), and Mind's
+// was settled here — Go's cyan, with a three-node network on the snout.
+//
+// If a sibling repo ever grows a mark for one of these, THAT becomes the
+// source and this table copies it, not the other way round. This file is the
+// herd's rendering of the family mark, not the authority on any hippo's brand.
 const HIPPOS = {
   resthippo: {
     name: "Rest Hippo",
@@ -90,8 +94,11 @@ const HIPPOS = {
   },
   mindhippo: {
     name: "Mind Hippo",
-    color: "#D946A6",
-    eye: "#D946A6",
+    // Go's brand cyan — see the note beside the same value in
+    // content/hippos.mjs. The two must stay in step: this one paints the mark,
+    // that one paints the page the mark sits on.
+    color: "#00ADD8",
+    eye: "#00ADD8",
     // Three connected nodes — a network small enough to still read at 16px.
     motif: (c) =>
       `<path d="M204 320 L308 320 L256 368 Z" fill="none" stroke="${c}" stroke-width="11" stroke-linejoin="round"/>` +
