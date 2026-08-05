@@ -45,13 +45,16 @@ export const HERD_COLOR = "#2BC4B0";
 // Where a store listing exists, it outranks a raw GitHub asset for the
 // platform it covers, so it gets a badge above the download grid.
 //
-// TODO(jason): paste the real Mac App Store URLs. Rest Hippo and Chip Hippo
-// are published there, but neither repository records the listing URL and it
-// cannot be derived from the bundle id — an Apple listing is
-// apps.apple.com/app/<slug>/id<numeric>, and only App Store Connect knows the
-// numeric. Until these are filled in, `url: null` renders NO badge at all
-// rather than a badge pointing at a search page: a "Get it on the Mac App
-// Store" button that lands somewhere else is worse than no button.
+// `?mt=12` is Apple's "this is Mac software" flag and belongs on every one of
+// these — without it the link can land on the iOS storefront's idea of the app.
+//
+// TODO(jason): Chip Hippo's Mac App Store URL. It is published there, but the
+// repository does not record the listing URL and it cannot be derived from the
+// bundle id — an Apple listing is apps.apple.com/<cc>/app/<slug>/id<numeric>,
+// and only App Store Connect knows the numeric. Passing `null` renders NO badge
+// at all, and the page prints a sentence saying the app is on the store
+// instead: a "Download on the Mac App Store" button that lands somewhere wrong
+// is worse than no button.
 const MAS = (url) => ({
   store: "mac",
   name: "Mac App Store",
@@ -71,7 +74,7 @@ export const HERD = [
     license: "Apache-2.0",
     platforms: ["macOS", "Windows", "Linux"],
     status: "released",
-    stores: [MAS(null)],
+    stores: [MAS("https://apps.apple.com/us/app/rest-hippo/id6784875828?mt=12")],
 
     lead: "A free, offline alternative to Postman and Insomnia. Collections are plain files on your disk, HTTP runs outside the browser so nothing is subject to CORS, and there is no account to make.",
 

@@ -87,11 +87,12 @@ touching.
 
 ## Known TODOs
 
-- **Mac App Store links.** Rest Hippo and Chip Hippo are published there, but
-  neither repository records the listing URL and it cannot be derived from the
-  bundle id. Until the URLs are filled into `MAS(...)` in
-  `content/hippos.mjs`, those pages print a sentence saying the app is on the
-  store rather than a badge that goes somewhere wrong.
+- **Chip Hippo's Mac App Store link.** It is published there, but the
+  repository does not record the listing URL and it cannot be derived from the
+  bundle id — only App Store Connect knows the numeric app id. Until it is
+  filled into `MAS(...)` in `content/hippos.mjs`, that page prints a sentence
+  saying the app is on the store rather than a badge that goes somewhere wrong.
+  Rest Hippo's is wired up and is the worked example to copy.
 - **Mind Hippo's mark was settled here**, not inherited — it is the one hippo
   with no published mark of its own. Its colour is Go's brand cyan
   (`#00ADD8`), for a project that is pure Go against the standard library, and
