@@ -68,7 +68,7 @@
   <h1>Mind Hippo</h1>
   <p class="hero-desc">Mind Hippo is a machine-learning runtime with nothing underneath it. Every tensor operation, every derivative, every layer, every optimiser is first-party code written against the Go standard library — no PyTorch, no TensorFlow, no BLAS binding, no cgo, and <strong>no model provider anywhere in it</strong>. It trains its own small models on a laptop CPU and serves them over HTTP with an embedded console: draw a digit with the mouse and watch the network decide what it is. When it answers <em>“that's a 7”</em>, you can follow the arithmetic that produced the answer all the way down — through the softmax, through the matrix multiplications, to the 784 pixel values you drew.</p>
   <div class="hero-actions">
-    <a class="btn btn-primary" href="#downloads"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> Release status</a>
+    <a class="btn btn-primary" href="https://github.com/jfigge/mindhippo" rel="noopener noreferrer"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/></svg> View the source</a>
     <a class="btn btn-ghost" href="/#herd"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg> Back to the herd</a>
   </div>
   <p class="hero-platforms">macOS · Linux · Windows &nbsp;·&nbsp; Go · no dependencies &nbsp;·&nbsp; Apache-2.0</p>
@@ -127,8 +127,18 @@
   <div class="section-inner">
     <p class="section-tag">Downloads</p>
     <h2 class="section-title">Not out yet</h2>
-    <p class="section-body">Mind Hippo is still being built, and its repository is private for now. There is nothing to install and nothing to watch yet — this page will carry the downloads, and the link to the source, as soon as either exists.</p>
+    <p class="section-body">Mind Hippo is being built in the open and has no tagged release yet. The repository is the place to watch; this page will carry the downloads the moment there are any.</p>
 
+    <div class="link-row">
+      <a class="link-card" href="https://github.com/jfigge/mindhippo" rel="noopener noreferrer">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/></svg>
+        <span>jfigge/mindhippo<small>Source, plans and progress</small></span>
+      </a>
+      <a class="link-card" href="https://github.com/jfigge/mindhippo/releases" rel="noopener noreferrer" data-release-link>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <span>Releases<small><span data-version-tag>No release yet</span></small></span>
+      </a>
+    </div>
   </div>
 </section>
 
@@ -140,6 +150,14 @@
     <h2 class="section-title">Mind Hippo, everywhere else</h2>
     <p class="section-body">The herd page is the introduction. These are the places the project actually lives.</p>
     <div class="link-row">
+      <a class="link-card" href="https://github.com/jfigge/mindhippo" rel="noopener noreferrer">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/></svg>
+        <span>jfigge/mindhippo<small>Source, issues and releases</small></span>
+      </a>
+      <a class="link-card" href="https://github.com/jfigge/mindhippo#readme" rel="noopener noreferrer">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+        <span>README<small>The short version, on GitHub</small></span>
+      </a>
       <a class="link-card" href="/#herd">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
         <span>The rest of the herd<small>Five more hippos</small></span>

@@ -57,9 +57,11 @@ jobs:
 
       # The default GITHUB_TOKEN is scoped to THIS repository, which is enough:
       # reading a public repo's releases needs only a valid token, not access to
-      # that repo. jfigge/mindhippo is private, so this call 404s for it —
-      # build-versions.mjs treats a 404 as "no releases yet" rather than as an
-      # error, which is also the right answer for a repo that has none.
+      # that repo. All six hippos are public as of 5 August 2026, but a repo
+      # that is private (or does not exist yet) answers 404 here, and
+      # build-versions.mjs treats that as "no releases yet" rather than as an
+      # error — which is also the right answer for a repo that has none. A
+      # hippo added to the herd before its repo opens will not fail this build.
       - name: Generate versions.json from every hippo's releases
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

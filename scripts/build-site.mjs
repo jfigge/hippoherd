@@ -280,7 +280,7 @@ function hippoCard(x) {
         <span data-card-dl-label>Latest release</span>
       </a>`
     : x.repoPrivate
-      ? "" // nothing to link to yet — see the note in content/hippos.mjs
+      ? "" // no repo a visitor could open — see `repoPrivate` in content/hippos.mjs
       : `<a class="btn btn-ghost" href="${repoUrl(x.slug)}" rel="noopener noreferrer">
         ${GITHUB_MARK}
         Watch the repo

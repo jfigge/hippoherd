@@ -15,7 +15,7 @@ get nothing".
 | Chip Hippo | 74xx TTL breadboard simulator | [chiphippo.com](https://chiphippo.com) | [jfigge/chiphippo](https://github.com/jfigge/chiphippo) |
 | Jump Hippo | On-demand SSH tunnels | [jumphippo.com](https://jumphippo.com) | [jfigge/jumphippo](https://github.com/jfigge/jumphippo) |
 | Keep Hippo | Vault-compatible secrets manager | [keephippo.com](https://keephippo.com) | [jfigge/keephippo](https://github.com/jfigge/keephippo) |
-| Mind Hippo | ML runtime written from scratch in Go | — | private for now |
+| Mind Hippo | ML runtime written from scratch in Go | — | [jfigge/mindhippo](https://github.com/jfigge/mindhippo) |
 | Roll Hippo | Shake-to-roll dice tray (iOS / Android) | — | [jfigge/rollhippo](https://github.com/jfigge/rollhippo) |
 
 ## What the site does
@@ -92,9 +92,6 @@ touching.
   bundle id. Until the URLs are filled into `MAS(...)` in
   `content/hippos.mjs`, those pages print a sentence saying the app is on the
   store rather than a badge that goes somewhere wrong.
-- **Mind Hippo's repository is private**, so its page carries no GitHub links
-  at all — a public site should not hand a visitor a 404. Delete the
-  `repoPrivate: true` line in `content/hippos.mjs` when it opens up.
 - **Mind Hippo's brand colour** (`#D946A6`) and its three-node snout motif are
   proposed here, not inherited: it is the one hippo with no published mark of
   its own. If it gets a different one later, change it in

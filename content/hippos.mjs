@@ -28,6 +28,16 @@
 // Values are inserted as HTML, so anything here may carry inline markup
 // (<strong>, <code>, <em>) — and must therefore be trusted, which it is: this
 // file is the source, not user input.
+//
+// OPTIONAL FLAGS a hippo may carry:
+//
+//   repoPrivate: true   Its GitHub repository is not public yet, so the
+//                       generator omits every link to it rather than putting a
+//                       404 in front of a visitor who clicks. Mind Hippo was
+//                       built this way and went public on 5 August 2026; the
+//                       flag stays supported because a hippo tends to start
+//                       closed and open up later. Delete the line when it does
+//                       — the links come back on their own.
 
 export const OWNER = "jfigge";
 export const HERD_COLOR = "#2BC4B0";
@@ -275,14 +285,6 @@ export const HERD = [
     platforms: ["macOS", "Linux", "Windows"],
     status: "development",
     stores: [],
-
-    // jfigge/mindhippo is a PRIVATE repository. Linking to it from a public
-    // site would put a 404 in front of every visitor who clicked, so the
-    // generator prints a line saying so instead of a dead link, and
-    // build-versions.mjs already treats the API's 404 as "no releases" rather
-    // than as an error. Delete this line the day the repo goes public — that
-    // is the whole change; the links come back on their own.
-    repoPrivate: true,
 
     lead: "Tensors, autodiff, neural networks and an inference server — written in pure Go against the standard library. No framework, no GPU, no cgo, and no hosted model behind any of it.",
 
