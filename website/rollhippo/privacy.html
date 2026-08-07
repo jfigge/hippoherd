@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <!-- Roll Hippo's own privacy statement, served at /rollhippo/privacy.
+       (GitHub Pages resolves an extensionless path to the .html beside it, so
+       both /rollhippo/privacy and /rollhippo/privacy.html reach this file —
+       which is why the sibling sites all name theirs privacy.html too.)
+
+       This is the URL App Store Connect and Play Console are given, so it has
+       to be right rather than reassuring. Every claim below is checkable
+       against the source: the permissions come from ios/Runner/Info.plist and
+       the merged Android manifest, the stored keys from lib/app/settings.dart
+       and lib/app/profiles.dart, and "no network" from there being no
+       networking code in lib/ at all.
+
+       It does NOT replace hippoherd.com/privacy.html, which covers the
+       website. This one covers the app. Both are linked from the front page.
+
+       No <style> block: the herd's stylesheet already draws .prose, which is
+       what its own privacy page uses. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#D7263D" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <meta name="description" content="Roll Hippo's privacy statement. The app collects nothing, sends nothing, and has no account. It ships without the internet permission and works with the SIM removed." />
+  <title>Privacy — Roll Hippo</title>
+  <link rel="canonical" href="https://hippoherd.com/rollhippo/privacy" />
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Hippo Herd" />
+  <meta property="og:title" content="Privacy — Roll Hippo" />
+  <meta property="og:description" content="Roll Hippo collects nothing and sends nothing. What it stores, what it asks permission for, and why." />
+  <meta property="og:url" content="https://hippoherd.com/rollhippo/privacy" />
+  <meta name="twitter:card" content="summary" />
+  <link rel="stylesheet" href="/site.css" />
+</head>
+<body data-hippo-page="rollhippo" style="--brand:#D7263D">
+
+<nav class="site">
+  <a class="nav-logo" href="/">
+    <span class="logo-mark"><img src="/favicon.svg" width="32" height="32" alt=""></span>
+    <span class="nav-wordmark">Hippo Herd</span>
+  </a>
+  <div class="nav-right">
+    <details class="nav-dropdown">
+      <summary class="nav-link nav-dropdown-summary">
+        The Hippos
+        <svg class="nav-dropdown-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+      </summary>
+      <div class="nav-dropdown-menu">
+        <a class="nav-dropdown-item" href="/resthippo/"><img src="/marks/resthippo.svg" width="16" height="16" alt=""> Rest Hippo</a>
+        <a class="nav-dropdown-item" href="/chiphippo/"><img src="/marks/chiphippo.svg" width="16" height="16" alt=""> Chip Hippo</a>
+        <a class="nav-dropdown-item" href="/jumphippo/"><img src="/marks/jumphippo.svg" width="16" height="16" alt=""> Jump Hippo</a>
+        <a class="nav-dropdown-item" href="/keephippo/"><img src="/marks/keephippo.svg" width="16" height="16" alt=""> Keep Hippo</a>
+        <a class="nav-dropdown-item" href="/mindhippo/"><img src="/marks/mindhippo.svg" width="16" height="16" alt=""> Mind Hippo</a>
+        <a class="nav-dropdown-item" href="/rollhippo/"><img src="/marks/rollhippo.svg" width="16" height="16" alt=""> Roll Hippo</a>
+      </div>
+    </details>
+    <!-- Relative to /rollhippo/, not to /rollhippo/privacy/: this page is a
+         FILE in that directory rather than a directory of its own, so "../"
+         here would land on the herd's front page. The guide, one level down
+         from the same base, is plain "docs/". -->
+    <a class="nav-link" href="./">Roll Hippo</a>
+    <a class="nav-link" href="docs/">Guide</a>
+    <a class="nav-link" href="https://github.com/jfigge/rollhippo" rel="noopener noreferrer">GitHub</a>
+  </div>
+</nav>
+
+<div class="prose">
+  <h1>Privacy</h1>
+  <p class="lede">Roll Hippo for iOS and Android · last updated 7 August 2026</p>
+
+  <p>
+    <strong>Roll Hippo collects no data about you, and sends none anywhere.</strong>
+    There is no account to make, no sign-in, no analytics, no crash reporting,
+    no advertising, no advertising identifier, no tracking of any kind, and no
+    update check. Nothing you do in the app is transmitted, because the app has
+    no way to transmit anything.
+  </p>
+  <p>
+    That is not a policy decision that could quietly be reversed in a later
+    build without you noticing. The Android release package is built
+    <strong>without the <code>INTERNET</code> permission</strong>, so the
+    operating system itself would refuse a network connection the app tried to
+    make; and there is no networking code in the app to make one. Roll Hippo
+    works with the SIM removed and in aeroplane mode, and behaves identically.
+  </p>
+
+  <h2>What is stored, and where</h2>
+  <p>
+    Three things are saved on your device, in the app's own private preferences,
+    by the phone's standard settings storage:
+  </p>
+  <ul>
+    <li>Your <strong>saved profiles</strong> — the dice you set up, their kinds
+      and colours, which mode each was saved on, the card shoe's settings, and
+      the names you gave them.</li>
+    <li>Your <strong>haptic strength</strong> setting.</li>
+    <li>Whether <strong>motion control</strong> is on or off.</li>
+  </ul>
+  <p>
+    That is the whole list. None of it identifies you, none of it leaves the
+    device, and there is no backup service, sync service or cloud account behind
+    it. It is included in your phone's own encrypted device backup only if you
+    have that turned on, which is between you and Apple or Google. Deleting the
+    app deletes all of it.
+  </p>
+
+  <h2>The camera</h2>
+  <p>
+    Roll Hippo asks for camera access for exactly one feature: reading a QR code
+    that somebody else's copy of the app is showing, so that their dice set-up
+    becomes yours.
+  </p>
+  <ul>
+    <li>The camera runs <strong>only while the scanner screen is open</strong>,
+      and stops when you leave it.</li>
+    <li>No photograph or video is recorded, saved, or transmitted. Frames are
+      examined for a QR code in memory and discarded.</li>
+    <li>The QR code <strong>is</strong> the data. Nothing is fetched from a
+      server when one is scanned — the dice are encoded in the square itself.</li>
+    <li>Declining the permission costs you the scanner and nothing else. Every
+      other part of the app works normally.</li>
+  </ul>
+
+  <h2>Motion sensors</h2>
+  <p>
+    The accelerometer and gyroscope are what make the app work: they are the
+    gravity and the shake inside the tray. Their readings are used in the frame
+    they arrive in and discarded. They are never recorded, never stored, and
+    never sent.
+  </p>
+  <p>
+    You can turn <strong>motion control</strong> off in Settings, after which
+    the app does not read them at all and the Throw and Draw buttons do the
+    whole job.
+  </p>
+
+  <h2>Children</h2>
+  <p>
+    Roll Hippo is suitable for all ages and collects no personal information
+    from anybody, of any age. There is no chat, no user-generated content, no
+    social feature, no link out to a store, and nothing to purchase — there are
+    no in-app purchases and no advertising.
+  </p>
+  <p>
+    It is a utility that produces random numbers with a physical interaction. It
+    is not a gambling app: there is no wagering, no currency, no stake, and no
+    casino.
+  </p>
+
+  <h2>Third-party code</h2>
+  <p>
+    The app is built with Flutter and includes a small number of open-source
+    packages: <code>sensors_plus</code> (the accelerometer and gyroscope),
+    <code>mobile_scanner</code> (the QR scanner's camera),
+    <code>qr_flutter</code> (drawing the QR code),
+    <code>shared_preferences</code> (the settings storage above),
+    <code>vector_math</code> and <code>cupertino_icons</code>.
+  </p>
+  <p>
+    None of them is an analytics, advertising or attribution SDK, and none
+    contacts a network on the app's behalf. The full list, with versions, is in
+    <a href="https://github.com/jfigge/rollhippo/blob/main/src/pubspec.yaml" rel="noopener noreferrer"><code>pubspec.yaml</code></a>,
+    and the whole app is
+    <a href="https://github.com/jfigge/rollhippo" rel="noopener noreferrer">open source</a>
+    — so none of this has to be taken on trust.
+  </p>
+
+  <h2>What the app stores know</h2>
+  <p>
+    Downloading Roll Hippo is a transaction with Apple or Google, not with us.
+    They record the download, and they may give us aggregate statistics —
+    numbers of installs by country, say — along with crash reports if you have
+    chosen to share those with the platform. None of that is collected by the
+    app, none of it identifies you to us, and it is governed by
+    <a href="https://www.apple.com/legal/privacy/" rel="noopener noreferrer">Apple's privacy policy</a>
+    and
+    <a href="https://policies.google.com/privacy" rel="noopener noreferrer">Google's</a>
+    rather than by this statement.
+  </p>
+
+  <h2>Your rights</h2>
+  <p>
+    Rights to access, correct, export or erase personal data all presuppose that
+    somebody holds some. Nobody here does: there is no server, no database and
+    no account, so there is nothing to request and nothing for us to delete. The
+    data described above is on your device, under your control, and goes when
+    the app does.
+  </p>
+
+  <h2>Changes to this statement</h2>
+  <p>
+    If Roll Hippo ever does something this page does not describe, this page
+    will be updated in the same release that changes it, and the date at the top
+    will say so. Previous versions are in the
+    <a href="https://github.com/jfigge/rollhippo/commits/main/website/privacy.html" rel="noopener noreferrer">file's history</a>,
+    which is public — this page is written in the app's own repository, so its
+    wording is versioned alongside the code it describes.
+  </p>
+
+  <h2>Getting in touch</h2>
+  <p>
+    Questions about any of this belong in
+    <a href="https://github.com/jfigge/rollhippo/issues" rel="noopener noreferrer">Roll Hippo's GitHub issues</a>,
+    where the answer is useful to everyone rather than to one inbox.
+  </p>
+  <p>
+    This statement covers the <strong>app</strong>. The website you are reading
+    it on is covered by the
+    <a href="/privacy.html">Hippo Herd privacy page</a>, which collects nothing
+    either.
+  </p>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo">
+      <span class="logo-mark"><img src="/favicon.svg" width="28" height="28" alt=""></span>
+      <span class="footer-name">Hippo Herd</span>
+    </div>
+    <p style="margin-bottom:14px">
+      <a href="/resthippo/">Rest Hippo</a>
+      &nbsp;·&nbsp;
+      <a href="/chiphippo/">Chip Hippo</a>
+      &nbsp;·&nbsp;
+      <a href="/jumphippo/">Jump Hippo</a>
+      &nbsp;·&nbsp;
+      <a href="/keephippo/">Keep Hippo</a>
+      &nbsp;·&nbsp;
+      <a href="/mindhippo/">Mind Hippo</a>
+      &nbsp;·&nbsp;
+      <a href="/rollhippo/">Roll Hippo</a>
+    </p>
+    <p style="margin-bottom:14px">
+      <a href="https://github.com/jfigge" rel="noopener noreferrer">GitHub</a>
+      &nbsp;·&nbsp;
+      <a href="https://github.com/sponsors/jfigge" rel="noopener noreferrer">Donate</a>
+      &nbsp;·&nbsp;
+      <a href="/privacy.html">Privacy</a>
+    </p>
+    <p>Copyright &copy; 2026 Jason Figge. Every hippo is free and open source.<br>
+    No telemetry, no accounts, no tracking — on the apps or on this site.</p>
+    <p style="margin-top:14px">Crafted with <a class="cc-referral" href="https://claude.ai/code" rel="noopener noreferrer">Claude&nbsp;Code</a>.</p>
+  </div>
+</footer>
+
+<script src="/nav.js" defer></script>
+</body>
+</html>
