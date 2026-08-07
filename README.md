@@ -44,6 +44,7 @@ scripts/build-site.mjs     → website/*.html   (8 pages)
 scripts/build-versions.mjs → website/versions.json  (all six repos' releases)
 scripts/make-marks.mjs     → website/marks/*.svg + favicon.svg
 website/                   The site itself — committed, and served as-is
+website/rollhippo/         NOT generated — Roll Hippo's own site, copied in
 ```
 
 `website/` is generated **and** committed, so a checkout can be served with any
@@ -72,6 +73,27 @@ cd website && python3 -m http.server 8791
 next build. Prose lives in `content/hippos.mjs`; layout lives in
 `scripts/build-site.mjs`; styling lives in `website/site.css`, which is written
 by hand and is not generated.
+
+### The one exception: `website/rollhippo/`
+
+Roll Hippo has no site of its own and is not getting one, so
+`hippoherd.com/rollhippo/` **is** its website — a product page and a full user
+guide, rather than the one-page introduction its siblings get here. Those files
+are written in [jfigge/rollhippo](https://github.com/jfigge/rollhippo) under
+`website/`, and land here by running `make site` in *that* repository.
+
+`content/hippos.mjs` marks it `externalSite: true`, and the only thing the flag
+does is stop `build-site.mjs` writing that one `index.html`. Everything else
+still comes from its entry: the card on the index, the nav dropdown, the
+footer, the 404 list, the sitemap, and its neighbours' previous/next links. So
+edit its prose here and the *card* changes; the page itself does not, because
+the page is not ours.
+
+Two rules follow. Do not hand-edit `website/rollhippo/` here either — the next
+`make site` in the rollhippo repo overwrites it with `rsync --delete`. And do
+not give that hippo a `domain`, which is what drives the "it has a home of its
+own" section and the live iframe preview: pointed at `hippoherd.com/rollhippo`
+it would embed this site inside itself.
 
 ### Adding a hippo
 

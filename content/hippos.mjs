@@ -38,6 +38,17 @@
 //                       flag stays supported because a hippo tends to start
 //                       closed and open up later. Delete the line when it does
 //                       — the links come back on their own.
+//
+//   externalSite: true  Its page under website/ is written by the project
+//                       itself, not by scripts/build-site.mjs, and is copied
+//                       in from that repository. The generator skips only the
+//                       WRITE — the card on the index, the nav dropdown, the
+//                       footer, the 404 list, the sitemap and the neighbours'
+//                       previous/next links still come from this entry. Roll
+//                       Hippo is the one: it has no site of its own, so
+//                       hippoherd.com/rollhippo IS its site, guide and all.
+//                       Do not set this and expect `node scripts/build-site.mjs`
+//                       to produce the page — nothing here will.
 
 export const OWNER = "jfigge";
 export const HERD_COLOR = "#2BC4B0";
@@ -342,8 +353,23 @@ export const HERD = [
     name: "Roll Hippo",
     color: "#D7263D",
     tagline: "Shake-to-roll dice tray",
+
+    // Roll Hippo has no site of its own and is not getting one: this page IS
+    // its site, which is why it is the only hippo whose page this generator
+    // does not write. The file lives in jfigge/rollhippo under website/ and
+    // arrives here by `make site` in that repository. Everything else about
+    // this entry still does its job — the card on the index, the nav
+    // dropdown, the footer, the 404 list and the previous/next links are all
+    // generated from it as usual.
+    //
+    // `domain` stays null even though the hippo now has a website, because
+    // what `domain` drives is the "it has a home of its own" section and the
+    // live iframe preview — and pointing those at hippoherd.com/rollhippo
+    // would embed this site inside itself.
+    externalSite: true,
+
     domain: null,
-    docs: null,
+    docs: "https://hippoherd.com/rollhippo/docs/",
     stack: "Flutter · Dart",
     license: "Apache-2.0",
     platforms: ["iOS", "Android"],
@@ -353,43 +379,43 @@ export const HERD = [
     lead: "The herd's first mobile app. Set your dice up once, and after that the phone is the tray — hold it upright, shake it, set it down, read the result.",
 
     blurb:
-      "Roll Hippo is a dice tray for tabletop play, and the interaction is deliberately physical: you build your dice groups once on the Setup screen, and from then on the phone <em>is</em> the tray. Hold it upright, shake, set it down. The dice tumble on a 60fps accelerometer-driven rigid-body simulation and settle where they settle. Two screens, no account, no network call, no analytics, no ads — it works with the SIM removed, and the tray shows nothing but dice.",
+      "Roll Hippo is a dice tray for tabletop play, and the interaction is deliberately physical: you build your set of dice once on the picker, and from then on the phone <em>is</em> the tray. Hold it upright, shake, set it down. The dice tumble on a 60fps accelerometer-driven rigid-body simulation and settle where they settle. No account, no network call, no analytics, no ads — it works with the SIM removed, and the tray shows nothing but dice.",
 
     callout: {
-      title: "The honesty rule",
-      body: "The tumbling is <strong>presentation</strong>. The values are drawn from a uniform random number generator at settle time and are never derived from the physics state. A dice app that is coy about its randomness has no business asking for your trust, so this is said in the app, the guide, and here.",
+      title: "The number is landed on, not chosen",
+      body: 'Roll Hippo does not pick a result and animate towards it. Each die is thrown with a uniformly random orientation and speed, it tumbles as a rigid body, and the value you read is read <strong>off that die\'s own orientation</strong> once it has stopped — the face that finished pointing up, or, on the D4, the face it came to rest on. Every solid is isohedral and each one\'s inertia tensor is computed from its own geometry rather than copied from a table, because a die whose inertia is wrong is a loaded die.',
     },
 
     features: [
       {
         icon: "move",
         title: "Shake to roll",
-        body: "The accelerometer drives a real rigid-body simulation at 60fps. Hold the phone upright, shake it, and set it down — no button, no gesture to learn.",
+        body: "The accelerometer and gyroscope drive a real rigid-body simulation at 60fps, in the phone's own frame of reference — so tilting pours the dice down the screen and a wrist flick turns into a tumble rather than a slide. No shake threshold, no gesture to learn.",
       },
       {
         icon: "dice",
-        title: "Dice groups, set once",
-        body: "Build the sets you actually roll on the Setup screen. The tray then holds exactly those, and nothing else: no log, no running total, no re-roll button.",
+        title: "Six solids, ten dice, your colours",
+        body: "D4 through D20, each a real polyhedron whose faces, numbering, volume and inertia are found from its vertices. Ten in the tray at once in any mixture, each picked out in a colour of its own.",
       },
       {
-        icon: "phone",
-        title: "One codebase, both stores",
-        body: "Flutter and Dart, shipping to the App Store and Google Play from a single source tree — the family's first mobile application.",
+        icon: "layers",
+        title: "Three sets, kept apart",
+        body: "Up to three separate groups, swiped between. A group you are not looking at is not simulated at all, so the numbers it rolled stay the numbers it rolled — a swipe cannot shake them.",
+      },
+      {
+        icon: "shuffle",
+        title: "The same dice, dealt as cards",
+        body: "A shoe holding every <em>ordered</em> outcome of your dice, because 1-2 and 2-1 are two ways for a pair to land and a deck holding each pair once would quietly halve the odds of every double. Cut it where you like.",
+      },
+      {
+        icon: "grid",
+        title: "Saved set-ups, shared as a square",
+        body: "Keep the games you actually play under names you choose. A profile turns into a QR code carrying the whole thing — every die, its kind and colour, the mode and the shoe — so the next player points a camera at your screen and has it too.",
       },
       {
         icon: "offline",
         title: "Completely offline",
-        body: "No account, no network call, no telemetry. Nothing the app knows about you ever leaves the device, because nothing ever leaves the device.",
-      },
-      {
-        icon: "shuffle",
-        title: "Honest randomness",
-        body: "Values come from a uniform RNG at settle time. The simulation decides how the dice look, never what they say.",
-      },
-      {
-        icon: "shield",
-        title: "Not a gambling app",
-        body: "A utility that produces uniform random integers with a physical interaction. No wagering, no casino, no simulated stakes.",
+        body: "No account, no network call, no telemetry. The camera is used for one thing, reading a QR code you point it at, and nothing is stored or sent. Prefer the dice without the shaking? Motion control switches off and the buttons are the whole interface.",
       },
     ],
   },

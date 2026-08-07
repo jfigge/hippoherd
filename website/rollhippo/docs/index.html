@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <!-- The user guide. Served at hippoherd.com/rollhippo/docs/ and written in
+       the rollhippo repository under website/docs/ — this file is the guide,
+       both in-repo and hosted, so the two cannot disagree.
+
+       One page rather than the fifteen its desktop siblings have. Roll Hippo
+       has four screens; splitting four screens across fifteen files would put
+       more effort into the navigation than into the writing, and a reader on
+       the phone the app runs on would rather scroll than tap.
+
+       Paths: the herd's chrome is absolute (it belongs to hippoherd, shared
+       with every page); Roll Hippo's pictures are relative and one level up,
+       because they are shared with the site's own gallery. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#D7263D" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <meta name="description" content="The Roll Hippo user guide: setting up your dice, rolling them, holding one, the card table, saved profiles, sharing a set-up by QR code, and what every setting does." />
+  <title>User guide — Roll Hippo</title>
+  <link rel="canonical" href="https://hippoherd.com/rollhippo/docs/" />
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Hippo Herd" />
+  <meta property="og:title" content="Roll Hippo — user guide" />
+  <meta property="og:description" content="Setting up your dice, rolling them, holding one, the card table, saved profiles, sharing by QR code, and what every setting does." />
+  <meta property="og:url" content="https://hippoherd.com/rollhippo/docs/" />
+  <meta property="og:image" content="https://hippoherd.com/rollhippo/images/og.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="stylesheet" href="/site.css" />
+  <style>
+    /* A guide layout on top of the herd's stylesheet: a column of prose with
+       the contents beside it on a wide screen and above it on a narrow one. */
+    .doc {
+      max-width: 1140px;
+      margin: 0 auto;
+      padding: 40px 2rem 80px;
+      display: grid;
+      grid-template-columns: 220px minmax(0, 1fr);
+      gap: 56px;
+      align-items: start;
+    }
+    .doc-toc {
+      position: sticky;
+      top: 88px;
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+    .doc-toc p {
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      font-size: 0.7rem;
+      color: var(--overlay-0);
+      margin: 0 0 12px;
+    }
+    .doc-toc a {
+      display: block;
+      padding: 5px 0;
+      color: var(--subtext-0);
+      text-decoration: none;
+      border-left: 2px solid transparent;
+      padding-left: 12px;
+      margin-left: -14px;
+    }
+    .doc-toc a:hover {
+      color: var(--text);
+      border-left-color: var(--brand);
+    }
+
+    .doc-body { min-width: 0; }
+    .doc-body h1 {
+      font-size: clamp(2rem, 4.4vw, 2.9rem);
+      letter-spacing: -0.025em;
+      line-height: 1.1;
+      margin: 0 0 14px;
+    }
+    .doc-lede {
+      color: var(--subtext-0);
+      font-size: 1.08rem;
+      line-height: 1.65;
+      margin: 0 0 8px;
+    }
+    .doc-body h2 {
+      font-size: 1.5rem;
+      letter-spacing: -0.02em;
+      margin: 54px 0 4px;
+      padding-top: 18px;
+      border-top: 1px solid var(--surface-0);
+      scroll-margin-top: 84px;
+    }
+    .doc-body h3 {
+      font-size: 1.06rem;
+      margin: 30px 0 -4px;
+      color: var(--text);
+    }
+    .doc-body p,
+    .doc-body li {
+      color: var(--subtext-0);
+      line-height: 1.68;
+    }
+    /* site.css zeroes the margin on <p> — it lays every page out with
+       explicit spacing rather than relying on the browser's. This is prose,
+       so it wants the gap back, and wants it stated here rather than assumed. */
+    .doc-body p { margin: 16px 0 0; }
+    .doc-body ul {
+      padding-left: 1.15rem;
+      margin: 14px 0 0;
+    }
+    .doc-body li { margin: 7px 0; }
+    .doc-body code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 0.88em;
+      background: var(--mantle);
+      border: 1px solid var(--surface-0);
+      border-radius: 5px;
+      padding: 1px 5px;
+    }
+    .doc-body strong { color: var(--text); }
+    /* Inline links, the way the herd draws them everywhere else (see
+       .dl-note a in site.css) rather than as the browser's blue. */
+    .doc-body a,
+    .doc-lede a {
+      color: var(--brand);
+      text-decoration: none;
+    }
+    .doc-body a:hover,
+    .doc-lede a:hover { text-decoration: underline; }
+    /* …except inside a link-card, which is a block with its own colours and
+       would be repainted brand-red by the rule above. */
+    .doc-body .link-card { color: var(--text); }
+
+    /* A figure sits beside its prose on a wide screen. A phone screenshot is
+       tall and narrow, so stacking it above the paragraph it illustrates
+       pushes that paragraph off the bottom of the reader's screen. */
+    .doc-figure {
+      float: right;
+      width: 216px;
+      margin: 8px 0 22px 30px;
+    }
+    .doc-figure img {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 18px;
+      border: 1px solid var(--surface-1);
+      background: #0b0e13;
+    }
+    .doc-figure figcaption {
+      margin-top: 10px;
+      font-size: 0.8rem;
+      line-height: 1.5;
+      color: var(--overlay-0);
+    }
+    .doc-clear { clear: both; }
+
+    .doc-note {
+      border: 1px solid var(--surface-1);
+      border-left: 3px solid var(--brand);
+      border-radius: 0 10px 10px 0;
+      background: var(--mantle);
+      padding: 14px 18px;
+      margin: 24px 0;
+    }
+    .doc-note p { margin: 0; font-size: 0.95rem; }
+    .doc-note p + p { margin-top: 10px; }
+
+    @media (max-width: 900px) {
+      .doc {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 28px;
+        padding-top: 28px;
+      }
+      .doc-toc {
+        position: static;
+        border-bottom: 1px solid var(--surface-0);
+        padding-bottom: 18px;
+      }
+      .doc-figure {
+        float: none;
+        margin: 22px auto;
+        width: min(260px, 70%);
+      }
+    }
+  </style>
+</head>
+<body data-hippo-page="rollhippo" style="--brand:#D7263D">
+
+<nav class="site">
+  <a class="nav-logo" href="/">
+    <span class="logo-mark"><img src="/favicon.svg" width="32" height="32" alt=""></span>
+    <span class="nav-wordmark">Hippo Herd</span>
+  </a>
+  <div class="nav-right">
+    <details class="nav-dropdown">
+      <summary class="nav-link nav-dropdown-summary">
+        The Hippos
+        <svg class="nav-dropdown-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+      </summary>
+      <div class="nav-dropdown-menu">
+        <a class="nav-dropdown-item" href="/resthippo/"><img src="/marks/resthippo.svg" width="16" height="16" alt=""> Rest Hippo</a>
+        <a class="nav-dropdown-item" href="/chiphippo/"><img src="/marks/chiphippo.svg" width="16" height="16" alt=""> Chip Hippo</a>
+        <a class="nav-dropdown-item" href="/jumphippo/"><img src="/marks/jumphippo.svg" width="16" height="16" alt=""> Jump Hippo</a>
+        <a class="nav-dropdown-item" href="/keephippo/"><img src="/marks/keephippo.svg" width="16" height="16" alt=""> Keep Hippo</a>
+        <a class="nav-dropdown-item" href="/mindhippo/"><img src="/marks/mindhippo.svg" width="16" height="16" alt=""> Mind Hippo</a>
+        <a class="nav-dropdown-item" href="/rollhippo/"><img src="/marks/rollhippo.svg" width="16" height="16" alt=""> Roll Hippo</a>
+      </div>
+    </details>
+    <a class="nav-link" href="../" >Roll Hippo</a>
+    <a class="nav-link" href="https://github.com/jfigge/rollhippo" rel="noopener noreferrer">GitHub</a>
+    <a class="btn btn-primary" href="../#get">Get the app</a>
+  </div>
+</nav>
+
+<div class="doc">
+  <aside class="doc-toc">
+    <p>Contents</p>
+    <a href="#start">Getting started</a>
+    <a href="#picker">Setting up your dice</a>
+    <a href="#rolling">Rolling</a>
+    <a href="#reading">Reading and holding</a>
+    <a href="#groups">Three separate sets</a>
+    <a href="#cards">The card table</a>
+    <a href="#profiles">Saved profiles</a>
+    <a href="#sharing">Sharing and scanning</a>
+    <a href="#settings">Settings</a>
+    <a href="#fairness">How the number is decided</a>
+    <a href="#privacy">Privacy</a>
+    <a href="#trouble">If something looks wrong</a>
+  </aside>
+
+  <main class="doc-body">
+    <h1>Roll Hippo — user guide</h1>
+    <p class="doc-lede">
+      Roll Hippo turns your phone into a dice tray. You choose the dice once;
+      after that you hold the phone upright, shake it, set it down, and read
+      what it says. This guide covers every screen, every gesture and every
+      setting.
+    </p>
+
+    <h2 id="start">Getting started</h2>
+    <p>
+      Open the app and you are on the <strong>picker</strong>. If you have saved
+      set-ups already, Roll Hippo asks which one you want to open before
+      anything else — pick one, or choose <strong>+ New Profile</strong> to
+      start from the default: two white six-sided dice.
+    </p>
+    <p>
+      There are four screens in all, and you will spend nearly all your time on
+      two of them: the picker, where the dice are chosen, and the tray, where
+      they are thrown. The card table replaces the tray when you would rather
+      deal than roll, and the scanner reads someone else's set-up off their
+      screen.
+    </p>
+
+    <h2 id="picker">Setting up your dice</h2>
+    <figure class="doc-figure">
+      <img src="../images/screens/02-picker.png" width="645" height="1398" loading="lazy"
+           alt="The picker: a rack of six dice of assorted kinds and colours, with the editor open showing colour swatches and the kind chips D4 through D20.">
+      <figcaption>The rack holds ten. Tapping a die opens the editor beneath it.</figcaption>
+    </figure>
+    <p>
+      The <strong>rack</strong> at the top of the picker is your set of dice —
+      two rows of five, filled left to right, up to <strong>ten</strong>.
+    </p>
+    <ul>
+      <li><strong>Add a die</strong> by tapping the large <code>+</code> in the
+        first empty slot.</li>
+      <li><strong>Change a die</strong> by tapping it. The editor opens
+        underneath, showing which one you have hold of — "Die&nbsp;3 —
+        D20", say.</li>
+      <li><strong>Choose its kind</strong> from the row of chips: D4, D6, D8,
+        D10, D12 or D20.</li>
+      <li><strong>Choose its colour</strong> from the row of swatches above the
+        chips. Each die carries its own, which is what lets you tell one from
+        another once they are all on the floor of the tray.</li>
+      <li><strong>Take one away</strong> with <strong>Remove</strong>, at the
+        right of the editor's heading.</li>
+    </ul>
+    <p>
+      When the rack says what you want it to say, tap <strong>Roll</strong> at
+      the bottom of the screen. That opens the tray with the dice already
+      thrown.
+    </p>
+    <div class="doc-note">
+      <p>
+        <strong>Why ten?</strong> The dice drop in from the top of the tray on a
+        grid spaced by their own width, so that no two ever start inside each
+        other. Past ten there is no longer room in a tray this size to do that.
+      </p>
+    </div>
+    <div class="doc-clear"></div>
+
+    <h2 id="rolling">Rolling</h2>
+    <figure class="doc-figure">
+      <img src="../images/screens/01-tray.png" width="645" height="1398" loading="lazy"
+           alt="The tray, with a D20, two orange D6s, a green D8 and a red D4 lifted off the floor and turned square to the glass to be read.">
+      <figcaption>Settled, turned square to the glass, and read.</figcaption>
+    </figure>
+    <p>
+      Hold the phone upright and <strong>shake it</strong>. The dice are thrown,
+      they bounce off the walls and off each other, and they settle. There is no
+      threshold to beat and no gesture to learn: the tray is simulated in the
+      phone's own frame of reference, so tilting pours the dice down the screen
+      and shaking throws them, and both are the same reading arriving from the
+      same sensor.
+    </p>
+    <p>
+      If your hands are full — or if you have turned motion control off — the
+      <strong>Throw</strong> button at the top right does exactly the same
+      thing. <strong>Close</strong> takes you back to the picker.
+    </p>
+    <p>
+      On a phone that has one, the tray taps back. Each knock you feel is a real
+      wall impact, and its strength is the impulse that die actually delivered —
+      so a D20 arriving hard registers harder than a D4 drifting into a corner.
+    </p>
+
+    <h2 id="reading">Reading and holding</h2>
+    <p>
+      A die that has settled on a tray held upright is showing its number to the
+      ceiling and its edge to you. It is genuinely there and genuinely
+      unreadable. So once everything has stopped, Roll Hippo lifts the dice off
+      the floor, <strong>turns each one until the face it landed on is square to
+      the glass</strong>, and lays them out on a grid.
+    </p>
+    <p>
+      Nothing is chosen when this happens. The face is read off the orientation
+      the physics arrived at, and only then is the die turned so that you can
+      see what it already said.
+    </p>
+    <ul>
+      <li><strong>Tap a die</strong> to <strong>hold</strong> it. A held die is
+        pinned: it keeps its number, it is not thrown by the next shake, and the
+        rest of the tray bounces off it as though it were part of the wall. Tap
+        it again to let it go.</li>
+      <li><strong>Tap the empty space</strong> around the dice to put the whole
+        formation back down on the floor of the tray, and tap again to bring it
+        back up.</li>
+    </ul>
+    <p>
+      Holding is what you want for a game where some dice are kept and the rest
+      re-rolled. Throw, tap the ones you are keeping, shake again — the held
+      ones stay exactly as they are.
+    </p>
+
+    <h2 id="groups">Three separate sets</h2>
+    <figure class="doc-figure">
+      <img src="../images/screens/03-full-tray.png" width="645" height="1398" loading="lazy"
+           alt="The tray holding all ten kinds of die at once, each in a different colour.">
+      <figcaption>Ten dice, every kind, one throw.</figcaption>
+    </figure>
+    <p>
+      The picker can hold up to <strong>three</strong> separate sets of dice.
+      The dots beneath the rack say which one you are editing; swipe the rack
+      sideways to reach the others.
+    </p>
+    <p>
+      In the tray, the same swipe moves between them — and each set keeps its
+      own result. A set you are not looking at is not simulated at all, which
+      means the numbers it rolled stay the numbers it rolled. Swiping cannot
+      shake them, and neither can anything happening in the set next door.
+    </p>
+    <p>
+      A set you have not thrown yet is waiting for you: its dice are already
+      lying on the floor, and it rolls when you shake it or press Throw.
+    </p>
+    <div class="doc-clear"></div>
+
+    <h2 id="cards">The card table</h2>
+    <figure class="doc-figure">
+      <img src="../images/screens/04-cards.png" width="645" height="1398" loading="lazy"
+           alt="The card table: a card printed with a green die and a red die lying on the glass, with the shoe behind it.">
+      <figcaption>One card stands for one throw of the dice it replaces.</figcaption>
+    </figure>
+    <p>
+      Swipe the picker's editor panel sideways — or tap the second of the two
+      dots below it — for <strong>card mode</strong>. Instead of throwing dice,
+      you deal from a shoe in which every card carries one possible outcome of
+      them.
+    </p>
+    <ul>
+      <li><strong>How many dice</strong> a card stands for: one, two or three.
+        Three is the limit because a shoe holds every outcome — two dice is 36
+        cards, three is 216, and four would be more than a thousand.</li>
+      <li><strong>How many decks</strong> are shuffled together, up to three.</li>
+      <li><strong>Where the shoe is cut</strong>: the percentage left when it
+        reshuffles.</li>
+      <li><strong>What colour</strong> each die is printed in on the card,
+        chosen one die at a time exactly as on the rack.</li>
+    </ul>
+    <p>
+      On the table itself, <strong>Draw</strong> turns the next card over, and a
+      shake does the same if motion control is on.
+    </p>
+    <div class="doc-note">
+      <p>
+        <strong>A shoe is not a pair of dice, and that is the point.</strong> It
+        holds every <em>ordered</em> outcome — 1-2 and 2-1 are two different
+        ways for a pair to land, so a deck holding each pair only once would
+        quietly halve the odds of every double. It differs from rolling in the
+        one way a shoe always does: cards are drawn without replacement, so what
+        has gone is gone until the cut comes round.
+      </p>
+    </div>
+    <div class="doc-clear"></div>
+
+    <h2 id="profiles">Saved profiles</h2>
+    <figure class="doc-figure">
+      <img src="../images/screens/05-profiles.png" width="645" height="1398" loading="lazy"
+           alt="The picker with five saved profiles listed below it: Farkle, Backgammon, Craps, D&amp;D and Yahtzee.">
+      <figcaption>The games you actually play, under your own names.</figcaption>
+    </figure>
+    <p>
+      Beneath the editor is <strong>Profiles</strong> — the set-ups you have
+      saved, each under a name you chose.
+    </p>
+    <ul>
+      <li><strong>+ New</strong> saves what is currently on screen as a new
+        profile and asks what to call it.</li>
+      <li><strong>Tap</strong> a profile to open it. The title at the top of the
+        screen becomes <em>Roll Hippo — &lt;name&gt;</em>.</li>
+      <li><strong>Press and hold</strong> a profile for its menu:
+        <strong>Save</strong> (write what is on screen into that profile),
+        <strong>Rename</strong> and <strong>Delete</strong>.</li>
+    </ul>
+    <div class="doc-note">
+      <p>
+        <strong>Nothing saves itself.</strong> Editing the rack changes what is
+        on screen and touches no saved profile at all. The lit profile tells you
+        which one you <em>opened</em>, not that the screen still matches it — so
+        to keep a change, hold the profile down and choose Save.
+      </p>
+      <p>
+        A profile also remembers which mode it was saved on, so one saved on the
+        card page opens on the card page.
+      </p>
+    </div>
+    <div class="doc-clear"></div>
+
+    <h2 id="sharing">Sharing and scanning</h2>
+    <figure class="doc-figure">
+      <img src="../images/screens/06-share.png" width="645" height="1398" loading="lazy"
+           alt="The Share sheet, showing a large QR code with the caption '2 dice' beneath it.">
+      <figcaption>The whole set-up as one square.</figcaption>
+    </figure>
+    <p>
+      The menu button at the top left of the picker has three entries.
+      <strong>Share</strong> turns the set-up currently on screen into a QR
+      code: every die, its kind and its colour, which page you are on, the shoe
+      you built, and the name you saved it under.
+    </p>
+    <p>
+      <strong>Scan</strong> opens the camera and reads one. What happens next
+      depends on the name the code carries:
+    </p>
+    <ul>
+      <li>A code with <strong>no name</strong> simply opens, unnamed.</li>
+      <li>A code whose name you already have, and which matches what you have
+        saved, opens without a word.</li>
+      <li>Anything else asks you first.</li>
+    </ul>
+    <p>
+      No network is involved at any point. The code is the data — it is read off
+      the glass by a camera, and nothing is fetched.
+    </p>
+    <div class="doc-clear"></div>
+
+    <h2 id="settings">Settings</h2>
+    <p>
+      <strong>Settings</strong>, on the same menu, has two controls.
+    </p>
+    <h3>Motion control</h3>
+    <p>
+      On — which is the point of the app — the phone's own movement drives the
+      tray: tilt to pour the dice down the screen, shake to throw them.
+    </p>
+    <p>
+      <strong>Off</strong>, the tray is handed a phone that is holding perfectly
+      still. Down is down the screen and stays there, a shake does nothing, and
+      <strong>Throw</strong> — or <strong>Draw</strong>, on the cards — is the
+      whole of the interface. It works exactly as it always did.
+    </p>
+    <p>
+      This is a real setting rather than an accessibility afterthought. A phone
+      flat on a table, a hand that cannot shake one, a game being played on a
+      train — all of them want the dice and none of them wants the
+      accelerometer.
+    </p>
+    <h3>Haptic strength</h3>
+    <p>
+      How hard the phone taps back when a die hits a wall. Dragging the slider
+      plays each notch back at the strength an ordinary throw would produce, so
+      you are comparing sensations rather than reading a number. All the way
+      down is off.
+    </p>
+
+    <h2 id="fairness">How the number is decided</h2>
+    <p>
+      Roll Hippo does not pick a result and animate towards it. Each die is
+      thrown with a uniformly random orientation and a randomised speed; from
+      that moment on it is a rigid body in a physics simulation, and where it
+      stops is where it stops. <strong>The value you read is read off the die's
+      own orientation once it has settled</strong> — the face that finished
+      pointing up, or, for the D4, the face it came to rest on, because a
+      tetrahedron at rest has a vertex pointing at the sky and no face at all.
+    </p>
+    <p>
+      Three things make that a fair reading rather than a decorative one:
+    </p>
+    <ul>
+      <li>Every solid is <strong>isohedral</strong> — each face the same
+        distance from the centre — which is what makes a die fair in the first
+        place.</li>
+      <li>Each shape's <strong>inertia tensor is computed from its own
+        geometry</strong> by decomposing the solid into tetrahedra, not copied
+        from a table. A die whose inertia is wrong is a loaded die.</li>
+      <li>Every die is built to the same width across its widest point and given
+        the <strong>mass its own volume implies</strong>, so a D20 really is
+        heavier than a D4.</li>
+    </ul>
+    <p>
+      The dice are also <strong>bevelled</strong>, and collision treats them as
+      the polyhedron inflated by that bevel — which is why they roll over an
+      edge onto the next face instead of landing on a corner and stalling. Real
+      dice are made that way for the same reason.
+    </p>
+
+    <h2 id="privacy">Privacy</h2>
+    <p>
+      Roll Hippo makes no network calls. There is no account, no sign-in, no
+      analytics, no crash reporting, no advertising and no update ping. Your
+      saved profiles and your two settings are stored on the phone, by the
+      phone, and go nowhere else.
+    </p>
+    <p>
+      The camera is used for exactly one thing — reading a QR code you point it
+      at — and only while the scanner is open. No image is stored or
+      transmitted.
+    </p>
+    <p>
+      The app works with the SIM removed and in aeroplane mode, because there is
+      nothing for it to reach. See the
+      <a href="/privacy.html">herd privacy policy</a>.
+    </p>
+
+    <h2 id="trouble">If something looks wrong</h2>
+    <h3>Shaking does nothing</h3>
+    <p>
+      Check <strong>Motion control</strong> in Settings. With it off, the tray
+      deliberately ignores the phone and Throw is the only way to roll. The
+      prompt on an unthrown tray tells you which of the two you are in: it reads
+      "Shake to roll" or "Tap Throw to roll".
+    </p>
+    <h3>A die will not re-roll</h3>
+    <p>
+      It is being <strong>held</strong>. Tap it once to release it. Held dice
+      survive every throw until you tap them again.
+    </p>
+    <h3>My changes disappeared</h3>
+    <p>
+      Editing the picker does not write to a saved profile. Hold the profile
+      down and choose <strong>Save</strong>, or use <strong>+ New</strong> to
+      keep the change as a profile of its own.
+    </p>
+    <h3>The screen will not rotate</h3>
+    <p>
+      That is deliberate, and it is not cosmetic. The walls of the tray are
+      fixed to the screen while gravity comes from the accelerometer, so a
+      screen that re-oriented as you tipped the phone would swing the tray out
+      from under the dice while down carried on pointing the same way.
+    </p>
+
+    <div class="doc-clear"></div>
+    <div class="link-row" style="margin-top:52px">
+      <a class="link-card" href="../">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"/><polyline points="12 19 5 12 12 5"/></svg>
+        <span>Roll Hippo<small>Back to the front page</small></span>
+      </a>
+      <a class="link-card" href="https://github.com/jfigge/rollhippo/issues" rel="noopener noreferrer">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span>Something not right?<small>Open an issue on GitHub</small></span>
+      </a>
+    </div>
+  </main>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo">
+      <span class="logo-mark"><img src="/favicon.svg" width="28" height="28" alt=""></span>
+      <span class="footer-name">Hippo Herd</span>
+    </div>
+    <p style="margin-bottom:14px">
+      <a href="/resthippo/">Rest Hippo</a>
+      &nbsp;·&nbsp;
+      <a href="/chiphippo/">Chip Hippo</a>
+      &nbsp;·&nbsp;
+      <a href="/jumphippo/">Jump Hippo</a>
+      &nbsp;·&nbsp;
+      <a href="/keephippo/">Keep Hippo</a>
+      &nbsp;·&nbsp;
+      <a href="/mindhippo/">Mind Hippo</a>
+      &nbsp;·&nbsp;
+      <a href="/rollhippo/">Roll Hippo</a>
+    </p>
+    <p style="margin-bottom:14px">
+      <a href="https://github.com/jfigge" rel="noopener noreferrer">GitHub</a>
+      &nbsp;·&nbsp;
+      <a href="https://github.com/sponsors/jfigge" rel="noopener noreferrer">Donate</a>
+      &nbsp;·&nbsp;
+      <a href="/privacy.html">Privacy</a>
+    </p>
+    <p>Copyright &copy; 2026 Jason Figge. Every hippo is free and open source.<br>
+    No telemetry, no accounts, no tracking — on the apps or on this site.</p>
+    <p style="margin-top:14px">Crafted with <a class="cc-referral" href="https://claude.ai/code" rel="noopener noreferrer">Claude&nbsp;Code</a>.</p>
+  </div>
+</footer>
+
+<script src="/nav.js" defer></script>
+</body>
+</html>

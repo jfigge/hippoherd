@@ -814,9 +814,19 @@ ${HERD.map(
 }
 
 function sitemap() {
+  // A hippo whose docs are hosted HERE rather than on its own domain has a
+  // second page on this site, and it should be findable. Everyone else's
+  // `docs` is an absolute URL somewhere else, which belongs in that site's
+  // sitemap and not in ours — so the test is where the URL points, not
+  // whether there is one.
+  const ownDocs = HERD.map((x) => x.docs).filter(
+    (url) => url && url.startsWith(SITE + "/"),
+  );
+
   const urls = [
     SITE + "/",
     ...HERD.map((x) => `${SITE}/${x.slug}/`),
+    ...ownDocs,
     SITE + "/privacy.html",
   ];
   return `<?xml version="1.0" encoding="UTF-8"?>
@@ -837,7 +847,26 @@ async function emit(path, body) {
 }
 
 await emit(`${OUT}/index.html`, indexPage());
-for (const x of HERD) await emit(`${OUT}/${x.slug}/index.html`, hippoPage(x));
+
+// One page per hippo — except a hippo that brings its own.
+//
+// `externalSite` means the directory under website/ is not ours to write: the
+// project owns those files, and they arrive here by a copy from its own
+// repository rather than from this generator. Roll Hippo is the case it exists
+// for. It has no site of its own and is not getting one, so hippoherd.com is
+// where its product page and its user guide live — written in jfigge/rollhippo
+// under website/, and synced across by `make site` there.
+//
+// Skipping the WRITE and nothing else is the whole of the mechanism. The hippo
+// stays in HERD, so its card on the index, its place in the nav dropdown, the
+// footer, the 404 list, the sitemap and its neighbours' previous/next links
+// are all still generated from content/hippos.mjs exactly as before. What it
+// does not get is an index.html from hippoPage(), which would otherwise
+// overwrite the real page on every deploy — quietly, and with a stub.
+for (const x of HERD) {
+  if (x.externalSite) continue;
+  await emit(`${OUT}/${x.slug}/index.html`, hippoPage(x));
+}
 await emit(`${OUT}/privacy.html`, privacyPage());
 await emit(`${OUT}/404.html`, notFoundPage());
 await emit(`${OUT}/sitemap.xml`, sitemap());
