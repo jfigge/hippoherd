@@ -24,13 +24,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#D7263D" />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-  <meta name="description" content="Roll Hippo is a dice tray for iPhone and Android. Set your dice up once, then the phone is the tray — hold it upright, shake it, set it down, read what it says. Free, open source, and completely offline." />
-  <title>Roll Hippo — the phone is the tray</title>
+  <meta name="description" content="Roll Hippo is a shoe of cards and a dice tray for iPhone and Android — deal one card per possible roll, or shake the phone and throw the dice themselves. Free, open source, and completely offline." />
+  <title>Roll Hippo — the phone is the tray, and the shoe</title>
   <link rel="canonical" href="https://hippoherd.com/rollhippo/" />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Hippo Herd" />
-  <meta property="og:title" content="Roll Hippo — the phone is the tray" />
-  <meta property="og:description" content="A dice tray for iPhone and Android. Shake the phone; the dice tumble on a real rigid-body simulation and settle where they settle. Free, open source, completely offline." />
+  <meta property="og:title" content="Roll Hippo — the phone is the tray, and the shoe" />
+  <meta property="og:description" content="A shoe of cards and a dice tray for iPhone and Android. Deal one card from every outcome your dice could produce, or shake the phone and watch them tumble. Free, open source, completely offline." />
   <meta property="og:url" content="https://hippoherd.com/rollhippo/" />
   <meta property="og:image" content="https://hippoherd.com/rollhippo/images/og.png" />
   <meta property="og:image:width" content="1200" />
@@ -221,13 +221,15 @@
       <img src="/marks/rollhippo.svg" width="38" height="38" alt="">
       Roll Hippo
     </div>
-    <h1>The phone <span class="accent">is</span> the tray.</h1>
+    <h1>The phone <span class="accent">is</span> the tray. And the shoe.</h1>
     <p class="rh-hero-lede">
-      Set your dice up once — up to ten of them, any mixture of D4 through D20,
-      each its own colour. After that, hold the phone upright and shake it. The
-      dice tumble inside a box the size of the screen on a real rigid-body
-      simulation, bounce off the walls and off each other, and settle where they
-      settle. Then you read what they say.
+      Two ways to get a roll, and Roll Hippo is equally both. Deal a card from a
+      shoe holding every outcome your dice could produce, drawn without
+      replacement and cut where you like — the same wager as the throw, with the
+      one thing a shoe adds. Or throw them for real: set your dice up once, up to
+      ten of them, any mixture of D4 through D20, then hold the phone upright and
+      shake it. They tumble inside a box the size of the screen on a real
+      rigid-body simulation and settle where they settle.
     </p>
 
     <div class="rh-stores">
@@ -276,13 +278,21 @@
 <section class="section section-alt">
   <div class="section-inner">
     <p class="section-tag">What it does</p>
-    <h2 class="section-title">A dice tray, simulated properly</h2>
+    <h2 class="section-title">A shoe and a tray, both done properly</h2>
     <p class="section-body">
       The box is the size of your phone and 20&nbsp;cm deep, and it is simulated
       in the phone's own frame of reference — so the walls never move and the
       acceleration inside them comes straight off the accelerometer. There is no
       shake threshold and no gesture to learn, because tilting and shaking are
       the same number arriving from the same sensor.
+    </p>
+    <p class="section-body">
+      The shoe is the other half, and it is the same care applied to a different
+      question. A deck holds every <em>ordered</em> outcome of your dice, once
+      each, so drawing a card is the same wager as making the throw it stands
+      for. What it adds is the thing a shoe has always been for: it is dealt
+      without replacement, so what has already gone tells you something about
+      what is left, and you decide with the cut how much of that you want.
     </p>
 
     <div class="callout">
@@ -307,6 +317,15 @@
         when your hands are full.</p>
       </div>
       <div class="feature-card">
+        <div class="feature-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="12" height="16" rx="2"/><path d="M8 4V2.8A1.8 1.8 0 0 1 10.2 1l7 1.9A1.8 1.8 0 0 1 18.4 5l-2.6 15"/></svg></div>
+        <h3>Or deal it from a shoe</h3>
+        <p>One card for every <em>ordered</em> outcome of your dice — 1-2 and
+        2-1 are two ways for a pair to land where snake eyes has only one, so a
+        deck that held each pair once would make every double twice as likely
+        as it is. Up to three decks, dealt without replacement. Cut it where you
+        like and it reshuffles when it gets there.</p>
+      </div>
+      <div class="feature-card">
         <div class="feature-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.4" fill="currentColor"/><circle cx="15.5" cy="15.5" r="1.4" fill="currentColor"/><circle cx="12" cy="12" r="1.4" fill="currentColor"/></svg></div>
         <h3>Six solids, ten dice, your colours</h3>
         <p>D4, D6, D8, D10, D12 and D20 — every one of them a real polyhedron
@@ -321,14 +340,6 @@
         tray you are not looking at is not simulated at all, so the numbers a
         group rolled stay the numbers it rolled — a swipe cannot shake them,
         and neither can anything happening next door.</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="12" height="16" rx="2"/><path d="M8 4V2.8A1.8 1.8 0 0 1 10.2 1l7 1.9A1.8 1.8 0 0 1 18.4 5l-2.6 15"/></svg></div>
-        <h3>The same dice, dealt as cards</h3>
-        <p>A shoe holding every <em>ordered</em> outcome of your dice — 1-2 and
-        2-1 are two ways for a pair to land, so a deck that held each pair once
-        would quietly halve the odds of every double. Cut it where you like and
-        it reshuffles when it gets there.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3h-3zM18 18h3v3h-3z"/></svg></div>
@@ -378,7 +389,7 @@
     <figure class="rh-shot">
       <img src="images/screens/04-cards.png" width="645" height="1398" loading="lazy"
            alt="The card table: a card printed with a green die and a red die, dealt onto the glass.">
-      <figcaption><b>Or deal them</b>The card table draws from a shoe of every outcome, without replacement.</figcaption>
+      <figcaption><b>Deal them instead</b>One card per possible roll, drawn from the shoe without replacement.</figcaption>
     </figure>
     <figure class="rh-shot">
       <img src="images/screens/05-profiles.png" width="645" height="1398" loading="lazy"

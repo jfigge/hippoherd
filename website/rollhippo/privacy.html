@@ -14,6 +14,15 @@
        and lib/app/profiles.dart, and "no network" from there being no
        networking code in lib/ at all.
 
+       The claim about INTERNET is true because of one file —
+       android/app/src/release/AndroidManifest.xml, which removes a permission
+       ML Kit's telemetry queue declares on the app's behalf. Delete that file
+       and the paragraph below becomes a lie in the next release build, which
+       is the whole reason it says what it says. `aapt2 dump permissions` on
+       the built APK is how to check it; reading the merged manifest under
+       build/app/intermediates/ is not, because the APK is the artefact that
+       actually ships and the intermediate is only on its way there.
+
        It does NOT replace hippoherd.com/privacy.html, which covers the
        website. This one covers the app. Both are linked from the front page.
 
@@ -84,6 +93,17 @@
     operating system itself would refuse a network connection the app tried to
     make; and there is no networking code in the app to make one. Roll Hippo
     works with the SIM removed and in aeroplane mode, and behaves identically.
+  </p>
+  <p>
+    One network-related permission does remain in the Android package, and it is
+    better named here than left to be discovered:
+    <code>ACCESS_NETWORK_STATE</code>, which the barcode-reading library behind
+    the QR scanner declares for itself. It grants the ability to <em>ask
+    whether</em> a network exists, and nothing else — it cannot open a
+    connection, and with <code>INTERNET</code> removed there is nothing in the
+    package that could act on the answer. It is left in place only because
+    taking a permission away from a library that expects to have it is a way to
+    break the scanner, not a way to make the app quieter than it already is.
   </p>
 
   <h2>What is stored, and where</h2>
