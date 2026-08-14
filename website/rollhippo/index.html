@@ -128,12 +128,36 @@
     /* Inline prose links, the way the herd draws them everywhere else it has
        one (see .dl-note a in site.css): the accent, no rule under it until
        the pointer is on it. The browser default — bright blue, underlined —
-       is the one thing on this page that would not look like the rest. */
-    .rh-soon-note a {
+       is the one thing on this page that would not look like the rest.
+
+       The feedback section's body copy is the page's other run of prose with
+       links in it, so it joins this rule rather than getting a copy of it that
+       can drift. It is scoped to .section-body and not to the whole section on
+       purpose: site.css draws a link inside a .callout in the callout's yellow,
+       and a second selector reaching in there would out-specify it. */
+    .rh-soon-note a,
+    .rh-feedback .section-body a {
       color: var(--brand);
       text-decoration: none;
     }
-    .rh-soon-note a:hover { text-decoration: underline; }
+    .rh-soon-note a:hover,
+    .rh-feedback .section-body a:hover { text-decoration: underline; }
+
+    /* A gap between two paragraphs of body copy.
+
+       The herd's reset zeroes every margin and .section-body puts none back,
+       so a second <p> starts one line under the first with nothing between
+       them. It has never shown up on the herd because no other page there
+       stacks two — every one of the six siblings says its piece in a single
+       .section-body and moves on to a grid. This page has two such runs, so
+       the rule is here rather than in site.css, which belongs to hippoherd
+       and is shared with those six.
+
+       On the adjacent sibling rather than on .section-body itself: the first
+       paragraph of a section sits under .section-title, which already carries
+       its own 14px, and a margin on every one of them would open that up to
+       32 and leave the heading floating. */
+    .section-body + .section-body { margin-top: 18px; }
 
     /* ── The gallery ───────────────────────────────────────────────────────
        A row of phones that scrolls sideways rather than a grid that wraps.
@@ -210,6 +234,7 @@
       </div>
     </details>
     <a class="nav-link" href="docs/">Guide</a>
+    <a class="nav-link" href="#feedback">Feedback</a>
     <a class="nav-link" href="https://github.com/jfigge/rollhippo" rel="noopener noreferrer">GitHub</a>
     <a class="btn btn-primary" href="#get">Get the app</a>
   </div>
@@ -227,7 +252,8 @@
       shoe holding every outcome your dice could produce, drawn without
       replacement and cut where you like — the same wager as the throw, with the
       one thing a shoe adds. Or throw them for real: set your dice up once, up to
-      ten of them, any mixture of D4 through D20, then hold the phone upright and
+      ten of them, any mixture of D4 through D20 — plus a poker die — then hold
+      the phone upright and
       shake it. They tumble inside a box the size of the screen on a real
       rigid-body simulation and settle where they settle.
     </p>
@@ -293,6 +319,9 @@
       for. What it adds is the thing a shoe has always been for: it is dealt
       without replacement, so what has already gone tells you something about
       what is left, and you decide with the cut how much of that you want.
+      Up to four shoes at once, each with its own dice, decks and cut, swiped
+      between the way the trays are — a shoe is its own memory, and two of them
+      side by side stay two.
     </p>
 
     <div class="callout">
@@ -327,19 +356,21 @@
       </div>
       <div class="feature-card">
         <div class="feature-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.4" fill="currentColor"/><circle cx="15.5" cy="15.5" r="1.4" fill="currentColor"/><circle cx="12" cy="12" r="1.4" fill="currentColor"/></svg></div>
-        <h3>Six solids, ten dice, your colours</h3>
+        <h3>Seven kinds, ten dice, your colours</h3>
         <p>D4, D6, D8, D10, D12 and D20 — every one of them a real polyhedron
-        with its faces, its numbering and its mass found from its vertices.
-        Ten in the tray at once, in any mixture, each picked out in a colour
-        of its own.</p>
+        with its faces, its numbering and its mass found from its vertices —
+        and a poker die, which is a D6 printed with the six cards it stands
+        for. Ten in the tray at once, in any mixture, each picked out in a
+        colour of its own.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="6" width="6" height="12" rx="1.5"/><rect x="9" y="6" width="6" height="12" rx="1.5"/><rect x="16" y="6" width="6" height="12" rx="1.5"/></svg></div>
-        <h3>Three trays, three results</h3>
-        <p>Set up as many as three separate groups and swipe between them. A
-        tray you are not looking at is not simulated at all, so the numbers a
-        group rolled stay the numbers it rolled — a swipe cannot shake them,
-        and neither can anything happening next door.</p>
+        <h3>Several trays, several results</h3>
+        <p>Set up as many as four separate groups — the picker offers you one
+        empty page at a time, so they arrive as you fill them — and swipe
+        between them. A tray you are not looking at is not simulated at all, so
+        the numbers a group rolled stay the numbers it rolled — a swipe cannot
+        shake them, and neither can anything happening next door.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3h-3zM18 18h3v3h-3z"/></svg></div>
@@ -401,6 +432,59 @@
            alt="The Share sheet, showing a QR code that encodes the whole set-up.">
       <figcaption><b>Hand it over</b>The whole set-up as one square. Scan it from another phone.</figcaption>
     </figure>
+  </div>
+</section>
+
+<!-- Feedback. Deliberately one section with no form in it, for the reason the
+     rest of the page keeps advertising: a form needs a server to post to, the
+     app never opens a socket and this page is static files on GitHub Pages.
+     The CSP above says form-action 'none', which is that same fact written
+     where a browser can enforce it. So the section's whole job is to hand the
+     visitor the tracker, and to say what a report has to carry given that the
+     app itself reports nothing. -->
+<section class="section section-alt rh-feedback" id="feedback">
+  <div class="section-inner">
+    <p class="section-tag">Feedback</p>
+    <h2 class="section-title">Ask for the thing that isn&rsquo;t there</h2>
+    <p class="section-body">
+      Roll Hippo is built around games somebody actually plays, which is
+      exactly why the gaps in it are invisible from the inside. If the die your
+      game wants isn&rsquo;t in the rack, if your table cuts a shoe somewhere
+      the slider won&rsquo;t reach, or if a screen reads wrong on the phone you
+      actually own, nothing here finds that out on its own. Say what the game
+      is and what it needed, and it turns into something that can be built.
+    </p>
+    <p class="section-body">
+      All of it goes to one place — the
+      <a href="https://github.com/jfigge/rollhippo/issues" rel="noopener noreferrer">issue
+      tracker on GitHub</a>, beside the source. It is public on purpose:
+      somebody may have asked for your feature already and can say so, and if
+      the answer turns out to be no, the reason stays attached to the question
+      instead of ending up in one person&rsquo;s mailbox. A free GitHub account
+      is the whole of what it costs.
+    </p>
+
+    <div class="callout">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <p><strong>A bug report has to carry what the app cannot send.</strong>
+      There is no crash reporting in Roll Hippo and no telemetry of any kind,
+      so a wrong result or a stuck screen leaves no trace anywhere but the
+      phone it happened on — until somebody writes it down, nobody knows it
+      happened. The phone, its OS version and what was on screen are usually
+      enough; if a particular set of dice is involved, the QR code from the
+      app&rsquo;s Share sheet carries the entire set-up in one picture.</p>
+    </div>
+
+    <div class="link-row">
+      <a class="link-card" href="https://github.com/jfigge/rollhippo/issues/new" rel="noopener noreferrer">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M15.1 14c.2-1 .6-1.7 1.4-2.5A4.7 4.7 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.8.8 1.2 1.5 1.4 2.5"/></svg>
+        <span>Suggest a feature<small>A blank box, and your own words</small></span>
+      </a>
+      <a class="link-card" href="https://github.com/jfigge/rollhippo/issues" rel="noopener noreferrer">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        <span>What has already been asked<small>Every open issue, and what came of the closed ones</small></span>
+      </a>
+    </div>
   </div>
 </section>
 

@@ -71,6 +71,10 @@
          from the same base, is plain "docs/". -->
     <a class="nav-link" href="./">Roll Hippo</a>
     <a class="nav-link" href="docs/">Guide</a>
+    <!-- "./#feedback", not "#feedback": this page is /rollhippo/privacy, so a
+         bare fragment would stay on it and find nothing. Same base as the two
+         links either side of it. -->
+    <a class="nav-link" href="./#feedback">Feedback</a>
     <a class="nav-link" href="https://github.com/jfigge/rollhippo" rel="noopener noreferrer">GitHub</a>
   </div>
 </nav>
@@ -108,8 +112,8 @@
 
   <h2>What is stored, and where</h2>
   <p>
-    Three things are saved on your device, in the app's own private preferences,
-    by the phone's standard settings storage:
+    Your saved profiles and your settings are saved on your device, in the app's
+    own private preferences, by the phone's standard settings storage:
   </p>
   <ul>
     <li>Your <strong>saved profiles</strong> — the dice you set up, their kinds
@@ -117,6 +121,11 @@
       the names you gave them.</li>
     <li>Your <strong>haptic strength</strong> setting.</li>
     <li>Whether <strong>motion control</strong> is on or off.</li>
+    <li>Whether <strong>shake to deal a card</strong> is on or off.</li>
+    <li>Whether the <strong>timer</strong> is on or off, and the
+      <strong>turn limit</strong> you set for it.</li>
+    <li>Whether the <strong>tutorial</strong> has been shown on this phone, so
+      that it is offered once rather than at every launch.</li>
   </ul>
   <p>
     That is the whole list. None of it identifies you, none of it leaves the

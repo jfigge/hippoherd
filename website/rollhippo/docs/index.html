@@ -207,6 +207,10 @@
       </div>
     </details>
     <a class="nav-link" href="../" >Roll Hippo</a>
+    <!-- The feedback section lives on the front page, so from here it is one
+         level up plus the fragment. "#feedback" alone would look for a section
+         of that name in the guide, and quietly do nothing. -->
+    <a class="nav-link" href="../#feedback">Feedback</a>
     <a class="nav-link" href="https://github.com/jfigge/rollhippo" rel="noopener noreferrer">GitHub</a>
     <a class="btn btn-primary" href="../#get">Get the app</a>
   </div>
@@ -220,7 +224,7 @@
     <a href="#picker">Setting up your dice</a>
     <a href="#rolling">Rolling</a>
     <a href="#reading">Reading and holding</a>
-    <a href="#groups">Three separate sets</a>
+    <a href="#groups">Several separate sets</a>
     <a href="#cards">The card table</a>
     <a href="#profiles">Saved profiles</a>
     <a href="#sharing">Sharing and scanning</a>
@@ -291,8 +295,8 @@
       <li><strong>Roll</strong> and <strong>Deal</strong>, and which of the two
         the button is;</li>
       <li><strong>Throw</strong> and <strong>Draw</strong>, and the shake that
-        does the same thing;</li>
-      <li>the three separate sets, and the swipe between them in the tray;</li>
+        does the first of them;</li>
+      <li>the separate sets, and the swipe between them in the tray;</li>
       <li>the menu at the top left, and motion control inside it.</li>
     </ul>
     <p>
@@ -327,11 +331,18 @@
     <ul>
       <li><strong>Add a die</strong> by tapping the large <code>+</code> in the
         first empty slot.</li>
-      <li><strong>Change a die</strong> by tapping it. The editor opens
-        underneath, showing which one you have hold of — "Die&nbsp;3 —
-        D20", say.</li>
+      <li><strong>Change a die</strong> by tapping it. A blue ring in the rack
+        says which one you have hold of, and the editor opens underneath with
+        that die's colour and kind already lit.</li>
       <li><strong>Choose its kind</strong> from the row of chips: D4, D6, D8,
-        D10, D12 or D20.</li>
+        D10, D12, D20 or Poker.
+        <br><strong>Poker</strong> is a six-sided die whose faces are the six
+        cards a poker die carries — nine, ten, jack, queen, king and ace —
+        printed as the cards themselves rather than as letters, with the pips
+        laid out the way a card lays them out. In ivory it prints its jack,
+        queen and king in blue, green and red, the way a real one does; painted
+        any other colour it prints in that die's own ink, with the red suits
+        still red.</li>
       <li><strong>Choose its colour</strong> from the row of swatches above the
         chips. Each die carries its own, which is what lets you tell one from
         another once they are all on the floor of the tray.</li>
@@ -340,8 +351,9 @@
     </ul>
     <p>
       When the rack says what you want it to say, tap <strong>Roll</strong> at
-      the bottom of the screen. That opens the tray with the dice already
-      thrown.
+      the bottom of the screen. That opens the tray, with your dice lying on
+      the floor of it and waiting — the throw is yours to make, and the next
+      section is how.
     </p>
     <div class="doc-note">
       <p>
@@ -358,6 +370,11 @@
            alt="The tray, with a D20, two orange D6s, a green D8 and a red D4 lifted off the floor and turned square to the glass to be read.">
       <figcaption>Settled, turned square to the glass, and read.</figcaption>
     </figure>
+    <p>
+      The tray opens waiting. Nothing has been thrown, the dice are lying where
+      they fell in, and it stays that way until you ask — the same as the card
+      table, which opens on a bare glass and waits for <strong>Draw</strong>.
+    </p>
     <p>
       Hold the phone upright and <strong>shake it</strong>. The dice are thrown,
       they bounce off the walls and off each other, and they settle. There is no
@@ -405,16 +422,44 @@
       ones stay exactly as they are.
     </p>
 
-    <h2 id="groups">Three separate sets</h2>
+    <h2 id="groups">Several separate sets</h2>
     <figure class="doc-figure">
       <img src="../images/screens/03-full-tray.png" width="645" height="1398" loading="lazy"
            alt="The tray holding all ten kinds of die at once, each in a different colour.">
       <figcaption>Ten dice, every kind, one throw.</figcaption>
     </figure>
     <p>
-      The picker can hold up to <strong>three</strong> separate sets of dice.
-      The dots beneath the rack say which one you are editing; swipe the rack
-      sideways to reach the others.
+      The picker can hold up to <strong>four</strong> separate sets of dice, and
+      it offers them one at a time rather than all at once: what you are shown
+      is the sets you have started and <strong>one empty one after them</strong>.
+      So a picker you have just opened has two dots &mdash; the set you have and
+      the set you could have &mdash; and putting a die in that empty page fills
+      its dot and adds a fresh empty one behind it, up to four.
+    </p>
+    <p>
+      The dots beneath the rack say which one you are editing &mdash; the lit
+      one is the set on screen. Swipe the rack sideways to reach the others. A
+      set you have not started counts for nothing: it is not a box on the tray,
+      and its dot is a hollow ring rather than a filled one.
+    </p>
+    <p>
+      Take the last die out of a set and you have said you are finished with
+      it, and what happens next depends on where that set sits. If it is the
+      <strong>last set in the row</strong>, nothing is lost: it goes back to
+      being the empty page the rack always finishes with, and its dot simply
+      goes hollow. If there is a set <strong>behind</strong> it, the app asks
+      first — because taking that die deletes the set and brings the next one
+      forward. Confirm and the emptied set slides away to the left while the one
+      behind it comes in from the right, keeping its own dice; cancel and
+      nothing at all happens.
+    </p>
+    <p>
+      Any set can go that way, the first one included. The only set you cannot
+      empty is the <em>last one left</em>: the picker always keeps one set with
+      dice in it, because a picker with none would have nothing to show you and
+      nothing to roll — so on a single set the Remove button greys out at the
+      last die. Empty the first while a second is set up and the second simply
+      becomes the first.
     </p>
     <p>
       In the tray, the same swipe moves between them — and each set keeps its
@@ -435,12 +480,22 @@
       <figcaption>One card stands for one throw of the dice it replaces.</figcaption>
     </figure>
     <p>
-      Swipe the picker's editor panel sideways — or tap the second of the two
-      dots below it — for <strong>card mode</strong>. It is the picker's other
+      Swipe the picker's panels sideways — or tap the second of the two dots
+      below them — for <strong>card mode</strong>. It is the picker's other
       page rather than a corner of it, and an alternative to the dice rather
       than a substitute for it: every card in the shoe carries one possible
       outcome of the dice it stands for, so dealing one is the same wager as
       throwing them.
+    </p>
+    <p>
+      Card mode's set-up sits in two panels rather than one, because it is
+      about two things. The upper one is the <strong>card</strong> — which die
+      of it the swatches are painting, and Remove, exactly as the dice page's
+      editor works. The lower one is the <strong>shoe</strong>: how many decks
+      go into it and where it is cut, neither of which is about any one die.
+      That is why the lower panel stays live on the empty page at the end of
+      the row, where the swatches above it grey out — you can set a new shoe's
+      decks and its cut before you put the first die on its card.
     </p>
     <ul>
       <li><strong>How many dice</strong> a card stands for: one, two or three.
@@ -451,10 +506,34 @@
         reshuffles.</li>
       <li><strong>What colour</strong> each die is printed in on the card,
         chosen one die at a time exactly as on the rack.</li>
+      <li><strong>Up to four shoes</strong>, swiped between exactly as the sets
+        of dice are and arriving the same way: the shoes you have started and
+        one empty one after them, with the dots under the rack saying which one
+        you are on and which of them you have started. Each carries its own
+        dice, its own decks and its own cut — one can be a blackjack shoe and
+        the next a single deck cut to the last card. The empty one on the end
+        has no card at all, which is how you say you only wanted the shoes you
+        have; adding a die to it starts it and offers you another, and taking
+        a shoe's last die away drops it from the row — decks, cut and all —
+        after the same question the sets of dice ask, and with the same slide.
+        A shoe at the end of the row is not asked about and is not deleted; it
+        goes back to being the empty page. Any shoe can go that way and the
+        last one left cannot: there is always one shoe with a card on it.</li>
     </ul>
     <p>
-      On the table itself, <strong>Draw</strong> turns the next card over, and a
-      shake does the same if motion control is on.
+      Dealing opens one table per started shoe, side by side, and a swipe moves
+      between them. <strong>They do not touch each other.</strong> Each is
+      shuffled separately and dealt separately, and each remembers what has
+      gone out of it, which is the whole point of playing with a shoe rather
+      than a pair of dice — the same reason two sets of dice keep their own
+      rolls on the tray. Closing takes all of them, and the question you are
+      asked before it says so.
+    </p>
+    <p>
+      On the table itself, <strong>Draw</strong> turns the next card over. A
+      shake does not, and that is deliberate — see
+      <a href="#shake">Shake to deal a card</a> under Settings, which is off
+      until you ask for it.
     </p>
     <div class="doc-note">
       <p>
@@ -547,7 +626,14 @@
     <h2 id="settings">Settings</h2>
     <p>
       <strong>Settings</strong> is the first entry on that same menu — Settings,
-      Scan, and <a href="#tour">How to use</a> — and it has two controls.
+      Scan, and <a href="#tour">How to use</a> — and it has five controls.
+    </p>
+    <p>
+      Each one is a line saying what it is doing now, and that line changes with
+      the switch — so what the sheet tells you is true of how it is set rather
+      than true in general. The argument for a setting is not on the sheet at
+      all. It is here, below, which is where somebody who wants one has come
+      looking.
     </p>
     <h3>Motion control</h3>
     <p>
@@ -566,12 +652,113 @@
       train — all of them want the dice and none of them wants the
       accelerometer.
     </p>
+    <h3 id="shake">Shake to deal a card</h3>
+    <p>
+      Drawn underneath Motion control, and inside it: it only means anything
+      while that switch is on, and it goes quiet when it is off.
+    </p>
+    <p>
+      <strong>Off, and worth leaving off.</strong> A shake on the tray and a
+      shake on the card table look like the same gesture and are not the same
+      act. Shaking dice <em>is</em> the simulation — the box moved, so the dice
+      tumbled — and a throw you did not mean costs you nothing, because you
+      simply throw again.
+    </p>
+    <p>
+      A shoe has memory, and that is the whole reason to play with one. A card
+      that has been dealt is off the shoe until the cut comes round, so what is
+      left to come has genuinely changed and there is no dealing it back. And a
+      phone handed across a table is a shake — several, usually. That is one
+      player's turn spent on cards nobody drew, and nothing undoes it.
+    </p>
+    <p>
+      So the gesture is still there, and it is asked for rather than assumed.
+      Turn it on if you play with the phone in your own hand; leave it alone if
+      it goes round the table. <strong>Draw</strong> turns the next card over
+      either way.
+    </p>
     <h3>Haptic strength</h3>
     <p>
       How hard the phone taps back when a die hits a wall. Dragging the slider
       plays each notch back at the strength an ordinary throw would produce, so
       you are comparing sensations rather than reading a number. All the way
       down is off.
+    </p>
+    <p>
+      The interface taps too, and at a fixed strength rather than at whatever
+      this slider says: a light tap for a menu entry, a profile you have
+      pressed, or anything you press in the picker — a die picked out of the
+      rack, its colour or its kind, a die added or taken away, the number of
+      decks, the point the shoe is cut at — and a slightly firmer one as a
+      menu opens under your thumb,
+      that one being the only sign a press-and-hold was long enough, since
+      nothing on the screen has moved yet. The cut is the one you drag rather
+      than press, and it counts as the figure changes, so you can land on a
+      number without watching it. Turning the slider all the way down silences
+      all of them as well as the tray.
+    </p>
+    <h3 id="timer">Timer</h3>
+    <p>
+      <strong>Off</strong>, and the last control on the sheet. Turn it on and a
+      clock appears between <strong>Close</strong> and <strong>Throw</strong>,
+      counting up in minutes and seconds from the last roll — or, on the card
+      table, from the last card.
+    </p>
+    <p>
+      It measures and does nothing else. Nothing counts down, nothing runs out,
+      and neither screen behaves any differently for it being there: a game
+      with a turn limit keeps the limit where it always was, in the players'
+      heads, and this only saves somebody watching a second phone.
+    </p>
+    <p>
+      Each set of dice keeps its own clock, for the same reason each keeps its
+      own roll. Swipe to another set and you are told how long ago
+      <em>that</em> one was thrown, not how long ago you last pressed
+      anything — and a set nobody has shaken yet shows a stopped
+      <strong>0:00</strong>, which cannot run out however long you leave it. A
+      shake counts
+      as the roll it is, so a tray shaken into a fresh result starts again from
+      zero without anybody touching <strong>Throw</strong>.
+    </p>
+    <p>
+      On the cards, a <a href="#cards">reshuffle</a> stops the clock rather
+      than restarting it: it goes back to <strong>0:00</strong> and stays
+      there, because the glass is bare and there is no card for it to be
+      counting since. The next card starts it again.
+    </p>
+    <h3 id="limit">Turn limit</h3>
+    <p>
+      Drawn underneath Timer, and inside it, the way Shake to deal is drawn
+      under Motion control: it only means anything while the clock is showing,
+      and it goes quiet when it is not. <strong>None</strong> to begin with.
+    </p>
+    <p>
+      Set one — thirty seconds to five minutes, in quarter-minutes — and when a
+      turn runs past it the screen flashes three times, the phone taps three
+      times with it, and the clock turns red and stays red. The next roll, or
+      the next card, puts it back to 0:00 and takes the colour with it.
+    </p>
+    <p>
+      The flash and the taps are both there because neither one reaches
+      everybody. A phone face up on the table between four players is seen and
+      not felt; a phone in somebody's hand at the far end is felt long before
+      it is looked at. Turning <a href="#settings">Impact strength</a> all the
+      way down silences the taps, as it silences everything else — the flash
+      stays.
+    </p>
+    <p>
+      <strong>Nothing is prevented and nothing is scored.</strong> The clock
+      goes on counting up past the limit rather than down towards it, because
+      how far over a turn has run is the number worth reading and
+      <span style="white-space: nowrap">−1:30</span> is a worse way to say it.
+      Roll Hippo has no opinion about whose turn it is and does not acquire one
+      here: it says the time is up, and what that costs is between the people
+      playing.
+    </p>
+    <p>
+      The notches are deliberate. A turn limit is a thing people agree on out
+      loud — "about a minute each" — and it is never 47 seconds, so the slider
+      is settable by dragging rather than by aiming.
     </p>
 
     <h2 id="fairness">How the number is decided</h2>
@@ -635,6 +822,13 @@
       deliberately ignores the phone and Throw is the only way to roll. The
       prompt on an unthrown tray tells you which of the two you are in: it reads
       "Shake to roll" or "Tap Throw to roll".
+    </p>
+    <h3>Shaking deals no card</h3>
+    <p>
+      That is the default. <strong>Shake to deal a card</strong> in Settings
+      turns it on — and the paragraph beside it is worth reading first, because
+      a dealt card cannot be dealt back. <strong>Draw</strong> works either
+      way.
     </p>
     <h3>I skipped the tour</h3>
     <p>
