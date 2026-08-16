@@ -34,9 +34,13 @@
   --yellow: #d4b060;
 
   /* The herd's own colour. Deliberately in the one region of the wheel none of
-     the six hippos occupies (Rest violet, Chip green, Jump blue, Keep amber,
-     Mind magenta, Roll red), so the umbrella never reads as one of the members
-     and never fights the card it sits beside. */
+     the seven hippos occupies (Rest violet, Chip green, Jump blue, Keep amber,
+     Mind cyan, Maze magenta, Roll red), so the umbrella never reads as one of
+     the members and never fights the card it sits beside.
+
+     Two corrections rather than one when Maze Hippo joined: magenta was listed
+     against Mind, which has been Go's cyan since it was drawn, and magenta was
+     the gap Maze was given — hue 310, between Rest at 246 and Roll at 351. */
   --herd: #2bc4b0;
   --brand: var(--herd);
 

@@ -8,8 +8,8 @@
  * what was already there.
  *
  * Data comes from ./versions.json, generated at deploy time from the GitHub
- * Releases API for all six repos at once (scripts/build-versions.mjs). The
- * browser never talks to api.github.com: six unauthenticated calls per page
+ * Releases API for all seven repos at once (scripts/build-versions.mjs). The
+ * browser never talks to api.github.com: seven unauthenticated calls per page
  * load would spend a third of a visitor's 60/hr rate limit, shared across
  * every site they visit that day, to render a download button.
  */
@@ -26,6 +26,7 @@
     chiphippo: { name: "Chip Hippo", desktop: true },
     jumphippo: { name: "Jump Hippo", desktop: true },
     keephippo: { name: "Keep Hippo", desktop: true },
+    mazehippo: { name: "Maze Hippo", desktop: false }, // iOS / Android
     mindhippo: { name: "Mind Hippo", desktop: true },
     rollhippo: { name: "Roll Hippo", desktop: false }, // iOS / Android
   };

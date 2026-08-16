@@ -21,7 +21,7 @@
 //
 // WHY THIS EXISTS. The sibling sites each inline everything in one
 // index.html, which is right for a one-page site. This one has eight pages
-// that share a header, a six-item dropdown, a footer, and a <head> — about 90
+// that share a header, a seven-item dropdown, a footer, and a <head> — about 90
 // lines of chrome that would otherwise be copy-pasted eight times. The eighth
 // copy drifts from the first the week a link changes, and the way you find out
 // is a visitor telling you that the menu on one page is missing a hippo.
@@ -139,6 +139,23 @@ const OS_META = {
 // ── Shared chrome ────────────────────────────────────────────────────────────
 
 const repoUrl = (slug) => `https://github.com/${OWNER}/${slug}`;
+
+// How many hippos there are, in words, because the two places that say it out
+// loud say it in prose. Derived from HERD rather than typed: both sentences
+// were written when there were six and neither changed when there were seven,
+// which is exactly the kind of staleness a generator is supposed to prevent —
+// the herd's own front page was the last thing on the site still claiming a
+// number nobody had checked. Falls back to the digits above twelve, at which
+// point the sentence needs rewriting anyway.
+const WORDS = [
+  "zero", "one", "two", "three", "four", "five", "six",
+  "seven", "eight", "nine", "ten", "eleven", "twelve",
+];
+const spell = (n) => WORDS[n] ?? String(n);
+const Spell = (n) => {
+  const w = spell(n);
+  return w.charAt(0).toUpperCase() + w.slice(1);
+};
 
 // A hippo has downloadable builds when it has shipped at least once. The two
 // that have not are not given an empty download grid with three "coming soon"
@@ -315,7 +332,7 @@ function indexPage() {
   <img class="hero-mark" src="/favicon.svg" width="84" height="84" alt="" />
   <div class="hero-badge">
     ${icon("heart", 11)}
-    Six hippos, one herd
+    ${Spell(HERD.length)} hippos, one herd
   </div>
   <h1>Welcome to the<br><span class="accent">hippo herd</span></h1>
   <p class="hero-desc">
@@ -604,7 +621,7 @@ function links(x) {
   }
   rows.push(`      <a class="link-card" href="/#herd">
         ${icon("grid", 16)}
-        <span>The rest of the herd<small>Five more hippos</small></span>
+        <span>The rest of the herd<small>${spell(HERD.length - 1).replace(/^./, (c) => c.toUpperCase())} more hippos</small></span>
       </a>`);
   return `    <div class="link-row">\n${rows.join("\n")}\n    </div>`;
 }

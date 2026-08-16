@@ -20,8 +20,8 @@
 // The family mark is ONE piece of geometry — two ear circles, a head, a snout,
 // two eyes — that every hippo shares; a hippo is that geometry, its own accent
 // colour, and one motif on the snout. Those marks already exist, hand-inlined,
-// in five separate repositories, and this site needs all six of them in one
-// place. Copying six hand-written SVGs in here is how the herd's Rest Hippo ends
+// in five separate repositories, and this site needs all seven of them in one
+// place. Copying seven hand-written SVGs in here is how the herd's Rest Hippo ends
 // up half a pixel from resthippo.com's own, so the geometry is written down once
 // and the differences are written down as data.
 //
@@ -52,9 +52,12 @@ const nostrils = (c) =>
 //
 // The four that have their own website carry the motif that site already
 // publishes, character for character, so the herd's copy and the project's own
-// are the same drawing. Mind and Roll are the two without a live site: Roll's
-// comes from its brand plan (features/20-brand-and-app-icons.md), and Mind's
-// was settled here — Go's cyan, with a three-node network on the snout.
+// are the same drawing. Three have no site to copy from, and they were settled
+// three different ways: Roll's comes from its brand plan
+// (features/20-brand-and-app-icons.md); Mind's was settled here — Go's cyan,
+// with a three-node network on the snout; and Maze's is copied from the SVG in
+// its own repository, which is the drawing its app icon is rasterised from. A
+// published mark always wins, wherever it is published.
 //
 // If a sibling repo ever grows a mark for one of these, THAT becomes the
 // source and this table copies it, not the other way round. This file is the
@@ -91,6 +94,22 @@ const HIPPOS = {
     color: "#F5A623",
     eye: "#F5A623",
     motif: (c) => nostrils(c),
+  },
+  mazehippo: {
+    name: "Maze Hippo",
+    // Hue 310 — the gap between Rest at 246 and Roll at 351. See the same
+    // value, and the same note, in content/hippos.mjs.
+    color: "#CA2BAF",
+    eye: "#CA2BAF",
+    // An arrow turning a corner: the elbow it has come along, and the head it
+    // is about to leave by. Copied character for character from
+    // jfigge/mazehippo's assets/mazehippo.svg, which is that project's drawing
+    // of record and what its icon tool rasterises — so the mark here and the
+    // app icon on the phone are the same geometry rather than two people's
+    // idea of the same motif. If that file changes, this copies it.
+    motif: (c) =>
+      `<path d="M200 366 L200 322 L278 322" fill="none" stroke="${c}" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/>` +
+      `<path d="M278 300 L278 344 L312 322 Z" fill="${c}"/>`,
   },
   mindhippo: {
     name: "Mind Hippo",

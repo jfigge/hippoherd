@@ -4,8 +4,8 @@
  * width and scaled down to fit. It reads like a screenshot and can never go
  * stale, because it is not a picture of the site — it is the site.
  *
- * Why an iframe and not a PNG: the alternative is six screenshots committed
- * here, re-captured by hand every time one of six other repositories changes
+ * Why an iframe and not a PNG: the alternative is a screenshot per hippo
+ * committed here, re-captured by hand every time one of those repositories changes
  * its hero. That is a maintenance debt that gets paid in the form of a herd
  * page showing a version of Rest Hippo that shipped eight months ago.
  *

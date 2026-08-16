@@ -19,7 +19,7 @@
 //
 // The sibling sites each generate a versions.json for their own repo. This one
 // is the aggregate: one file holding the latest release of every hippo, so the
-// herd site can offer a direct download for the visitor's machine without six
+// herd site can offer a direct download for the visitor's machine without seven
 // round trips to api.github.com from the browser (which would also burn the
 // visitor's unauthenticated rate limit, 60/hr shared across every site they
 // visit).
@@ -47,6 +47,7 @@ const HERD = [
   "chiphippo",
   "jumphippo",
   "keephippo",
+  "mazehippo",
   "mindhippo",
   "rollhippo",
 ];

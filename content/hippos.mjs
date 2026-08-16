@@ -288,6 +288,89 @@ export const HERD = [
   },
 
   {
+    slug: "mazehippo",
+    name: "Maze Hippo",
+    // Hue 310, which was the only gap left in the herd's one-colour-per-app
+    // system between Rest at 246 and Roll at 351. Written down in three places
+    // in jfigge/mazehippo as well — the icon tool, the SVG of record and
+    // Android's adaptive-icon background resource — and in make-marks.mjs
+    // beside this. That repository is the authority; this copies it.
+    color: "#CA2BAF",
+    tagline: "Tap-to-clear arrow puzzle",
+
+    // Maze Hippo has no site of its own and is not getting one: the page at
+    // hippoherd.com/mazehippo IS its site, which is why this generator does
+    // not write it. The files live in jfigge/mazehippo under website/ and
+    // arrive here by `make site` in that repository. Everything else about
+    // this entry still does its job — the card on the index, the nav
+    // dropdown, the footer, the 404 list and the previous/next links are all
+    // generated from it as usual.
+    //
+    // `domain` stays null even though the hippo has a website, because what
+    // `domain` drives is the "it has a home of its own" section and the live
+    // iframe preview — and pointing those at hippoherd.com/mazehippo would
+    // embed this site inside itself. Same reasoning as Roll Hippo's entry.
+    externalSite: true,
+
+    domain: null,
+    docs: null,
+    stack: "Flutter · Dart",
+    license: "Apache-2.0",
+    platforms: ["iOS", "Android"],
+    // "development" rather than "planned": the game is written — a hundred
+    // levels, both platforms, tests green — and what is outstanding is the
+    // App Store listing rather than the app. "Planned" reads as not started.
+    // Not "prerelease" either, which in STATUS_LABEL sits beside `shipped()`
+    // and means there is something to download; there are no releases on the
+    // repo, so that would point at a grid with nothing in it.
+    status: "development",
+    stores: [],
+
+    lead: "A small tap-to-clear puzzle, built mostly for the fun of building it. Tap an arrow and it threads itself off the board — unless something is in the way. A hundred levels, three lives, and no advertising anywhere in it.",
+
+    blurb:
+      "Maze Hippo is a grid of dots with arrows wound through it, and one rule: tap an arrow and it threads itself off the board the way it points, or it runs into another arrow's body, stops, turns red and costs one of three lives. It exists because the version of this on the app stores is usually buried in advertising — so this one has <strong>no ads, no accounts, no analytics and no network connection at all</strong>. The interesting part is underneath: there is no level data in it and no solver, because every level is computed from its number and generated along its own solution.",
+
+    callout: {
+      title: "You can never be stuck, and that is a theorem",
+      body: 'Removing an arrow can only ever free others, so an arrow that is free stays free. Whatever order the player taps in, the latest-placed arrow still standing was free when it was placed onto a board holding <em>more</em> than the one in front of them — so it is free now. <strong>There is always a legal move</strong>, a life is only ever lost to a wrong tap, and the game needs no undo button to be fair.',
+    },
+
+    features: [
+      {
+        icon: "zap",
+        title: "One rule, and it is visible",
+        body: "An arrow moves like a snake: the head steps and the body threads up behind it along the line the head already took. So whether it can leave depends on one straight line of dots and nothing else — its own bends cost it nothing — and the thing to check before tapping is a thing you can actually see.",
+      },
+      {
+        icon: "grid",
+        title: "No level data, and no solver",
+        body: "All hundred levels are computed from their number in a few milliseconds on the phone. Arrows are placed one at a time with a clear run to the edge, which makes <em>the reverse of the placement order a solution</em> — the level is generated along its own answer, so an unfinishable one is not something the generator can produce.",
+      },
+      {
+        icon: "layers",
+        title: "Difficulty is one number",
+        body: "Not size, but how many arrows can leave at once: at four there is nearly always an obvious move, at one there is never a choice. Ten levels at four, fifteen at three, twenty at two, and the last fifty-five at one.",
+      },
+      {
+        icon: "heart",
+        title: "Three lives, and a clock that waits",
+        body: "A wrong tap costs a life and leaves the board exactly as it was. The clock starts when you first touch an arrow rather than when the level appears — a board is read before it is played, and on a hard one for a good while.",
+      },
+      {
+        icon: "activity",
+        title: "A bed that does not repeat",
+        body: "Two synthesised loops, one of 97 seconds and one of 71. They share no factors, so the pair line up again only every hour and fifty-five minutes — two files under half a megabyte doing the work of a generative engine.",
+      },
+      {
+        icon: "offline",
+        title: "Nothing leaves the phone",
+        body: "No account, no network call, no telemetry, no advertising identifier, and no permission prompt of any kind. The Android package ships without the <code>INTERNET</code> permission, so the OS itself would refuse a connection the game tried to open.",
+      },
+    ],
+  },
+
+  {
     slug: "mindhippo",
     name: "Mind Hippo",
     // Go's own brand cyan. Mind Hippo is pure Go against the standard library

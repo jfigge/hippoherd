@@ -4,7 +4,7 @@ name: Deploy Website
 #
 # Two generators run here, in this order, and both matter:
 #
-#   scripts/build-versions.mjs  reads the GitHub Releases API for all six hippo
+#   scripts/build-versions.mjs  reads the GitHub Releases API for all seven hippo
 #                               repositories and writes website/versions.json,
 #                               which is what puts a real installer behind the
 #                               "Download for your machine" button.
@@ -57,7 +57,7 @@ jobs:
 
       # The default GITHUB_TOKEN is scoped to THIS repository, which is enough:
       # reading a public repo's releases needs only a valid token, not access to
-      # that repo. All six hippos are public as of 5 August 2026, but a repo
+      # that repo. All seven hippos are public as of 15 August 2026, but a repo
       # that is private (or does not exist yet) answers 404 here, and
       # build-versions.mjs treats that as "no releases yet" rather than as an
       # error — which is also the right answer for a repo that has none. A

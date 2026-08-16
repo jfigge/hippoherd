@@ -15,6 +15,7 @@ get nothing".
 | Chip Hippo | 74xx TTL breadboard simulator | [chiphippo.com](https://chiphippo.com) | [jfigge/chiphippo](https://github.com/jfigge/chiphippo) |
 | Jump Hippo | On-demand SSH tunnels | [jumphippo.com](https://jumphippo.com) | [jfigge/jumphippo](https://github.com/jfigge/jumphippo) |
 | Keep Hippo | Vault-compatible secrets manager | [keephippo.com](https://keephippo.com) | [jfigge/keephippo](https://github.com/jfigge/keephippo) |
+| Maze Hippo | Tap-to-clear arrow puzzle (iOS / Android) | — | [jfigge/mazehippo](https://github.com/jfigge/mazehippo) |
 | Mind Hippo | ML runtime written from scratch in Go | — | [jfigge/mindhippo](https://github.com/jfigge/mindhippo) |
 | Roll Hippo | Shake-to-roll dice tray (iOS / Android) | — | [jfigge/rollhippo](https://github.com/jfigge/rollhippo) |
 
@@ -41,10 +42,11 @@ strip stays hidden rather than lying.
 ```
 content/hippos.mjs         Every user-visible word about every hippo
 scripts/build-site.mjs     → website/*.html   (8 pages)
-scripts/build-versions.mjs → website/versions.json  (all six repos' releases)
+scripts/build-versions.mjs → website/versions.json  (all seven repos' releases)
 scripts/make-marks.mjs     → website/marks/*.svg + favicon.svg
 website/                   The site itself — committed, and served as-is
 website/rollhippo/         NOT generated — Roll Hippo's own site, copied in
+website/mazehippo/         NOT generated — Maze Hippo's own site, copied in
 ```
 
 `website/` is generated **and** committed, so a checkout can be served with any
@@ -74,34 +76,47 @@ next build. Prose lives in `content/hippos.mjs`; layout lives in
 `scripts/build-site.mjs`; styling lives in `website/site.css`, which is written
 by hand and is not generated.
 
-### The one exception: `website/rollhippo/`
+### The exceptions: `website/rollhippo/` and `website/mazehippo/`
 
-Roll Hippo has no site of its own and is not getting one, so
-`hippoherd.com/rollhippo/` **is** its website — a product page and a full user
-guide, rather than the one-page introduction its siblings get here. Those files
-are written in [jfigge/rollhippo](https://github.com/jfigge/rollhippo) under
-`website/`, and land here by running `make site` in *that* repository.
+The two phone apps have no site of their own and are not getting one, so
+`hippoherd.com/rollhippo/` and `hippoherd.com/mazehippo/` **are** their
+websites — a product page and a privacy statement each, and in Roll Hippo's
+case a full user guide, rather than the one-page introduction their siblings
+get here. Those files are written in
+[jfigge/rollhippo](https://github.com/jfigge/rollhippo) and
+[jfigge/mazehippo](https://github.com/jfigge/mazehippo) under `website/`, and
+land here by running `make site` in *that* repository.
 
-`content/hippos.mjs` marks it `externalSite: true`, and the only thing the flag
-does is stop `build-site.mjs` writing that one `index.html`. Everything else
-still comes from its entry: the card on the index, the nav dropdown, the
+`content/hippos.mjs` marks both `externalSite: true`, and the only thing the
+flag does is stop `build-site.mjs` writing that one `index.html`. Everything
+else still comes from the entry: the card on the index, the nav dropdown, the
 footer, the 404 list, the sitemap, and its neighbours' previous/next links. So
 edit its prose here and the *card* changes; the page itself does not, because
 the page is not ours.
 
-Two rules follow. Do not hand-edit `website/rollhippo/` here either — the next
-`make site` in the rollhippo repo overwrites it with `rsync --delete`. And do
-not give that hippo a `domain`, which is what drives the "it has a home of its
-own" section and the live iframe preview: pointed at `hippoherd.com/rollhippo`
-it would embed this site inside itself.
+Two rules follow. Do not hand-edit `website/rollhippo/` or
+`website/mazehippo/` here either — the next `make site` in the owning repo
+overwrites it with `rsync --delete`. And do not give either hippo a `domain`,
+which is what drives the "it has a home of its own" section and the live
+iframe preview: pointed at `hippoherd.com/rollhippo` it would embed this site
+inside itself.
+
+Maze Hippo's pictures are worth one more note, because they are unusual and
+they are not screenshots. `tool/website.dart` in that repository runs the
+game's real painter against its real level generator and rasterises the
+result, so the hero and the six boards on that page are the current game by
+construction. `make site` there re-renders them before it copies, which is why
+nothing here ever needs to know they exist.
 
 ### Adding a hippo
 
 1. Add an entry to `HERD` in `content/hippos.mjs`.
 2. Add its colour and snout motif to `HIPPOS` in `scripts/make-marks.mjs`.
 3. Add its slug to `HERD` in `scripts/build-versions.mjs`.
-4. Add its hostname to `ALLOWED` in `website/preview.js` if it has a site.
-5. Run all three generators.
+4. Add it to `HIPPOS` in `website/herd.js` — `desktop: false` for a phone app,
+   which is what stops the page offering a desktop installer for it.
+5. Add its hostname to `ALLOWED` in `website/preview.js` if it has a site.
+6. Run all three generators.
 
 The nav dropdown, the footer, the sitemap, the 404 page, the previous/next
 links and the index grid all come from that list, so none of them needs
