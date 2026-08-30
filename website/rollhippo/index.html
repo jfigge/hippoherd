@@ -99,12 +99,14 @@
     }
 
     /* ── Store badges ──────────────────────────────────────────────────────
-       Both stores are placeholders until the listings exist. They are drawn
-       as plainly disabled rather than as live buttons pointing at a search
-       page, which is the same call hippoherd makes about Chip Hippo's
+       The App Store one is live and is therefore an <a>; Google Play has no
+       listing yet and is still a <span>. A badge with nowhere to go is drawn
+       as plainly disabled rather than as a live button pointing at a store
+       search, which is the same call hippoherd makes about Chip Hippo's
        missing Mac App Store link: a badge that lands somewhere wrong is
-       worse than a badge that says "not yet". Swap in the URLs and the
-       `is-soon` class comes off — see the comment in the markup. */
+       worse than a badge that says "not yet". `is-soon` is what carries
+       that, so it now sits on one badge of the two rather than on both —
+       swap Play's URL in and it comes off there as well. */
     .rh-stores {
       display: flex;
       flex-wrap: wrap;
@@ -260,25 +262,28 @@
     </p>
 
     <div class="rh-stores">
-      <!-- PLACEHOLDERS. When the listings go live, replace the <span> with an
-           <a href="…" rel="noopener noreferrer"> and drop the is-soon class:
+      <!-- The App Store listing is live. The 6798933169 in that URL is the
+           id App Store Connect issued and cannot be derived from the bundle
+           identifier, which is why it is written out here rather than built
+           from anything.
 
-             App Store    https://apps.apple.com/app/roll-hippo/id<numeric>
-                          The numeric id comes from App Store Connect; it
-                          cannot be derived from the bundle identifier.
-             Google Play  https://play.google.com/store/apps/details?id=<pkg>
+           Google Play is still a placeholder. When that listing exists,
+           replace its <span> with an
 
-           Left as spans on purpose rather than as links to a store search.
-           An anchor that goes somewhere approximate is worse than a badge
-           that admits it is not ready — the same call hippoherd makes about
-           Chip Hippo's missing Mac App Store URL. -->
-      <span class="store-badge is-soon">
+             <a href="https://play.google.com/store/apps/details?id=<pkg>"
+                rel="noopener noreferrer">
+
+           and drop the is-soon class. It is a span on purpose rather than a
+           link to a store search: an anchor that goes somewhere approximate
+           is worse than a badge that admits it is not ready — the same call
+           hippoherd makes about Chip Hippo's missing Mac App Store URL. -->
+      <a class="store-badge" href="https://apps.apple.com/us/app/roll-hippo/id6798933169" rel="noopener noreferrer">
         <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.365 1.43c0 1.14-.42 2.2-1.13 3.02-.85.99-2.24 1.76-3.4 1.66-.14-1.1.4-2.26 1.07-3.02.77-.88 2.14-1.55 3.24-1.66.01.09.02.19.02.29zM20.9 17.13c-.6 1.38-.89 2-1.66 3.22-1.08 1.7-2.6 3.82-4.48 3.83-1.67.02-2.1-1.09-4.37-1.08-2.27.01-2.74 1.1-4.41 1.08-1.88-.02-3.32-1.93-4.4-3.63C-1.4 15.9-1.72 9.28 1.14 5.9 2.16 4.66 3.7 3.87 5.35 3.85c1.79-.03 2.92 1.13 4.4 1.13 1.44 0 2.32-1.14 4.39-1.14 1.5 0 3.1.82 4.24 2.23-3.73 2.04-3.12 7.37.52 8.83-.01.02-.01.04-.01.06z"/></svg>
         <span>
-          <span class="store-badge-sub">Coming soon</span>
+          <span class="store-badge-sub">Download on the</span>
           <span class="store-badge-name">App Store</span>
         </span>
-      </span>
+      </a>
       <span class="store-badge is-soon">
         <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3.6 1.9a1 1 0 0 0-.5.9v18.4a1 1 0 0 0 .5.9l10-10.1zM14.9 13.4l2.6 2.6-11.4 6.4zM18.6 10.6l2.9 1.6a1 1 0 0 1 0 1.7l-2.9 1.6-2.9-2.4zM14.9 10.6 6.1 1.6l11.4 6.4z"/></svg>
         <span>
@@ -288,7 +293,8 @@
       </span>
     </div>
     <p class="rh-soon-note">
-      Free, no account, no ads. Until the listings are live, the
+      Free, no account, no ads. On the App Store now; the Play listing is not
+      up yet, and until it is, the
       <a href="https://github.com/jfigge/rollhippo" rel="noopener noreferrer">source</a>
       builds and runs on both platforms.
     </p>
@@ -495,21 +501,23 @@
     <h2 class="section-title">On both phones, from one source tree</h2>
     <p class="section-body">
       Roll Hippo is the herd's first mobile app: one Flutter codebase, shipping
-      to the App Store and to Google Play. It is free and Apache-2.0, and it
-      will stay that way.
+      to the App Store and to Google Play. It is on the App Store now; the Play
+      listing is still to come. It is free and Apache-2.0, and it will stay
+      that way.
     </p>
 
     <div class="rh-stores">
-      <!-- The same two placeholders as the hero. Update both when the
-           listings exist; they are deliberately not shared through a
+      <!-- The same two badges as the hero, in the same two states: the App
+           Store one live, Google Play still to come. Both copies have to be
+           changed by hand — they are deliberately not shared through a
            template, because this page has no build step. -->
-      <span class="store-badge is-soon">
+      <a class="store-badge" href="https://apps.apple.com/us/app/roll-hippo/id6798933169" rel="noopener noreferrer">
         <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.365 1.43c0 1.14-.42 2.2-1.13 3.02-.85.99-2.24 1.76-3.4 1.66-.14-1.1.4-2.26 1.07-3.02.77-.88 2.14-1.55 3.24-1.66.01.09.02.19.02.29zM20.9 17.13c-.6 1.38-.89 2-1.66 3.22-1.08 1.7-2.6 3.82-4.48 3.83-1.67.02-2.1-1.09-4.37-1.08-2.27.01-2.74 1.1-4.41 1.08-1.88-.02-3.32-1.93-4.4-3.63C-1.4 15.9-1.72 9.28 1.14 5.9 2.16 4.66 3.7 3.87 5.35 3.85c1.79-.03 2.92 1.13 4.4 1.13 1.44 0 2.32-1.14 4.39-1.14 1.5 0 3.1.82 4.24 2.23-3.73 2.04-3.12 7.37.52 8.83-.01.02-.01.04-.01.06z"/></svg>
         <span>
-          <span class="store-badge-sub">Coming soon</span>
+          <span class="store-badge-sub">Download on the</span>
           <span class="store-badge-name">App Store</span>
         </span>
-      </span>
+      </a>
       <span class="store-badge is-soon">
         <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3.6 1.9a1 1 0 0 0-.5.9v18.4a1 1 0 0 0 .5.9l10-10.1zM14.9 13.4l2.6 2.6-11.4 6.4zM18.6 10.6l2.9 1.6a1 1 0 0 1 0 1.7l-2.9 1.6-2.9-2.4zM14.9 10.6 6.1 1.6l11.4 6.4z"/></svg>
         <span>
