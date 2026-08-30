@@ -502,6 +502,89 @@ export const HERD = [
       },
     ],
   },
+  {
+    slug: "scanhippo",
+    name: "Scan Hippo",
+    // Hue 94, chosen the way Maze's was: the midpoint of the widest arc no
+    // hippo occupies. Keep sits at 37 and Chip at 150, and that 113-degree gap
+    // is the largest on the wheel by a factor of two — so this green-yellow is
+    // as far from every sibling as a new colour can get, and it clears Chip's
+    // blue-green by 56 degrees. It must stay in step with the same value in
+    // scripts/make-marks.mjs: that one paints the mark, this one paints the
+    // page the mark sits on.
+    color: "#61B422",
+    tagline: "OBD-II tester on a salvaged connector",
+
+    // Scan Hippo has no site of its own and is not getting one: the page at
+    // website/scanhippo IS its site, which is why this generator does not
+    // write it. The file lives in jfigge/scanhippo under website/ and arrives
+    // here by `make site` in that repository. Everything else about this entry
+    // still does its job — the card on the index, the nav dropdown, the
+    // footer, the 404 list and the previous/next links are all generated from
+    // it as usual.
+    //
+    // `domain` stays null for the reason Roll Hippo's does: what `domain`
+    // drives is the "it has a home of its own" section and the live iframe
+    // preview, and pointing those at hippoherd.com/scanhippo would embed this
+    // site inside itself.
+    externalSite: true,
+
+    domain: null,
+    docs: null,
+    stack: "Arduino · C++ · MCP2515",
+    license: "Apache-2.0",
+    platforms: ["Arduino Nano ESP32"],
+    status: "development",
+
+    // No stores, and unlike Roll Hippo's empty array this one is not waiting
+    // on a review queue. The phone app is not going to be published: the
+    // hardware half only exists on one car, so there is nothing an installed
+    // app could usefully talk to. See the "Not a product" section on its page.
+    stores: [],
+
+    lead: "An OBD-II tester built on the connector a dead Subaru StarLink module left behind. An Arduino Nano ESP32 on the car's CAN bus, speaking ISO 15765-4 — and the story of the repair that produced it.",
+
+    blurb:
+      "A 2016 Outback's StarLink module outlived the 3G network it needed, and scanned for it until the battery went flat. Removing the head unit that had been silencing it broke the stereo as well, because the module sits <em>inline</em> in the front speaker and microphone paths. Fixing that meant desoldering the module's connector — and the half left over carried two CAN buses, three power rails, two buttons and two LEDs, already wired into the dash. Scan Hippo is what got built on it.",
+
+    callout: {
+      title: "Every command is a transaction, not a frame fired into the dark",
+      body: 'Each request carries a reply and a deadline, so an unplugged node reads as <strong>no response</strong> rather than looking identical to success. Eight independent reassembly channels — one per possible ECU — keep two segmented replies to the same broadcast from splicing into nonsense, and the MCP2515\'s acceptance filters are set up correctly rather than left in the state where asking for a mask of <code>0x7FF</code> quietly writes a mask of zero.',
+    },
+
+    features: [
+      {
+        icon: "activity",
+        title: "Standard ISO 15765-4",
+        body: "500 kbit/s, 11-bit identifiers, every frame padded to DLC 8 — so nothing changes between the bench and the driveway. <code>0x7DF</code> reaches every ECU, <code>0x7E0</code>+n addresses one, <code>0x7E8</code>+n is how it answers.",
+      },
+      {
+        icon: "layers",
+        title: "ISO-TP done properly",
+        body: "Segmented transfers with flow control, block size and STmin pacing, and the timeout paths that matter when a node stops answering half-way through a reply.",
+      },
+      {
+        icon: "network",
+        title: "Eight reassembly channels",
+        body: "One per possible ECU. A single broadcast can put two segmented replies on the wire at once, and one shared buffer would interleave them into something that parses but is not true.",
+      },
+      {
+        icon: "shield",
+        title: "Filters that actually filter",
+        body: "Three separate traps in the MCP2515 driver make acceptance filters fail <em>silently</em>, including one where the obvious call accepts every frame on the bus. All three are handled in one place, and written down.",
+      },
+      {
+        icon: "terminal",
+        title: "114 checks, no hardware",
+        body: "Frame bytes, pacing, timeouts, DTC and PID codecs and the filter register encoding — plus an integration suite that compiles the three real sketches unmodified and runs them against each other on a simulated bus.",
+      },
+      {
+        icon: "phone",
+        title: "A seam where the app goes",
+        body: "Everything the tester prints goes through a single <code>Print *</code>, so moving the console to a Bluetooth LE characteristic is a one-line change. The app is not built yet, and is not going to a store when it is.",
+      },
+    ],
+  },
 ];
 
 export const BY_SLUG = Object.fromEntries(HERD.map((h) => [h.slug, h]));

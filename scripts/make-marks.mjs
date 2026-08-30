@@ -135,6 +135,31 @@ const HIPPOS = {
       `<circle cx="256" cy="335" r="16" fill="${c}"/>` +
       `<circle cx="332" cy="367" r="16" fill="${c}"/>`,
   },
+  scanhippo: {
+    name: "Scan Hippo",
+    // Hue 94, and arrived at the way Maze's was: the midpoint of the widest
+    // arc no hippo occupies. With Keep at 37 and Chip at 150 that arc is 113
+    // degrees wide, the largest gap on the wheel by a factor of two, so this
+    // green-yellow is as far from every sibling as a new colour can get. Deep
+    // enough to read as accent text on the page's #1c1c1c (6.5:1) while
+    // leaving the white hippo legible on top of it. See the same value, and
+    // the same note, in content/hippos.mjs.
+    color: "#61B422",
+    eye: "#61B422",
+    // A square wave across the snout — the one motif in the family that is a
+    // picture of a signal rather than of a thing, for the one hippo whose job
+    // is reading one.
+    //
+    // This started as a CAN differential pair, two mirrored traces that part
+    // for a dominant bit and close again, which is what the bus actually looks
+    // like on a scope. Drawn, it was a mistake twice over: the two pulses share
+    // their rising and falling edges, so the strokes met at the corners and
+    // closed into a rectangle, and a rectangle on the snout is already Chip
+    // Hippo's. One trace with three transitions cannot enclose anything, and
+    // says "signal" at 16px where the pair said "box with wires".
+    motif: (c) =>
+      `<path d="M184 350 L214 350 L214 314 L256 314 L256 350 L298 350 L298 314 L328 314" fill="none" stroke="${c}" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/>`,
+  },
 };
 
 const HERD = "#2BC4B0";

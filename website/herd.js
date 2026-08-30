@@ -29,6 +29,9 @@
     mazehippo: { name: "Maze Hippo", desktop: false }, // iOS / Android
     mindhippo: { name: "Mind Hippo", desktop: true },
     rollhippo: { name: "Roll Hippo", desktop: false }, // iOS / Android
+    // Firmware for one board, and no release to download — `desktop: false`
+    // is what stops the card offering a desktop installer for it.
+    scanhippo: { name: "Scan Hippo", desktop: false }, // Arduino firmware
   };
 
   var DL_ICON =
