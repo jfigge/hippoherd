@@ -28,12 +28,18 @@ const DEFAULTS = Object.freeze({
   indent: "2", // "2" | "4" | "tab"
   autoUnescape: "1", // "1" | "0"
   theme: "system", // "system" | "light" | "dark"
+  lint: "1", // "1" | "0" — warnings for valid but suspect JSON
+  schemaDraft: "2020-12", // "2020-12" | "07"
+  schemaRequired: "1", // "1" | "0" — list the keys every sample has as required
 });
 
 const ALLOWED = Object.freeze({
   indent: ["2", "4", "tab"],
   autoUnescape: ["1", "0"],
   theme: ["system", "light", "dark"],
+  lint: ["1", "0"],
+  schemaDraft: ["2020-12", "07"],
+  schemaRequired: ["1", "0"],
 });
 
 export class Settings {
@@ -85,6 +91,30 @@ export class Settings {
 
   set theme(value) {
     this.set("theme", value);
+  }
+
+  get lint() {
+    return this.get("lint") === "1";
+  }
+
+  set lint(on) {
+    this.set("lint", on ? "1" : "0");
+  }
+
+  get schemaDraft() {
+    return this.get("schemaDraft");
+  }
+
+  set schemaDraft(value) {
+    this.set("schemaDraft", value);
+  }
+
+  get schemaRequired() {
+    return this.get("schemaRequired") === "1";
+  }
+
+  set schemaRequired(on) {
+    this.set("schemaRequired", on ? "1" : "0");
   }
 }
 

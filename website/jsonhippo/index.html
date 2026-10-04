@@ -50,6 +50,8 @@
   <symbol id="jh-i-collapse" viewBox="0 0 16 16"><path d="M4 10l4-4 4 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 2.5h10" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></symbol>
   <symbol id="jh-i-up" viewBox="0 0 16 16"><path d="M3.5 10.5L8 6l4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   <symbol id="jh-i-down" viewBox="0 0 16 16"><path d="M3.5 5.5L8 10l4.5-4.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="jh-i-schema" viewBox="0 0 16 16"><rect x="2" y="1.5" width="5" height="4" rx="1" fill="none" stroke="currentColor" stroke-width="1.4"/><rect x="9" y="6.5" width="5" height="3.5" rx="1" fill="none" stroke="currentColor" stroke-width="1.4"/><rect x="9" y="11" width="5" height="3.5" rx="1" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M4.5 5.5v7.25H9M4.5 8.25H9" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></symbol>
+  <symbol id="jh-i-warn" viewBox="0 0 16 16"><path d="M8 2.2l6.3 11.3H1.7z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M8 6.6v3.2M8 11.6v.1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
   <symbol id="jh-i-target" viewBox="0 0 16 16"><circle cx="8" cy="8" r="5" fill="none" stroke="currentColor" stroke-width="1.4"/><circle cx="8" cy="8" r="1.6" fill="currentColor"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></symbol>
   <symbol id="jh-i-system" viewBox="0 0 16 16"><circle cx="8" cy="8" r="5.5" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 2.5a5.5 5.5 0 0 1 0 11z" fill="currentColor"/></symbol>
   <symbol id="jh-i-sun" viewBox="0 0 16 16"><circle cx="8" cy="8" r="3" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 1.5v1.5M8 13v1.5M1.5 8H3M13 8h1.5M3.4 3.4l1 1M11.6 11.6l1 1M3.4 12.6l1-1M11.6 4.4l1-1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></symbol>
@@ -97,6 +99,9 @@
       <button type="button" class="jh-btn" data-action="unescape" title="Unescape escaped JSON">
         <svg class="jh-icon" aria-hidden="true"><use href="#jh-i-unescape"/></svg><span>Unescape</span>
       </button>
+      <button type="button" class="jh-btn" data-action="schema" title="Replace the JSON with a JSON Schema inferred from it (Undo brings the JSON back)">
+        <svg class="jh-icon" aria-hidden="true"><use href="#jh-i-schema"/></svg><span>Schema</span>
+      </button>
       <span class="jh-toolbar-sep" aria-hidden="true"></span>
       <button type="button" class="jh-btn" data-action="copy" title="Copy to the clipboard">
         <svg class="jh-icon" aria-hidden="true"><use href="#jh-i-copy"/></svg><span>Copy</span>
@@ -119,12 +124,28 @@
           <input type="checkbox" id="jh-auto-unescape" checked>
           <span>Auto-unescape</span>
         </label>
+        <label class="jh-check" title="Warn about valid JSON that is probably a mistake: duplicate keys, empty keys, numbers that lose precision">
+          <input type="checkbox" id="jh-lint" checked>
+          <span>Warnings</span>
+        </label>
       </div>
     </div>
 
     <div class="jh-notice" id="jh-notice" role="status" hidden>
       <span class="jh-notice-text"></span>
-      <button type="button" class="jh-link" data-action="undo-unescape">Undo</button>
+      <button type="button" class="jh-link" data-action="undo">Undo</button>
+      <!-- Shown while the editor holds an inferred schema: changing these
+           infers it again from the JSON it came from. -->
+      <span class="jh-notice-options" hidden>
+        <select id="jh-schema-draft" class="jh-select jh-select--quiet" aria-label="JSON Schema draft" title="JSON Schema draft">
+          <option value="2020-12">Draft 2020-12</option>
+          <option value="07">Draft-07</option>
+        </select>
+        <label class="jh-check" title="List the keys that every object at a position has as required">
+          <input type="checkbox" id="jh-schema-required" checked>
+          <span>Required keys</span>
+        </label>
+      </span>
       <button type="button" class="jh-notice-close" data-action="dismiss-notice" aria-label="Dismiss">×</button>
     </div>
 
@@ -198,6 +219,7 @@
     <div class="jh-detail" id="jh-detail" hidden>
       <code class="jh-detail-path"></code>
       <span class="jh-detail-kind"></span>
+      <span class="jh-detail-warn" hidden></span>
       <span class="jh-detail-actions">
         <button type="button" class="jh-btn" data-tree="copy-path">
           <svg class="jh-icon" aria-hidden="true"><use href="#jh-i-copy"/></svg><span>Copy path</span>
@@ -290,6 +312,15 @@
     <input type="file" class="jh-file" id="jh-diff-file" accept=".json,.txt,.log,application/json,text/plain" hidden>
   </section>
 </main>
+
+<!-- Warnings (lint): the full list, opened from the status bar. -->
+<section class="jh-warnings" id="jh-warnings" aria-labelledby="jh-warnings-title" hidden>
+  <div class="jh-warnings-head">
+    <span class="jh-warnings-title" id="jh-warnings-title">Warnings</span>
+    <button type="button" class="jh-notice-close" data-warnings="close" aria-label="Close the list of warnings">×</button>
+  </div>
+  <ol class="jh-warnings-list"></ol>
+</section>
 
 <footer class="jh-status" id="jh-status" role="status" aria-live="polite">
   <span class="jh-status-main">Paste JSON, type it, or load a file.</span>

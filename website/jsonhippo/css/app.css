@@ -411,6 +411,13 @@ textarea {
   font-size: 13px;
 }
 
+/* Schema options, shown in the notice while the text is an inferred schema. */
+.jh-notice-options {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
 .jh-notice-close {
   margin-left: auto;
   padding: 0 6px;
@@ -467,6 +474,18 @@ textarea {
 .jh-gutter-line--error::before {
   content: "▶ ";
   font-size: 9px;
+  vertical-align: 1px;
+}
+
+/* A line with lint warnings: amber, where an error is red. */
+.jh-gutter-line--warn {
+  color: var(--warn);
+  font-weight: 700;
+}
+
+.jh-gutter-line--warn::before {
+  content: "▲ ";
+  font-size: 8px;
   vertical-align: 1px;
 }
 
@@ -1036,6 +1055,101 @@ textarea {
   gap: 6px;
 }
 
+.jh-detail-warn {
+  flex: 0 1 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  max-width: 45%;
+  color: var(--warn);
+  font-size: 12px;
+}
+
+.jh-detail-warn > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── Warnings list (lint) ───────────────────────────────────────────────── */
+
+.jh-warnings {
+  display: flex;
+  flex-direction: column;
+  max-height: 30vh;
+  border-top: 1px solid var(--surface-1);
+  background: var(--bg);
+}
+
+.jh-warnings-head {
+  display: flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-bottom: 1px solid var(--surface-0);
+  background: var(--mantle);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.jh-warnings-list {
+  margin: 0;
+  padding: 2px 0;
+  overflow: auto;
+  list-style: none;
+}
+
+/* Until the next parse, after an edit: the positions may have moved. */
+.jh-warnings--stale .jh-warnings-list {
+  opacity: 0.55;
+}
+
+.jh-warning {
+  display: grid;
+  grid-template-columns: 10em 7.5em minmax(0, 1fr) auto;
+  gap: 12px;
+  width: 100%;
+  padding: 2px 12px;
+  border: 0;
+  background: none;
+  color: var(--text);
+  font-size: 13px;
+  line-height: 20px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.jh-warning:hover {
+  background: var(--surface-0);
+}
+
+.jh-warning-where {
+  color: var(--subtext);
+  font: 12px / 20px var(--mono);
+  white-space: nowrap;
+}
+
+.jh-warning-label {
+  color: var(--warn);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.jh-warning-message,
+.jh-warning-path {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.jh-warning-path {
+  max-width: 32ch;
+  color: var(--muted);
+  font: 12px / 20px var(--mono);
+}
+
 /* ── Status bar ─────────────────────────────────────────────────────────── */
 
 .jh-status {
@@ -1079,7 +1193,53 @@ textarea {
 }
 
 .jh-status-warn {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 10px;
+  min-width: 0;
   color: var(--warn);
+}
+
+.jh-status-warn-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--warn);
+  font: 600 13px / 1.45 var(--sans);
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.jh-status-warn-count:hover,
+.jh-status-warn-count[aria-expanded="true"] {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.jh-status-warn-count .jh-icon {
+  width: 14px;
+  height: 14px;
+}
+
+.jh-status-warn .jh-link {
+  color: var(--warn);
+  font-weight: 400;
+  text-align: left;
+}
+
+/* A warning on a tree row, after its value. */
+.jh-warn-mark {
+  display: inline-flex;
+  margin-left: 6px;
+  color: var(--warn);
+}
+
+.jh-warn-mark .jh-icon {
+  width: 14px;
+  height: 14px;
 }
 
 .jh-status .jh-link {
@@ -1098,6 +1258,15 @@ textarea {
   }
 
   .jh-btn .jh-icon + span {
+    display: none;
+  }
+
+  .jh-warning {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .jh-warning-label,
+  .jh-warning-path {
     display: none;
   }
 }

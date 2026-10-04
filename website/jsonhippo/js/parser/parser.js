@@ -43,7 +43,9 @@
  *   start/end = { line, column, offset }; end is just past the node.
  *   Numbers keep their source text as `value` (see tokenizer.js).
  *
- * Duplicate keys are kept, in source order, and reported as warnings.
+ * Duplicate keys are kept, in source order. Warnings — a duplicate key, a
+ * number that loses precision — are the linter's (lint/linter.js), which the
+ * parser calls as it reads when one is passed in: parse(text, { lint }).
  * Parsing stops at the first error: no recovery, one error per run.
  *
  * Pure JS: no DOM, no jQuery. Runs in Node under `node --test`.
@@ -64,7 +66,9 @@ const KEY_HINT = "Object keys must be double-quoted strings.";
 
 /**
  * Parse JSON text.
- * @returns {{ ast, warnings, stats: { nodes, keys, depth } }}
+ * @param options { maxDepth, lint: a Linter, or null for no warnings }
+ * @returns {{ ast, warnings, warningTotal, stats: { nodes, keys, depth } }}
+ *          warnings is the linter's list (capped); warningTotal counts them all
  * @throws {JsonHippoError}
  */
 export function parse(text, options) {
@@ -86,16 +90,16 @@ function at(pos) {
 }
 
 class Parser {
-  constructor(text, { maxDepth = MAX_DEPTH } = {}) {
+  constructor(text, { maxDepth = MAX_DEPTH, lint = null } = {}) {
     this.tokens = new Tokenizer(text);
     this.maxDepth = maxDepth;
     // Open containers, outermost first. Each frame:
     //   { kind, node, open (the '{' / '[' token),
     //     key, keyToken  — the member being read (objects), or null between members
-    //     index          — the item being read (arrays), or null between items
-    //     keys           — Map of key → first keyToken, for duplicate warnings }
+    //     index          — the item being read (arrays), or null between items }
     this.stack = [];
-    this.warnings = [];
+    this.lint = lint;
+    lint?.begin(() => this.currentPath());
     this.nodeCount = 0;
     this.keyCount = 0;
     this.deepest = 0;
@@ -106,7 +110,8 @@ class Parser {
       const ast = this.parseDocument();
       return {
         ast,
-        warnings: this.warnings,
+        warnings: this.lint?.warnings ?? [],
+        warningTotal: this.lint?.total ?? 0,
         stats: { nodes: this.nodeCount, keys: this.keyCount, depth: this.deepest },
       };
     } catch (err) {
@@ -230,7 +235,9 @@ class Parser {
 
   scalar(kind, value, token) {
     this.nodeCount++;
-    return { kind, value, raw: token.raw, start: startOf(token), end: endOf(token) };
+    const node = { kind, value, raw: token.raw, start: startOf(token), end: endOf(token) };
+    this.lint?.value(node);
+    return node;
   }
 
   // ── object / array ───────────────────────────────────────────────────────
@@ -243,9 +250,10 @@ class Parser {
     }
     this.nodeCount++;
     const node = kind === "object" ? { kind, entries: [], start: startOf(open), end: null } : { kind, items: [], start: startOf(open), end: null };
-    const frame = { kind, node, open, key: null, keyToken: null, index: kind === "array" ? 0 : null, keys: null };
+    const frame = { kind, node, open, key: null, keyToken: null, index: kind === "array" ? 0 : null };
     this.stack.push(frame);
     if (this.stack.length > this.deepest) this.deepest = this.stack.length;
+    this.lint?.open(node);
 
     // '{}' and '[]': close at once. A wrong closer or the end of input here
     // gets the same treatment it would get after a child.
@@ -301,7 +309,7 @@ class Parser {
     frame.key = key.value;
     frame.keyToken = key;
     this.keyCount++;
-    this.noteDuplicate(frame, key);
+    this.lint?.key(key);
 
     const colon = this.tokens.next();
     if (colon.type !== T.COLON) {
@@ -311,26 +319,6 @@ class Parser {
       });
     }
     return this.tokens.next();
-  }
-
-  noteDuplicate(frame, key) {
-    if (frame.keys === null) frame.keys = new Map();
-    const first = frame.keys.get(key.value);
-    if (first === undefined) {
-      frame.keys.set(key.value, key);
-      return;
-    }
-    this.warnings.push({
-      code: "DUPLICATE_KEY",
-      message: `duplicate key ${key.raw} (first defined at ${at(first)})`,
-      key: key.value,
-      line: key.line,
-      column: key.column,
-      offset: key.offset,
-      endOffset: key.endOffset,
-      path: this.currentPath(),
-      first: startOf(first),
-    });
   }
 
   addChild(frame, node) {
@@ -381,6 +369,7 @@ class Parser {
   finish(frame, closeToken) {
     this.stack.pop();
     frame.node.end = endOf(closeToken);
+    this.lint?.close(frame.node);
     return frame.node;
   }
 

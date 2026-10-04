@@ -32,6 +32,9 @@
  * found through the element's data-id) pointing at its AST node, which is
  * how a row links back to its source position.
  *
+ * A row with a lint warning — on its key or on its value — carries a small
+ * warning mark, and the detail bar says what the warning is.
+ *
  * DOM work goes through jQuery (event delegation, classes, insertion); the
  * markup itself is built as one HTML string per render, which is what keeps
  * ten thousand rows inside the time budget.
@@ -79,6 +82,7 @@ const NO_TOGGLE = '<span class="jh-toggle jh-toggle--none" aria-hidden="true"></
 // and a selected one states its size in the detail bar.
 const MARK = { object: ICON("object", " jh-type"), array: ICON("array", " jh-type") };
 const DOT = '<span class="jh-dot" aria-hidden="true"></span>';
+const WARN = ICON("warn");
 
 /**
  * Control characters shown as their Unicode "control pictures" (\n → ␊).
@@ -136,6 +140,7 @@ export class TreeView {
 
     this.ast = null;
     this.stats = null;
+    this.warnings = new Map(); // key token or AST node → its lint warnings
     this.expanded = new Set();
     this.shown = new Map(); // container node → how many children are rendered
     this.recs = [];
@@ -155,9 +160,15 @@ export class TreeView {
   }
 
   /** Show a freshly parsed document: the root and its first level. */
-  setDocument(ast, stats) {
+  setDocument(ast, stats, warnings = []) {
     this.ast = ast;
     this.stats = stats;
+    this.warnings = new Map();
+    for (const w of warnings) {
+      const list = this.warnings.get(w.target);
+      if (list) list.push(w);
+      else this.warnings.set(w.target, [w]);
+    }
     this.expanded = new Set([ast]);
     this.shown = new Map();
     this.selected = null;
@@ -237,6 +248,7 @@ export class TreeView {
   clearDocument() {
     this.ast = null;
     this.stats = null;
+    this.warnings = new Map();
     this.recs = [];
     this.recByNode = new Map();
     this.selected = null;
@@ -325,6 +337,9 @@ export class TreeView {
       rest = `<span class="jh-colon">:</span>${this.scalarHtml(node, match?.value)}`;
     }
 
+    const warns = this.warningsOf(rec);
+    if (warns) rest += `<span class="jh-warn-mark" title="${escapeHtml(warns.map((w) => w.message).join("\n"))}">${WARN}</span>`;
+
     const aria = container ? ` aria-expanded="${open}"` : "";
     let html =
       `<li class="${cls}" role="treeitem" aria-level="${rec.depth + 1}"${aria} aria-selected="${this.selected === node}" tabindex="-1" data-id="${rec.id}">` +
@@ -334,6 +349,15 @@ export class TreeView {
       html += this.childrenHtml(rec, bulkDepth + 1);
     }
     return `${html}</li>`;
+  }
+
+  /** The warnings on a row — on its key and on its value — or null. */
+  warningsOf(rec) {
+    if (this.warnings.size === 0) return null;
+    const onKey = rec.keyToken ? this.warnings.get(rec.keyToken) : undefined;
+    const onValue = this.warnings.get(rec.node);
+    if (!onKey) return onValue ?? null;
+    return onValue ? onKey.concat(onValue) : onKey;
   }
 
   scalarHtml(node, range) {
@@ -550,6 +574,13 @@ export class TreeView {
     if (rec) {
       this.$detail.find(".jh-detail-path").text(this.pathOf(rec)).attr("title", this.pathOf(rec));
       this.$detail.find(".jh-detail-kind").text(describeNode(rec.node));
+      const warns = this.warningsOf(rec);
+      const text = warns ? warns.map((w) => w.message).join("; ") : "";
+      this.$detail
+        .find(".jh-detail-warn")
+        .html(warns ? `${WARN}<span>${escapeHtml(text)}</span>` : "")
+        .attr("title", text)
+        .prop("hidden", !warns);
     }
     this.onSelect(rec ? { node: rec.node, path: this.pathOf(rec) } : null);
   }

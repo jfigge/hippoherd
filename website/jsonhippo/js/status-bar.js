@@ -16,11 +16,14 @@
 
 /**
  * status-bar.js — the bar along the bottom (jh-status): what the parser made
- * of the current text. A summary when it is valid; the error, its hint and
- * the links that jump to it when it is not.
+ * of the current text. A summary when it is valid, with the count of any
+ * warnings and a link to the first; the error, its hint and the links that
+ * jump to it when it is not.
  */
 
 import { escapeHtml, formatBytes, formatCount, plural } from "./util.js";
+
+const WARN_ICON = '<svg class="jh-icon" aria-hidden="true"><use href="#jh-i-warn"/></svg>';
 
 export class StatusBar {
   /**
@@ -29,13 +32,15 @@ export class StatusBar {
    *   onJump(start, end, line, column) — put the caret on a position in the text
    *   onDiffJump(side, start, end)     — the same, in a Diff pane ('left' / 'right')
    *   onValidate()                     — validate now (for large inputs)
+   *   onWarnings()                     — open or close the list of warnings
    * }
    */
-  constructor(el, { onJump, onDiffJump, onValidate }) {
+  constructor(el, { onJump, onDiffJump, onValidate, onWarnings }) {
     this.el = el;
     this.onJump = onJump;
     this.onDiffJump = onDiffJump;
     this.onValidate = onValidate;
+    this.onWarnings = onWarnings;
     this.targets = new Map(); // data-jump id → { start, end, line, column, side? }
 
     el.addEventListener("click", (e) => {
@@ -47,6 +52,7 @@ export class StatusBar {
         return;
       }
       if (e.target.closest("[data-validate]")) this.onValidate();
+      else if (e.target.closest("[data-warnings]")) this.onWarnings();
     });
   }
 
@@ -74,24 +80,33 @@ export class StatusBar {
     );
   }
 
-  /** "Valid JSON — 1,284 keys, depth 7, 2.1 MB", plus any duplicate-key warnings. */
-  valid({ stats, warnings }, bytes, rootKind) {
+  /**
+   * "Valid JSON — 1,284 keys, depth 7, 2.1 MB", then "⚠ 3 warnings" (which
+   * opens the list) and the first warning as a link to it.
+   */
+  valid({ stats, warnings, warningTotal }, bytes, rootKind, { listOpen = false } = {}) {
     this.targets.clear();
     const summary =
       rootKind === "object" || rootKind === "array"
         ? `Valid JSON — ${plural(stats.keys, "key")}, depth ${formatCount(stats.depth)}, ${formatBytes(bytes)}`
         : `Valid JSON — a single ${rootKind} value, ${formatBytes(bytes)}`;
     let html = `<span class="jh-status-main">${escapeHtml(summary)}</span>`;
-    if (warnings.length > 0) {
+    if (warningTotal > 0) {
       const w = warnings[0];
       this.targets.set("warning", { start: w.offset, end: w.endOffset, line: w.line, column: w.column });
-      const more = warnings.length > 1 ? ` (+${formatCount(warnings.length - 1)} more)` : "";
       html +=
-        `<span class="jh-status-warn">⚠ ${escapeHtml(plural(warnings.length, "duplicate key"))}: ` +
-        `<button type="button" class="jh-link" data-jump="warning">line ${w.line}, col ${w.column}: ${escapeHtml(w.message)}</button>` +
-        `${escapeHtml(more)}</span>`;
+        `<span class="jh-status-warn">` +
+        `<button type="button" class="jh-status-warn-count" data-warnings aria-controls="jh-warnings" aria-expanded="${listOpen}" title="List every warning">` +
+        `${WARN_ICON}${escapeHtml(plural(warningTotal, "warning"))}</button>` +
+        `<button type="button" class="jh-link" data-jump="warning" title="Go to this warning">line ${w.line}, col ${w.column}: ${escapeHtml(w.message)}</button>` +
+        "</span>";
     }
     this.render("valid", html);
+  }
+
+  /** Keep the count's aria-expanded in step with the list. */
+  warningsExpanded(open) {
+    this.el.querySelector("[data-warnings]")?.setAttribute("aria-expanded", String(open));
   }
 
   error(err) {

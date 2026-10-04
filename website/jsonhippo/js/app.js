@@ -23,17 +23,26 @@
  *
  *   TextView   (text-view.js)   the textarea, gutter, toolbar, smart-paste notice
  *   StatusBar  (status-bar.js)  valid summary, or the error with its jump links
+ *   WarningsView (warnings-view.js) the list of lint warnings, opened from the status bar
  *   TreeView   (tree-view.js)   the tree, its toolbar and detail bar (jQuery)
  *   TreeFilter (tree-filter.js) the filter box over the tree (jQuery)
  *   DiffView   (diff-view.js)   the Diff tab: two editable panes, compared
  *
  * When validation runs (docs/features/05): on paste, on Format/Minify, and
  * 400 ms after typing stops — except above LIVE_LIMIT, where typing does not
- * trigger it and the status bar offers "Validate now" instead.
+ * trigger it and the status bar offers "Validate now" instead. With the
+ * Warnings box ticked, each validation also lints (lint/linter.js).
+ *
+ * Schema (docs/features/09) replaces the text with a JSON Schema inferred
+ * from it, the way Unescape replaces it with the unescaped JSON: the notice
+ * offers Undo, and — while the schema is untouched — its options, which
+ * infer it again from the same JSON.
  */
 
 import { parse } from "./parser/parser.js";
 import { JsonHippoError } from "./parser/errors.js";
+import { Linter } from "./lint/linter.js";
+import { inferSchema, MAX_SCHEMA_DEPTH } from "./schema/infer.js";
 import { detectAndUnescape } from "./smart-paste.js";
 import { format, minify, INDENTS } from "./formatter.js";
 import { TextView } from "./text-view.js";
@@ -42,7 +51,8 @@ import { Settings } from "./settings.js";
 import { TreeView } from "./tree-view.js";
 import { TreeFilter } from "./tree-filter.js";
 import { DiffView } from "./diff-view.js";
-import { debounce, nextFrame, utf8Length } from "./util.js";
+import { WarningsView } from "./warnings-view.js";
+import { debounce, formatCount, nextFrame, utf8Length } from "./util.js";
 
 const TYPING_DEBOUNCE_MS = 400;
 
@@ -77,7 +87,8 @@ class App {
     this.settings = new Settings();
     this.version = 0; // bumped on every change to the text
     this.result = { version: 0, empty: true }; // latest parse: { version, empty } | { version, ok, ast, … } | { version, error }
-    this.unescapeOriginal = null; // the text before Unescape, for Undo
+    this.undoText = null; // the text before Unescape or Schema replaced it, for Undo
+    this.schemaShown = false; // the text is a schema inferred from undoText, untouched
     this.tab = "text";
 
     this.textView = new TextView(document.getElementById("jh-panel-text"), {
@@ -91,6 +102,12 @@ class App {
       onJump: (start, end, line, column) => this.jumpToText(start, end, line, column),
       onDiffJump: (side, start, end) => this.diffView.panes[side].jumpTo(start, end),
       onValidate: () => this.validate(),
+      onWarnings: () => this.warningsView.toggle(),
+    });
+
+    this.warningsView = new WarningsView(document.getElementById("jh-warnings"), {
+      onJump: (w) => this.jumpToText(w.offset, w.endOffset, w.line, w.column),
+      onChange: (open) => this.status.warningsExpanded(open),
     });
 
     this.diffView = new DiffView(document.getElementById("jh-panel-diff"), {
@@ -127,8 +144,10 @@ class App {
     this.version++;
     // Typing invalidates Undo: restoring the pre-unescape text would throw
     // the edits away without saying so.
-    if (this.unescapeOriginal !== null && !paste) this.dropUndo();
+    if (this.undoText !== null && !paste) this.dropUndo();
     this.textView.clearError();
+    this.textView.clearWarnings();
+    this.warningsView.markStale();
     if (paste) {
       this.validateSoon.cancel();
       this.validate();
@@ -150,14 +169,16 @@ class App {
   }
 
   applyUnescape(original, { text, levels }) {
-    this.unescapeOriginal = original;
+    this.undoText = original;
+    this.schemaShown = false;
     this.replaceText(text);
     this.textView.showNotice(`Unescaped ${levels === 1 ? "1 level" : `${levels} levels`} of escaped JSON.`);
     this.validate();
   }
 
   dropUndo() {
-    this.unescapeOriginal = null;
+    this.undoText = null;
+    this.schemaShown = false;
     this.textView.hideNotice();
   }
 
@@ -177,9 +198,12 @@ class App {
         }
         break;
       }
-      case "undo-unescape":
-        if (this.unescapeOriginal !== null) {
-          const original = this.unescapeOriginal;
+      case "schema":
+        this.showSchema();
+        break;
+      case "undo":
+        if (this.undoText !== null) {
+          const original = this.undoText;
           this.dropUndo();
           this.replaceText(original);
           this.validate();
@@ -218,6 +242,35 @@ class App {
     await this.validate();
   }
 
+  // ── Schema ───────────────────────────────────────────────────────────────
+
+  /** Replace valid JSON with the JSON Schema inferred from it. Never touches invalid text. */
+  async showSchema() {
+    const result = await this.validate({ explicit: true });
+    if (!result?.ok) return;
+    this.writeSchema(this.textView.text, result.ast);
+  }
+
+  /** The schema of `sample` (parsed: `ast`) into the editor; Undo brings `sample` back. */
+  writeSchema(sample, ast) {
+    const { schema, depthLimited } = inferSchema(ast, {
+      draft: this.settings.schemaDraft,
+      required: this.settings.schemaRequired,
+    });
+    this.replaceText(format(schema, { indent: INDENTS[this.settings.indent] }));
+    this.undoText = sample;
+    this.schemaShown = true;
+    const cut = depthLimited ? ` Below depth ${formatCount(MAX_SCHEMA_DEPTH)} it gives types only.` : "";
+    this.textView.showNotice(`Replaced with a JSON Schema inferred from your JSON.${cut}`, { options: true });
+    this.validate();
+  }
+
+  /** A schema option changed: infer the schema again from the same JSON. */
+  schemaOptionsChanged() {
+    if (!this.schemaShown) return;
+    this.writeSchema(this.undoText, parse(this.undoText).ast);
+  }
+
   // ── Validation ───────────────────────────────────────────────────────────
 
   /**
@@ -235,6 +288,8 @@ class App {
       this.result = { version, empty: true };
       this.status.idle();
       this.textView.clearError();
+      this.textView.clearWarnings();
+      this.warningsView.update([], 0);
       this.syncTree();
       return this.result;
     }
@@ -253,7 +308,7 @@ class App {
 
   parseNow(text, version) {
     try {
-      return { version, ok: true, ...parse(text) };
+      return { version, ok: true, ...parse(text, { lint: this.settings.lint ? new Linter() : null }) };
     } catch (err) {
       if (!(err instanceof JsonHippoError)) throw err;
       return { version, error: err };
@@ -263,11 +318,15 @@ class App {
   showResult(text) {
     const r = this.result;
     if (r.ok) {
-      this.status.valid(r, utf8Length(text), r.ast.kind);
+      this.warningsView.update(r.warnings, r.warningTotal);
+      this.status.valid(r, utf8Length(text), r.ast.kind, { listOpen: this.warningsView.isOpen });
       this.textView.clearError();
+      this.textView.setWarnings(r.warnings);
     } else if (r.error) {
+      this.warningsView.update([], 0);
       this.status.error(r.error);
       this.textView.showError(r.error);
+      this.textView.clearWarnings();
     }
   }
 
@@ -281,7 +340,7 @@ class App {
     const r = this.result;
     if (r.ok) {
       if (this.treeView.ast !== r.ast) {
-        this.treeView.setDocument(r.ast, r.stats);
+        this.treeView.setDocument(r.ast, r.stats, r.warnings);
         this.treeFilter.refresh();
       }
     } else if (r.error) {
@@ -318,8 +377,10 @@ class App {
       document.getElementById(`jh-panel-${id}`).hidden = !on;
     }
 
-    // Entering Diff: whatever is in the editor goes into the Left pane.
+    // Entering Diff: whatever is in the editor goes into the Left pane. The
+    // Diff tab has its own status; the warnings list is the Text tab's.
     if (name === "diff") {
+      this.warningsView.toggle(false);
       this.validateSoon.flush();
       this.diffView.enter(this.textView.text);
       return;
@@ -371,6 +432,28 @@ class App {
     auto.checked = this.settings.autoUnescape;
     auto.addEventListener("change", () => {
       this.settings.autoUnescape = auto.checked;
+    });
+
+    // Off means no lint work at all, so turning it on (or off) parses again.
+    const lint = document.getElementById("jh-lint");
+    lint.checked = this.settings.lint;
+    lint.addEventListener("change", () => {
+      this.settings.lint = lint.checked;
+      this.validate();
+    });
+
+    const draft = document.getElementById("jh-schema-draft");
+    draft.value = this.settings.schemaDraft;
+    draft.addEventListener("change", () => {
+      this.settings.schemaDraft = draft.value;
+      this.schemaOptionsChanged();
+    });
+
+    const required = document.getElementById("jh-schema-required");
+    required.checked = this.settings.schemaRequired;
+    required.addEventListener("change", () => {
+      this.settings.schemaRequired = required.checked;
+      this.schemaOptionsChanged();
     });
 
     const themeButton = document.getElementById("jh-theme");

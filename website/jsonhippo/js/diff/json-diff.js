@@ -29,6 +29,8 @@
  * Pure JS: no DOM, no jQuery. Runs in Node under `node --test`.
  */
 
+import { canonicalNumber } from "../numbers.js";
+
 /**
  * Two array elements that are not equal are paired as "changed" only when
  * their similarity is ABOVE this (0..1). A shared key earns half credit even
@@ -52,36 +54,6 @@ const WINDOW = 50;
 const MAX_DIFF_DEPTH = 1000;
 
 const isContainer = (n) => n.kind === "object" || n.kind === "array";
-
-/**
- * A number's value as a canonical string, so "1.0", "1", "1e0" and "10e-1"
- * compare equal — exactly, at any precision, never through a double.
- */
-export function canonicalNumber(raw) {
-  let s = raw;
-  let negative = false;
-  if (s[0] === "-") {
-    negative = true;
-    s = s.slice(1);
-  }
-  let exponent = 0;
-  const e = s.search(/[eE]/);
-  if (e >= 0) {
-    exponent = Number(s.slice(e + 1));
-    s = s.slice(0, e);
-  }
-  let digits = s;
-  const dot = s.indexOf(".");
-  if (dot >= 0) {
-    digits = s.slice(0, dot) + s.slice(dot + 1);
-    exponent -= s.length - dot - 1;
-  }
-  digits = digits.replace(/^0+/, "");
-  if (digits === "") return "0"; // 0, -0, 0.000
-  const trimmed = digits.replace(/0+$/, "");
-  exponent += digits.length - trimmed.length;
-  return `${negative ? "-" : ""}${trimmed}e${exponent}`;
-}
 
 /** A 53-bit string hash (cyrb53). */
 function hashString(str) {
