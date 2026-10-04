@@ -26,6 +26,7 @@
  *   WarningsView (warnings-view.js) the list of lint warnings, opened from the status bar
  *   TreeView   (tree-view.js)   the tree, its toolbar and detail bar (jQuery)
  *   TreeFilter (tree-filter.js) the filter box over the tree (jQuery)
+ *   SchemaView (schema-view.js) the Schema tab: a JSON Schema inferred from the text
  *   DiffView   (diff-view.js)   the Diff tab: two editable panes, compared
  *
  * When validation runs (docs/features/05): on paste, on Format/Minify, and
@@ -33,16 +34,15 @@
  * trigger it and the status bar offers "Validate now" instead. With the
  * Warnings box ticked, each validation also lints (lint/linter.js).
  *
- * Schema (docs/features/09) replaces the text with a JSON Schema inferred
- * from it, the way Unescape replaces it with the unescaped JSON: the notice
- * offers Undo, and — while the schema is untouched — its options, which
- * infer it again from the same JSON.
+ * The Tree and Schema tabs show the parse of exactly the current text: if it
+ * is behind when either is opened, they parse there and then. The schema
+ * (docs/features/09) is inferred from that parse into a tab of its own, so
+ * the text is never changed.
  */
 
 import { parse } from "./parser/parser.js";
 import { JsonHippoError } from "./parser/errors.js";
 import { Linter } from "./lint/linter.js";
-import { inferSchema, MAX_SCHEMA_DEPTH } from "./schema/infer.js";
 import { detectAndUnescape } from "./smart-paste.js";
 import { format, minify, INDENTS } from "./formatter.js";
 import { TextView } from "./text-view.js";
@@ -50,9 +50,10 @@ import { StatusBar } from "./status-bar.js";
 import { Settings } from "./settings.js";
 import { TreeView } from "./tree-view.js";
 import { TreeFilter } from "./tree-filter.js";
+import { SchemaView } from "./schema-view.js";
 import { DiffView } from "./diff-view.js";
 import { WarningsView } from "./warnings-view.js";
-import { debounce, formatCount, nextFrame, utf8Length } from "./util.js";
+import { debounce, nextFrame, utf8Length } from "./util.js";
 
 const TYPING_DEBOUNCE_MS = 400;
 
@@ -63,7 +64,7 @@ const LIVE_LIMIT = 5 * 1024 * 1024;
 const SHOW_BUSY_ABOVE = 512 * 1024;
 
 /** The tabs, in the order they sit in the bar. */
-const TABS = ["tree", "text", "diff"];
+const TABS = ["tree", "text", "schema", "diff"];
 
 const THEMES = ["system", "light", "dark"];
 const THEME_UI = {
@@ -87,8 +88,7 @@ class App {
     this.settings = new Settings();
     this.version = 0; // bumped on every change to the text
     this.result = { version: 0, empty: true }; // latest parse: { version, empty } | { version, ok, ast, … } | { version, error }
-    this.undoText = null; // the text before Unescape or Schema replaced it, for Undo
-    this.schemaShown = false; // the text is a schema inferred from undoText, untouched
+    this.unescapeOriginal = null; // the text before Unescape, for Undo
     this.tab = "text";
 
     this.textView = new TextView(document.getElementById("jh-panel-text"), {
@@ -115,16 +115,18 @@ class App {
       settings: this.settings,
     });
 
+    this.schemaView = new SchemaView(document.getElementById("jh-panel-schema"), {
+      settings: this.settings,
+      onGoToError: () => this.goToError(),
+    });
+
     const $tree = $("#jh-panel-tree");
     this.treeView = new TreeView($tree, {
       // The detail bar (path, copy, show in text) is TreeView's own; nothing
       // outside the tree needs to follow the selection yet.
       onSelect: () => {},
       onShowInText: ({ node, keyToken }) => this.showInText(node, keyToken),
-      onGoToError: () => {
-        const err = this.result.error;
-        if (err) this.jumpToText(err.offset, err.endOffset, err.line, err.column);
-      },
+      onGoToError: () => this.goToError(),
       formatValue: (node) => format(node, { indent: INDENTS[this.settings.indent] }),
     });
     this.treeFilter = new TreeFilter($tree, this.treeView, {
@@ -132,6 +134,7 @@ class App {
       isActive: () => this.tab === "tree",
     });
     this.treeView.showEmpty();
+    this.schemaView.showEmpty();
 
     this.validateSoon = debounce(() => this.validate(), TYPING_DEBOUNCE_MS);
     this.bindChrome();
@@ -144,7 +147,7 @@ class App {
     this.version++;
     // Typing invalidates Undo: restoring the pre-unescape text would throw
     // the edits away without saying so.
-    if (this.undoText !== null && !paste) this.dropUndo();
+    if (this.unescapeOriginal !== null && !paste) this.dropUndo();
     this.textView.clearError();
     this.textView.clearWarnings();
     this.warningsView.markStale();
@@ -169,16 +172,14 @@ class App {
   }
 
   applyUnescape(original, { text, levels }) {
-    this.undoText = original;
-    this.schemaShown = false;
+    this.unescapeOriginal = original;
     this.replaceText(text);
     this.textView.showNotice(`Unescaped ${levels === 1 ? "1 level" : `${levels} levels`} of escaped JSON.`);
     this.validate();
   }
 
   dropUndo() {
-    this.undoText = null;
-    this.schemaShown = false;
+    this.unescapeOriginal = null;
     this.textView.hideNotice();
   }
 
@@ -198,12 +199,9 @@ class App {
         }
         break;
       }
-      case "schema":
-        this.showSchema();
-        break;
-      case "undo":
-        if (this.undoText !== null) {
-          const original = this.undoText;
+      case "undo-unescape":
+        if (this.unescapeOriginal !== null) {
+          const original = this.unescapeOriginal;
           this.dropUndo();
           this.replaceText(original);
           this.validate();
@@ -242,35 +240,6 @@ class App {
     await this.validate();
   }
 
-  // ── Schema ───────────────────────────────────────────────────────────────
-
-  /** Replace valid JSON with the JSON Schema inferred from it. Never touches invalid text. */
-  async showSchema() {
-    const result = await this.validate({ explicit: true });
-    if (!result?.ok) return;
-    this.writeSchema(this.textView.text, result.ast);
-  }
-
-  /** The schema of `sample` (parsed: `ast`) into the editor; Undo brings `sample` back. */
-  writeSchema(sample, ast) {
-    const { schema, depthLimited } = inferSchema(ast, {
-      draft: this.settings.schemaDraft,
-      required: this.settings.schemaRequired,
-    });
-    this.replaceText(format(schema, { indent: INDENTS[this.settings.indent] }));
-    this.undoText = sample;
-    this.schemaShown = true;
-    const cut = depthLimited ? ` Below depth ${formatCount(MAX_SCHEMA_DEPTH)} it gives types only.` : "";
-    this.textView.showNotice(`Replaced with a JSON Schema inferred from your JSON.${cut}`, { options: true });
-    this.validate();
-  }
-
-  /** A schema option changed: infer the schema again from the same JSON. */
-  schemaOptionsChanged() {
-    if (!this.schemaShown) return;
-    this.writeSchema(this.undoText, parse(this.undoText).ast);
-  }
-
   // ── Validation ───────────────────────────────────────────────────────────
 
   /**
@@ -290,7 +259,7 @@ class App {
       this.textView.clearError();
       this.textView.clearWarnings();
       this.warningsView.update([], 0);
-      this.syncTree();
+      this.syncView();
       return this.result;
     }
 
@@ -302,7 +271,7 @@ class App {
 
     this.result = this.parseNow(text, version);
     this.showResult(text);
-    this.syncTree();
+    this.syncView();
     return this.result;
   }
 
@@ -330,14 +299,18 @@ class App {
     }
   }
 
-  /** The Tree tab shows the parse of exactly the current text, or its error. */
-  syncTree() {
-    if (this.tab !== "tree") return;
+  /** The Tree and Schema tabs show the parse of exactly the current text, or its error. */
+  syncView() {
+    if (this.tab !== "tree" && this.tab !== "schema") return;
     if (this.result.version !== this.version) {
       this.result = this.textView.text.trim() === "" ? { version: this.version, empty: true } : this.parseNow(this.textView.text, this.version);
       if (!this.result.empty) this.showResult(this.textView.text);
     }
-    const r = this.result;
+    if (this.tab === "tree") this.syncTree(this.result);
+    else this.syncSchema(this.result);
+  }
+
+  syncTree(r) {
     if (r.ok) {
       if (this.treeView.ast !== r.ast) {
         this.treeView.setDocument(r.ast, r.stats, r.warnings);
@@ -350,6 +323,12 @@ class App {
       this.treeView.showEmpty();
       this.treeFilter.refresh();
     }
+  }
+
+  syncSchema(r) {
+    if (r.ok) this.schemaView.show(r.ast);
+    else if (r.error) this.schemaView.showError(r.error);
+    else this.schemaView.showEmpty();
   }
 
   // ── Navigation between views ─────────────────────────────────────────────
@@ -386,10 +365,15 @@ class App {
       return;
     }
     if (from === "diff") this.validate(); // puts the Text/Tree status back
-    if (name === "tree") {
+    if (name === "tree" || name === "schema") {
       this.validateSoon.flush();
-      this.syncTree();
+      this.syncView();
     }
+  }
+
+  goToError() {
+    const err = this.result.error;
+    if (err) this.jumpToText(err.offset, err.endOffset, err.line, err.column);
   }
 
   jumpToText(start, end, line, column) {
@@ -440,20 +424,6 @@ class App {
     lint.addEventListener("change", () => {
       this.settings.lint = lint.checked;
       this.validate();
-    });
-
-    const draft = document.getElementById("jh-schema-draft");
-    draft.value = this.settings.schemaDraft;
-    draft.addEventListener("change", () => {
-      this.settings.schemaDraft = draft.value;
-      this.schemaOptionsChanged();
-    });
-
-    const required = document.getElementById("jh-schema-required");
-    required.checked = this.settings.schemaRequired;
-    required.addEventListener("change", () => {
-      this.settings.schemaRequired = required.checked;
-      this.schemaOptionsChanged();
     });
 
     const themeButton = document.getElementById("jh-theme");

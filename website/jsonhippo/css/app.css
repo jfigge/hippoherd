@@ -411,13 +411,6 @@ textarea {
   font-size: 13px;
 }
 
-/* Schema options, shown in the notice while the text is an inferred schema. */
-.jh-notice-options {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-}
-
 .jh-notice-close {
   margin-left: auto;
   padding: 0 6px;
@@ -817,24 +810,29 @@ textarea {
   line-height: 18px;
 }
 
-.jh-tree-message {
+/* In place of the tree, or of the schema, when there is no valid JSON. */
+.jh-tree-message,
+.jh-schema-message {
   max-width: 760px;
   margin: 40px auto;
   padding: 0 20px;
   text-align: center;
 }
 
-.jh-tree-message-title {
+.jh-tree-message-title,
+.jh-schema-message-title {
   margin: 0 0 6px;
   font: 600 14px/1.5 var(--mono);
   word-break: break-word;
 }
 
-.jh-tree-message--error .jh-tree-message-title {
+.jh-tree-message--error .jh-tree-message-title,
+.jh-schema-message--error .jh-schema-message-title {
   color: var(--error);
 }
 
-.jh-tree-message-hint {
+.jh-tree-message-hint,
+.jh-schema-message-hint {
   margin: 0 0 16px;
   color: var(--subtext);
 }

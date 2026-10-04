@@ -51,7 +51,7 @@ export class TextView {
    *   onEdit(text, { paste }) — the user changed the text (typing, cut, a paste
    *                             that was not intercepted, drop)
    *   onPaste(pastedText, replacesAll) → true if the app took the paste over
-   *   onCommand(name)          — 'format' | 'minify' | 'unescape' | 'schema' | 'clear' | 'undo'
+   *   onCommand(name)          — 'format' | 'minify' | 'unescape' | 'clear' | 'undo-unescape'
    *   onLoad(text, fileName)   — a file was read
    * }
    */
@@ -160,14 +160,10 @@ export class TextView {
     requestAnimationFrame(scroll);
   }
 
-  /**
-   * The notice under the toolbar; `undo` shows its Undo link, `options` the
-   * schema options.
-   */
-  showNotice(message, { undo = true, options = false } = {}) {
+  /** The notice under the toolbar; `undo` shows its Undo link. */
+  showNotice(message, { undo = true } = {}) {
     this.notice.querySelector(".jh-notice-text").textContent = message;
-    this.notice.querySelector('[data-action="undo"]').hidden = !undo;
-    this.notice.querySelector(".jh-notice-options").hidden = !options;
+    this.notice.querySelector('[data-action="undo-unescape"]').hidden = !undo;
     this.notice.hidden = false;
   }
 
