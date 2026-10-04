@@ -1,0 +1,894 @@
+/* JsonHippo — app.css
+ *
+ * One stylesheet, two themes. The dark theme is the Hippo family palette
+ * (the one hippoherd.com uses); the light theme is its daylight counterpart.
+ * The theme follows the system unless the header toggle pins one, which
+ * js/theme.js records as <html data-theme="light|dark">.
+ *
+ * Every text colour below was checked for WCAG AA (4.5:1) against the
+ * surfaces it sits on in its theme. The brand purple (#B65CF0, hue 276 — the
+ * widest gap left on the herd's colour wheel, between Rest at 246 and Maze
+ * at 310) is used as a fill; text in the accent uses --accent, which is
+ * lightened for dark and deepened for light so it passes on both.
+ *
+ * Naming: jh- prefix; state classes are block--modifier.
+ */
+
+/* ── Theme ──────────────────────────────────────────────────────────────── */
+
+:root {
+  --brand: #b65cf0;
+  --on-brand: #101010;
+
+  --bg: #ffffff;
+  --mantle: #f6f6f8;
+  --crust: #ececf0;
+  --surface-0: #ececf0;
+  --surface-1: #dcdce2;
+  --surface-2: #c8c8d0;
+  --text: #1f1f24;
+  --subtext: #57575f;
+  --muted: #6e6e76;
+  --accent: #7e2fb8;
+  --selection: #efe2fb;
+  --match: #fff1a8;
+  --match-current: #ffd24d;
+  --match-row: #fff8d6;
+  --error: #c4271d;
+  --error-bg: #fdecea;
+  --warn: #8a5a00;
+  --ok: #1a7f37;
+
+  --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  --sans: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --code-size: 13px;
+  --code-line: 20px;
+
+  color-scheme: light;
+}
+
+/* The family's dark palette. Written out twice — once for "follow the system"
+   and once for "pinned dark" — because a media query cannot be combined with
+   an attribute selector into one rule. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --on-brand: #101010;
+    --bg: #1c1c1c;
+    --mantle: #161616;
+    --crust: #101010;
+    --surface-0: #2a2a2a;
+    --surface-1: #383838;
+    --surface-2: #484848;
+    --text: #e8e8e8;
+    --subtext: #b0b0b0;
+    --muted: #8a8a8a;
+    --accent: #c98bf5;
+    --selection: #3a2a4a;
+    --match: #5c4a12;
+    --match-current: #8a6a10;
+    --match-row: #2e2814;
+    --error: #ff7b72;
+    --error-bg: #3a1d1b;
+    --warn: #e3b341;
+    --ok: #56d364;
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme="dark"] {
+  --on-brand: #101010;
+  --bg: #1c1c1c;
+  --mantle: #161616;
+  --crust: #101010;
+  --surface-0: #2a2a2a;
+  --surface-1: #383838;
+  --surface-2: #484848;
+  --text: #e8e8e8;
+  --subtext: #b0b0b0;
+  --muted: #8a8a8a;
+  --accent: #c98bf5;
+  --selection: #3a2a4a;
+  --match: #5c4a12;
+  --match-current: #8a6a10;
+  --match-row: #2e2814;
+  --error: #ff7b72;
+  --error-bg: #3a1d1b;
+  --warn: #e3b341;
+  --ok: #56d364;
+  color-scheme: dark;
+}
+
+/* ── Base ───────────────────────────────────────────────────────────────── */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  font: 14px/1.45 var(--sans);
+  background: var(--bg);
+  color: var(--text);
+  overflow: hidden;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 1px;
+}
+
+.jh-sprite {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+.jh-icon {
+  width: 16px;
+  height: 16px;
+  flex: none;
+  vertical-align: -3px;
+}
+
+/* ── Header and tabs ────────────────────────────────────────────────────── */
+
+.jh-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 8px 14px;
+  background: var(--mantle);
+  border-bottom: 1px solid var(--surface-0);
+}
+
+.jh-brand {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.jh-logo {
+  display: block;
+  border-radius: 7px;
+}
+
+.jh-name {
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: 0.01em;
+}
+
+.jh-tagline {
+  color: var(--subtext);
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.jh-header-actions {
+  display: flex;
+  gap: 6px;
+  margin-left: auto;
+}
+
+.jh-tabs {
+  display: flex;
+  gap: 2px;
+  padding: 0 10px;
+  background: var(--mantle);
+  border-bottom: 1px solid var(--surface-1);
+}
+
+.jh-tab {
+  padding: 8px 16px 7px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: none;
+  color: var(--subtext);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.jh-tab:hover {
+  color: var(--text);
+}
+
+.jh-tab--active {
+  color: var(--text);
+  border-bottom-color: var(--brand);
+}
+
+/* ── Panels and toolbars ────────────────────────────────────────────────── */
+
+.jh-main {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.jh-panel {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.jh-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--surface-0);
+}
+
+.jh-toolbar-sep {
+  width: 1px;
+  height: 20px;
+  margin: 0 4px;
+  background: var(--surface-1);
+}
+
+.jh-toolbar-end {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.jh-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border: 1px solid var(--surface-1);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 13px;
+  line-height: 20px;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.jh-btn:hover {
+  background: var(--surface-0);
+}
+
+.jh-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.jh-btn--ghost {
+  border-color: transparent;
+  background: none;
+}
+
+.jh-btn--primary {
+  border-color: var(--brand);
+  background: var(--brand);
+  color: var(--on-brand);
+  font-weight: 600;
+}
+
+.jh-btn--primary:hover {
+  background: var(--brand);
+  filter: brightness(1.08);
+}
+
+.jh-btn--done {
+  border-color: var(--ok);
+  color: var(--ok);
+}
+
+/* In the toolbars and the detail bar, buttons drop their boxes: a row of
+   outlined buttons is most of what made the tabs look busy. */
+.jh-toolbar .jh-btn:not(.jh-btn--primary),
+.jh-detail .jh-btn {
+  padding: 4px 8px;
+  border-color: transparent;
+  background: none;
+  color: var(--subtext);
+}
+
+.jh-toolbar .jh-btn:not(.jh-btn--primary):hover,
+.jh-detail .jh-btn:hover {
+  background: var(--surface-0);
+  color: var(--text);
+}
+
+.jh-toolbar .jh-btn--done:not(.jh-btn--primary),
+.jh-detail .jh-btn--done {
+  color: var(--ok);
+}
+
+.jh-field,
+.jh-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--subtext);
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.jh-select {
+  padding: 3px 6px;
+  border: 1px solid var(--surface-1);
+  border-radius: 6px;
+  background: var(--bg);
+  font-size: 13px;
+}
+
+.jh-select--quiet {
+  border-color: transparent;
+  background-color: transparent;
+  color: var(--subtext);
+  cursor: pointer;
+}
+
+.jh-select--quiet:hover {
+  background-color: var(--surface-0);
+  color: var(--text);
+}
+
+.jh-check input {
+  accent-color: var(--brand);
+}
+
+.jh-link {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+
+/* ── Smart-paste notice ─────────────────────────────────────────────────── */
+
+.jh-notice {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 12px;
+  background: var(--selection);
+  border-bottom: 1px solid var(--surface-1);
+  font-size: 13px;
+}
+
+.jh-notice-close {
+  margin-left: auto;
+  padding: 0 6px;
+  border: 0;
+  background: none;
+  color: var(--subtext);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+/* ── Text editor: gutter + textarea ─────────────────────────────────────── */
+
+.jh-editor {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  background: var(--bg);
+}
+
+.jh-gutter {
+  flex: none;
+  position: relative;
+  overflow: hidden;
+  min-width: 3.5em;
+  padding: 0 8px 0 10px;
+  background: var(--mantle);
+  border-right: 1px solid var(--surface-0);
+  color: var(--muted);
+  font: var(--code-size) / var(--code-line) var(--mono);
+  text-align: right;
+  user-select: none;
+}
+
+/* Only the visible line numbers exist; this block is moved to line up. */
+.jh-gutter-lines {
+  position: absolute;
+  top: 0;
+  right: 8px;
+  left: 10px;
+  will-change: transform;
+}
+
+.jh-gutter-line {
+  height: var(--code-line);
+  white-space: nowrap;
+}
+
+.jh-gutter-line--error {
+  color: var(--error);
+  font-weight: 700;
+}
+
+.jh-gutter-line--error::before {
+  content: "▶ ";
+  font-size: 9px;
+  vertical-align: 1px;
+}
+
+.jh-input-wrap {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.jh-input {
+  display: block;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 6px 12px;
+  border: 0;
+  outline: none;
+  resize: none;
+  background: transparent;
+  color: var(--text);
+  font: var(--code-size) / var(--code-line) var(--mono);
+  tab-size: 4;
+  /* No soft wrapping, so each text line is one gutter line. (CSS rather than
+     the non-standard wrap="off" attribute.) */
+  white-space: pre;
+  overflow-wrap: normal;
+  overflow: auto;
+  position: relative;
+  z-index: 1;
+}
+
+.jh-input::placeholder {
+  color: var(--muted);
+}
+
+/* Lays out one line of the text, invisibly, in the textarea's font, so the
+   error marker can be placed where the textarea really draws the token. */
+.jh-mirror {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 0;
+  overflow: hidden;
+  visibility: hidden;
+  white-space: pre;
+  font: var(--code-size) / var(--code-line) var(--mono);
+  tab-size: 4;
+  pointer-events: none;
+}
+
+/* The error's line, as a band behind the (transparent) textarea, and the bad
+   token underlined within it. Positioned from js; hidden when scrolled away. */
+.jh-error-band {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: var(--code-line);
+  background: var(--error-bg);
+  pointer-events: none;
+}
+
+.jh-error-mark {
+  position: absolute;
+  height: var(--code-line);
+  border-bottom: 2px solid var(--error);
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* ── Tree toolbar: filter + expand controls, one quiet row ──────────────── */
+
+.jh-filter {
+  flex: 1 1 220px;
+  min-width: 160px;
+  padding: 4px 10px;
+  border: 1px solid var(--surface-1);
+  border-radius: 6px;
+  background: var(--bg);
+  font-size: 13px;
+  line-height: 20px;
+}
+
+.jh-filter--invalid {
+  border-color: var(--error);
+  outline-color: var(--error);
+}
+
+/* Borderless controls: they show themselves on hover and when they are on,
+   and otherwise stay out of the way of the data. */
+.jh-toggle-btn,
+.jh-icon-btn {
+  min-width: 28px;
+  padding: 4px 6px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: none;
+  color: var(--subtext);
+  font: 600 13px/20px var(--mono);
+  cursor: pointer;
+}
+
+.jh-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.jh-toggle-btn:hover,
+.jh-icon-btn:hover:not(:disabled) {
+  background: var(--surface-0);
+  color: var(--text);
+}
+
+.jh-icon-btn:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.jh-toggle-btn[aria-pressed="true"] {
+  border-color: var(--brand);
+  background: var(--selection);
+  color: var(--text);
+}
+
+.jh-filter-count {
+  color: var(--subtext);
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.jh-filter-count:empty {
+  display: none;
+}
+
+.jh-filter-error {
+  flex-basis: 100%;
+  color: var(--error);
+  font-size: 13px;
+}
+
+.jh-filter-error:empty {
+  display: none;
+}
+
+.jh-confirm {
+  display: inline-flex;
+  flex-basis: 100%;
+  align-items: center;
+  gap: 8px;
+  padding: 3px 4px 3px 10px;
+  border-radius: 6px;
+  background: var(--selection);
+  font-size: 13px;
+}
+
+/* ── Tree ───────────────────────────────────────────────────────────────── */
+
+/* Modelled on jsonviewer.stack.hu's tree, which reads as data first: plain
+   text in the UI font, keys and values in the same colour, a mark only where
+   it carries information (object or array), and nothing on a row that the
+   rows below it already show. */
+
+.jh-tree-wrap {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 6px 0 24px;
+}
+
+.jh-tree,
+.jh-children {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.jh-children {
+  margin-left: 7px;
+  padding-left: 11px;
+  border-left: 1px dotted var(--surface-2);
+}
+
+.jh-tree {
+  padding: 0 8px;
+  font: 13px / 20px var(--sans);
+}
+
+.jh-node {
+  outline: none;
+}
+
+.jh-row {
+  display: flex;
+  align-items: center;
+  min-height: 20px;
+  padding: 0 6px 0 0;
+  border-radius: 3px;
+  white-space: nowrap;
+  cursor: default;
+}
+
+.jh-row:hover {
+  background: var(--mantle);
+}
+
+.jh-node--selected > .jh-row {
+  background: var(--selection);
+}
+
+.jh-node:focus-visible > .jh-row {
+  outline: 2px solid var(--brand);
+  outline-offset: -2px;
+}
+
+.jh-toggle {
+  display: inline-flex;
+  flex: none;
+  width: 14px;
+  height: 14px;
+  color: var(--muted);
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+
+.jh-toggle .jh-icon {
+  width: 14px;
+  height: 14px;
+}
+
+.jh-toggle:hover {
+  color: var(--text);
+}
+
+.jh-toggle--none {
+  visibility: hidden;
+}
+
+.jh-node--expanded > .jh-row > .jh-toggle {
+  transform: rotate(90deg);
+}
+
+.jh-node--collapsed > .jh-children {
+  display: none;
+}
+
+/* { } and [ ]: the only per-row mark with something to say. */
+.jh-type {
+  width: 15px;
+  height: 15px;
+  margin: 0 5px 0 2px;
+  color: var(--accent);
+}
+
+/* Scalars: one small, neutral dot in the same column, so every key starts at
+   the same x and the eye has an anchor — the type is in the value itself. */
+.jh-dot {
+  flex: none;
+  width: 15px;
+  height: 15px;
+  margin: 0 5px 0 2px;
+  background: radial-gradient(circle, var(--surface-2) 0 2.5px, transparent 3px);
+}
+
+.jh-key {
+  color: var(--text);
+}
+
+.jh-key--index,
+.jh-key--root {
+  color: var(--subtext);
+}
+
+.jh-colon {
+  margin-right: 5px;
+  color: var(--muted);
+}
+
+.jh-value {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--text);
+}
+
+.jh-value--null {
+  color: var(--subtext);
+}
+
+.jh-count {
+  margin-left: 8px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.jh-truncated {
+  margin-left: 4px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.jh-node--match > .jh-row {
+  border-radius: 0 3px 3px 0;
+  box-shadow: inset 2px 0 0 var(--brand);
+}
+
+.jh-hl {
+  border-radius: 2px;
+  background: var(--match);
+  color: inherit;
+}
+
+.jh-node--match-current > .jh-row {
+  background: var(--match-row);
+  box-shadow: inset 3px 0 0 var(--brand);
+}
+
+.jh-node--match-current > .jh-row .jh-hl {
+  background: var(--match-current);
+}
+
+.jh-more {
+  padding: 2px 0 2px 36px;
+}
+
+.jh-more .jh-btn {
+  padding: 1px 8px;
+  margin-right: 6px;
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.jh-tree-message {
+  max-width: 760px;
+  margin: 40px auto;
+  padding: 0 20px;
+  text-align: center;
+}
+
+.jh-tree-message-title {
+  margin: 0 0 6px;
+  font: 600 14px/1.5 var(--mono);
+  word-break: break-word;
+}
+
+.jh-tree-message--error .jh-tree-message-title {
+  color: var(--error);
+}
+
+.jh-tree-message-hint {
+  margin: 0 0 16px;
+  color: var(--subtext);
+}
+
+/* ── Detail bar ─────────────────────────────────────────────────────────── */
+
+.jh-detail {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 10px;
+  border-top: 1px solid var(--surface-0);
+  background: var(--mantle);
+}
+
+.jh-detail-path {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font: var(--code-size) var(--mono);
+}
+
+.jh-detail-kind {
+  flex: none;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.jh-detail-actions {
+  display: flex;
+  gap: 6px;
+}
+
+/* ── Status bar ─────────────────────────────────────────────────────────── */
+
+.jh-status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 14px;
+  min-height: 32px;
+  padding: 6px 12px;
+  border-top: 1px solid var(--surface-1);
+  background: var(--mantle);
+  color: var(--subtext);
+  font-size: 13px;
+}
+
+.jh-status--valid .jh-status-main {
+  color: var(--ok);
+  font-weight: 600;
+}
+
+.jh-status--error {
+  background: var(--error-bg);
+}
+
+.jh-status-error {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--error);
+  font: 600 13px/1.45 var(--mono);
+  text-align: left;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  text-underline-offset: 3px;
+  word-break: break-word;
+  cursor: pointer;
+}
+
+.jh-status-hint {
+  color: var(--text);
+}
+
+.jh-status-warn {
+  color: var(--warn);
+}
+
+.jh-status .jh-link {
+  font-size: 13px;
+}
+
+/* ── Narrow screens ─────────────────────────────────────────────────────── */
+
+@media (max-width: 760px) {
+  .jh-tagline {
+    display: none;
+  }
+
+  .jh-toolbar-end {
+    margin-left: 0;
+  }
+
+  .jh-btn .jh-icon + span {
+    display: none;
+  }
+}

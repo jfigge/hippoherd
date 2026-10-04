@@ -301,16 +301,25 @@ function hippoCard(x) {
   // A store listing has no GitHub release behind it, so the version chip is
   // written here and left without `data-version-chip` — otherwise herd.js
   // would fill it from versions.json with "No release yet".
+  // A web app (`webApp` in content/hippos.mjs) has no release either: the
+  // page at /<slug>/ IS the app, so the chip says where it runs.
   const listing = phoneListing(x);
-  const versionChip = listing
-    ? `<span class="chip chip-brand">On the ${h(listing.name)}</span>`
-    : `<span class="chip chip-brand" data-version-chip>—</span>`;
+  const versionChip = x.webApp
+    ? `<span class="chip chip-brand">Runs in your browser</span>`
+    : listing
+      ? `<span class="chip chip-brand">On the ${h(listing.name)}</span>`
+      : `<span class="chip chip-brand" data-version-chip>—</span>`;
 
   // The second button is what herd.js retargets at a real installer once it
   // knows the machine. It ships pointing at the releases page, which is the
   // correct destination when there is nothing better to offer. A phone app's
   // store listing outranks both it and the repo.
-  const action = listing
+  const action = x.webApp && !x.repoPrivate
+    ? `<a class="btn btn-ghost" href="${repoUrl(x.slug)}" rel="noopener noreferrer">
+        ${GITHUB_MARK}
+        View the source
+      </a>`
+    : listing
     ? `<a class="btn btn-ghost" href="${h(listing.url)}" rel="noopener noreferrer">
         ${appleMark(16)}
         ${h(listing.name)}
@@ -343,7 +352,7 @@ function hippoCard(x) {
           <span class="chip">${x.platforms.map(h).join(" · ")}</span>
         </div>
         <div class="hippo-card-actions">
-          <a class="btn btn-primary" href="/${x.slug}/">Learn more</a>
+          <a class="btn btn-primary" href="/${x.slug}/">${x.webApp ? "Launch" : "Learn more"}</a>
           ${action}
         </div>
       </article>`;

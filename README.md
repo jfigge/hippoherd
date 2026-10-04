@@ -18,7 +18,7 @@ get nothing".
 | Maze Hippo | Tap-to-clear arrow puzzle (iOS / Android) | — | [jfigge/mazehippo](https://github.com/jfigge/mazehippo) |
 | Mind Hippo | ML runtime written from scratch in Go | — | [jfigge/mindhippo](https://github.com/jfigge/mindhippo) |
 | Roll Hippo | Shake-to-roll dice tray ([App Store](https://apps.apple.com/us/app/roll-hippo/id6798933169); Android to come) | — | [jfigge/rollhippo](https://github.com/jfigge/rollhippo) |
-| JsonHippo | JSON viewer with pinpoint errors (web app) | — | [jfigge/jsonhippo](https://github.com/jfigge/jsonhippo) |
+| JsonHippo | JSON viewer with pinpoint errors — a web app that runs here | [hippoherd.com/jsonhippo](https://hippoherd.com/jsonhippo/) | [jfigge/jsonhippo](https://github.com/jfigge/jsonhippo) |
 
 ## What the site does
 
@@ -108,6 +108,16 @@ game's real painter against its real level generator and rasterises the
 result, so the hero and the six boards on that page are the current game by
 construction. `make site` there re-renders them before it copies, which is why
 nothing here ever needs to know they exist.
+
+### `website/jsonhippo/`: the page is the app
+
+JsonHippo is a static web app, and `hippoherd.com/jsonhippo/` is where it
+runs — not a page about it. Its entry carries `externalSite: true`, so the
+generator never writes the directory, and `webApp: true`, so its card says
+"Runs in your browser" instead of a version and its button is **Launch**
+rather than **Learn more**. The files are the app's `dist/`, copied in by
+`make site` in [jfigge/jsonhippo](https://github.com/jfigge/jsonhippo) with
+`rsync --delete`; do not edit them here.
 
 ### Adding a hippo
 

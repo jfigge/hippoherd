@@ -49,6 +49,15 @@
 //                       hippoherd.com/rollhippo IS its site, guide and all.
 //                       Do not set this and expect `node scripts/build-site.mjs`
 //                       to produce the page — nothing here will.
+//
+//   webApp: true        The hippo IS a web page: website/<slug>/ holds the app
+//                       itself, not a page about it. Its card says "Runs in
+//                       your browser" instead of a version (there is nothing to
+//                       download, so no release to count), and its buttons
+//                       open the app and its source instead of "Learn more"
+//                       and a release. Always paired with externalSite: the
+//                       app is copied in from its own repository. JsonHippo is
+//                       the first.
 
 export const OWNER = "jfigge";
 export const HERD_COLOR = "#2BC4B0";
@@ -611,27 +620,28 @@ export const HERD = [
     color: "#B65CF0",
     tagline: "JSON viewer with pinpoint errors",
 
-    // The product page leads with screenshots, which hippoPage() has no layout
-    // for, so — like Roll, Maze and Scan — the page is written in
-    // jfigge/jsonhippo (site/hippoherd/) and arrives here by `make site` in
-    // that repository. Everything else about this entry still does its job:
-    // the card on the index, the nav dropdown, the footer, the 404 list, the
-    // sitemap and the previous/next links.
-    //
-    // `domain` stays null for now. Unlike Roll and Scan, JsonHippo is meant to
-    // have a home of its own — the app runs from a static site, and
-    // jsonhippo.com is the plan — but that site is not live yet, and `domain`
-    // turns on the live iframe preview of it. Set it (and add the host to
-    // ALLOWED in website/preview.js) once it is.
+    // JsonHippo is a static web app, and hippoherd.com/jsonhippo/ is where it
+    // runs: the index card is its advertisement, and clicking it opens the app
+    // itself, not a page about it. The files are built in jfigge/jsonhippo and
+    // arrive here by `make site` in that repository (an rsync --delete of its
+    // dist/), which is why the generator must never write this directory.
+    // Everything else about this entry still does its job: the card, the nav
+    // dropdown, the footer, the 404 list, the sitemap and the previous/next
+    // links — all of which now lead straight into the app.
     externalSite: true,
+    webApp: true,
 
+    // `domain` stays null: the app's home IS this site. If jsonhippo.com is
+    // bought later, set it here and add the host to ALLOWED in
+    // website/preview.js.
     domain: null,
     docs: null,
     stack: "HTML · vanilla JS · jQuery",
     license: "Apache-2.0",
     platforms: ["Any modern browser"],
-    // Built and tested, but not hosted anywhere and never released.
-    status: "development",
+    // Live at hippoherd.com/jsonhippo/. A web app has no GitHub release to
+    // track; with webApp set, "released" only means "no status chip".
+    status: "released",
     stores: [],
 
     lead: "Pinpoint errors for JSON that will not parse — line, column, what was expected and the path to it — plus smart paste of escaped JSON and a tree you can filter. A static page: nothing is uploaded.",
