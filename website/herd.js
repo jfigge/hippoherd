@@ -385,15 +385,18 @@
     if (!p || !p.os) return; // stays hidden — see .detected in site.css
     if (labelEl) labelEl.textContent = platformLabel(p);
 
-    // A phone or tablet. Roll Hippo is the only hippo it could ever run, and
-    // it isn't out yet, so say that instead of offering a desktop installer.
+    // A phone or tablet. There is no desktop installer worth offering it, so
+    // point at the one hippo it can install today: Roll Hippo, on the App
+    // Store — its card carries the link. Google Play has no listing yet.
     if (p.os === "ios" || p.os === "android") {
       if (btn) btn.remove();
       if (note) {
         note.textContent =
           hippo && !HIPPOS[hippo].desktop
             ? "It isn't in the stores yet — the repo is the place to watch."
-            : "The rest of the herd is desktop software; Roll Hippo is the one built for a phone.";
+            : p.os === "ios"
+              ? "Most of the herd is desktop software — Roll Hippo is on the App Store, and its card below goes straight there."
+              : "Most of the herd is desktop software — Roll Hippo is on the App Store now, and coming to Google Play.";
       }
       strip.setAttribute("data-resolved", "true");
       return;

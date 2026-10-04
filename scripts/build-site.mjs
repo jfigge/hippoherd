@@ -119,8 +119,11 @@ const icon = (name, size = 20, extra = "") =>
 const GITHUB_MARK =
   '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/></svg>';
 
-const APPLE_MARK =
-  '<svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.365 1.43c0 1.14-.42 2.2-1.13 3.02-.85.99-2.24 1.76-3.4 1.66-.14-1.1.4-2.26 1.07-3.02.77-.88 2.14-1.55 3.24-1.66.01.09.02.19.02.29zM20.9 17.13c-.6 1.38-.89 2-1.66 3.22-1.08 1.7-2.6 3.82-4.48 3.83-1.67.02-2.1-1.09-4.37-1.08-2.27.01-2.74 1.1-4.41 1.08-1.88-.02-3.32-1.93-4.4-3.63C-1.4 15.9-1.72 9.28 1.14 5.9 2.16 4.66 3.7 3.87 5.35 3.85c1.79-.03 2.92 1.13 4.4 1.13 1.44 0 2.32-1.14 4.39-1.14 1.5 0 3.1.82 4.24 2.23-3.73 2.04-3.12 7.37.52 8.83-.01.02-.01.04-.01.06z"/></svg>';
+const appleMark = (size) =>
+  `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.365 1.43c0 1.14-.42 2.2-1.13 3.02-.85.99-2.24 1.76-3.4 1.66-.14-1.1.4-2.26 1.07-3.02.77-.88 2.14-1.55 3.24-1.66.01.09.02.19.02.29zM20.9 17.13c-.6 1.38-.89 2-1.66 3.22-1.08 1.7-2.6 3.82-4.48 3.83-1.67.02-2.1-1.09-4.37-1.08-2.27.01-2.74 1.1-4.41 1.08-1.88-.02-3.32-1.93-4.4-3.63C-1.4 15.9-1.72 9.28 1.14 5.9 2.16 4.66 3.7 3.87 5.35 3.85c1.79-.03 2.92 1.13 4.4 1.13 1.44 0 2.32-1.14 4.39-1.14 1.5 0 3.1.82 4.24 2.23-3.73 2.04-3.12 7.37.52 8.83-.01.02-.01.04-.01.06z"/></svg>`;
+
+// 26px on a store badge; the card buttons use it at 16, beside GITHUB_MARK.
+const APPLE_MARK = appleMark(26);
 
 // ── Platform icons for the download cards ────────────────────────────────────
 const OS_ICONS = {
@@ -162,6 +165,13 @@ const Spell = (n) => {
 // cards in it — they get a panel that says what is actually true.
 const shipped = (hippo) =>
   hippo.status === "released" || hippo.status === "prerelease";
+
+// A phone app ships through its store, not through GitHub Releases, so its
+// listing is the thing to link to. Mac App Store entries are deliberately not
+// counted: a desktop hippo's card keeps its one-click GitHub installer, and
+// its page carries the store badge.
+const phoneListing = (hippo) =>
+  (hippo.stores || []).find((s) => s.store === "ios" && s.url);
 
 const STATUS_LABEL = {
   released: null, // the version chip already says it
@@ -288,17 +298,31 @@ function hippoCard(x) {
     ? `<span class="chip chip-muted">${h(STATUS_LABEL[x.status])}</span>`
     : "";
 
+  // A store listing has no GitHub release behind it, so the version chip is
+  // written here and left without `data-version-chip` — otherwise herd.js
+  // would fill it from versions.json with "No release yet".
+  const listing = phoneListing(x);
+  const versionChip = listing
+    ? `<span class="chip chip-brand">On the ${h(listing.name)}</span>`
+    : `<span class="chip chip-brand" data-version-chip>—</span>`;
+
   // The second button is what herd.js retargets at a real installer once it
   // knows the machine. It ships pointing at the releases page, which is the
-  // correct destination when there is nothing better to offer.
-  const action = shipped(x)
-    ? `<a class="btn btn-ghost" data-card-dl href="${repoUrl(x.slug)}/releases/latest" rel="noopener noreferrer">
+  // correct destination when there is nothing better to offer. A phone app's
+  // store listing outranks both it and the repo.
+  const action = listing
+    ? `<a class="btn btn-ghost" href="${h(listing.url)}" rel="noopener noreferrer">
+        ${appleMark(16)}
+        ${h(listing.name)}
+      </a>`
+    : shipped(x)
+      ? `<a class="btn btn-ghost" data-card-dl href="${repoUrl(x.slug)}/releases/latest" rel="noopener noreferrer">
         ${icon("download", 14)}
         <span data-card-dl-label>Latest release</span>
       </a>`
-    : x.repoPrivate
-      ? "" // no repo a visitor could open — see `repoPrivate` in content/hippos.mjs
-      : `<a class="btn btn-ghost" href="${repoUrl(x.slug)}" rel="noopener noreferrer">
+      : x.repoPrivate
+        ? "" // no repo a visitor could open — see `repoPrivate` in content/hippos.mjs
+        : `<a class="btn btn-ghost" href="${repoUrl(x.slug)}" rel="noopener noreferrer">
         ${GITHUB_MARK}
         Watch the repo
       </a>`;
@@ -313,7 +337,7 @@ function hippoCard(x) {
         </div>
         <p class="blurb">${x.lead}</p>
         <div class="hippo-card-meta">
-          <span class="chip chip-brand" data-version-chip>—</span>
+          ${versionChip}
           ${statusChip}
           <span class="chip">${h(x.stack)}</span>
           <span class="chip">${x.platforms.map(h).join(" · ")}</span>
@@ -350,7 +374,7 @@ function indexPage() {
       View on GitHub
     </a>
   </div>
-  <p class="hero-platforms">macOS · Windows · Linux &nbsp;·&nbsp; iOS &amp; Android soon &nbsp;·&nbsp; Free &amp; open source</p>
+  <p class="hero-platforms">macOS · Windows · Linux &nbsp;·&nbsp; iOS &nbsp;·&nbsp; Android soon &nbsp;·&nbsp; Free &amp; open source</p>
 </div>
 
 <section class="section section-alt" id="herd">

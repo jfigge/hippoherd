@@ -73,6 +73,17 @@ const MAS = (url) => ({
   url: url,
 });
 
+// The iOS storefront. No `?mt=12` here — that flag is what sends a link to the
+// Mac side, and this one has to land on the phone listing. For a phone app the
+// listing IS the release: there is no GitHub build to hand anyone, so the card
+// on the index links here instead of to a releases page.
+const APP_STORE = (url) => ({
+  store: "ios",
+  name: "App Store",
+  sub: "Download on the",
+  url: url,
+});
+
 export const HERD = [
   {
     slug: "resthippo",
@@ -456,8 +467,11 @@ export const HERD = [
     stack: "Flutter · Dart",
     license: "Apache-2.0",
     platforms: ["iOS", "Android"],
-    status: "planned",
-    stores: [],
+    status: "released",
+    // On the App Store since August 2026. Google Play has no listing yet; add
+    // its entry here when it does, not before — a badge that lands on a store
+    // search is worse than no badge.
+    stores: [APP_STORE("https://apps.apple.com/us/app/roll-hippo/id6798933169")],
 
     lead: "The herd's first mobile app. Set your dice up once, and after that the phone is the tray — hold it upright, shake it, set it down, read the result.",
 
@@ -536,8 +550,8 @@ export const HERD = [
     platforms: ["Arduino Nano ESP32"],
     status: "development",
 
-    // No stores, and unlike Roll Hippo's empty array this one is not waiting
-    // on a review queue. The phone app is not going to be published: the
+    // No stores, and this empty array is not waiting on a review queue the way
+    // Roll Hippo's once was. The phone app is not going to be published: the
     // hardware half only exists on one car, so there is nothing an installed
     // app could usefully talk to. See the "Not a product" section on its page.
     stores: [],
