@@ -27,20 +27,23 @@ export class StatusBar {
    * @param el        the <footer class="jh-status">
    * @param callbacks {
    *   onJump(start, end, line, column) — put the caret on a position in the text
+   *   onDiffJump(side, start, end)     — the same, in a Diff pane ('left' / 'right')
    *   onValidate()                     — validate now (for large inputs)
    * }
    */
-  constructor(el, { onJump, onValidate }) {
+  constructor(el, { onJump, onDiffJump, onValidate }) {
     this.el = el;
     this.onJump = onJump;
+    this.onDiffJump = onDiffJump;
     this.onValidate = onValidate;
-    this.targets = new Map(); // data-jump id → { start, end, line, column }
+    this.targets = new Map(); // data-jump id → { start, end, line, column, side? }
 
     el.addEventListener("click", (e) => {
       const jump = e.target.closest("[data-jump]");
       if (jump) {
         const t = this.targets.get(jump.dataset.jump);
-        if (t) this.onJump(t.start, t.end, t.line, t.column);
+        if (t?.side) this.onDiffJump(t.side, t.start, t.end);
+        else if (t) this.onJump(t.start, t.end, t.line, t.column);
         return;
       }
       if (e.target.closest("[data-validate]")) this.onValidate();
@@ -103,6 +106,39 @@ export class StatusBar {
       this.targets.set("opener", { start: o.offset, end: o.offset + 1, line: o.line, column: o.column });
       html += `<button type="button" class="jh-link" data-jump="opener">Go to the opener (line ${o.line}, col ${o.column})</button>`;
     }
+    this.render("error", html);
+  }
+
+  // ── The Diff tab ─────────────────────────────────────────────────────────
+
+  diffIdle(message) {
+    this.idle(message);
+  }
+
+  diffMatch() {
+    this.targets.clear();
+    this.render("valid", '<span class="jh-status-main">Documents match</span><span>Same content — order aside.</span>');
+  }
+
+  /** "3 differences: 1 added, 1 missing, 1 changed" */
+  diffSummary(text) {
+    this.targets.clear();
+    this.render("diff", `<span class="jh-status-main">${escapeHtml(text)}</span>`);
+  }
+
+  /** A parse error in one or both panes; the last good comparison stays on screen. */
+  diffErrors(errors) {
+    this.targets.clear();
+    let html = "";
+    for (const side of ["left", "right"]) {
+      const err = errors[side];
+      if (!err) continue;
+      this.targets.set(side, { side, start: err.offset, end: err.endOffset });
+      const label = side === "left" ? "Left" : "Right";
+      html += `<button type="button" class="jh-status-error" data-jump="${side}" title="Go to the error">${label} — ${escapeHtml(err.toString())}</button>`;
+      if (err.hint) html += `<span class="jh-status-hint">${escapeHtml(err.hint)}</span>`;
+    }
+    html += '<span class="jh-status-stale">Showing the last comparison until this is fixed.</span>';
     this.render("error", html);
   }
 }

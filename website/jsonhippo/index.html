@@ -80,6 +80,7 @@
        where the JSON has to go in before there is a tree to show. -->
   <button type="button" class="jh-tab" id="jh-tab-tree" role="tab" aria-selected="false" aria-controls="jh-panel-tree" tabindex="-1">Tree</button>
   <button type="button" class="jh-tab jh-tab--active" id="jh-tab-text" role="tab" aria-selected="true" aria-controls="jh-panel-text">Text</button>
+  <button type="button" class="jh-tab" id="jh-tab-diff" role="tab" aria-selected="false" aria-controls="jh-panel-diff" tabindex="-1">Diff</button>
 </div>
 
 <main class="jh-main">
@@ -209,6 +210,84 @@
         </button>
       </span>
     </div>
+  </section>
+  <!-- ── Diff ─────────────────────────────────────────────────────────── -->
+  <section class="jh-panel" id="jh-panel-diff" role="tabpanel" aria-labelledby="jh-tab-diff" hidden>
+    <div class="jh-toolbar jh-diff-toolbar" role="toolbar" aria-label="Diff tools">
+      <div class="jh-reorder">
+        <span class="jh-reorder-label" id="jh-reorder-label">Reorder</span>
+        <div class="jh-segmented" role="radiogroup" aria-labelledby="jh-reorder-label" title="Lay one side out in the other's order">
+          <input type="radio" class="jh-segmented-input" name="jh-reorder" id="jh-reorder-left" value="left">
+          <label class="jh-segmented-option" for="jh-reorder-left">Left master</label>
+          <input type="radio" class="jh-segmented-input" name="jh-reorder" id="jh-reorder-off" value="off" checked>
+          <label class="jh-segmented-option" for="jh-reorder-off">Off</label>
+          <input type="radio" class="jh-segmented-input" name="jh-reorder" id="jh-reorder-right" value="right">
+          <label class="jh-segmented-option" for="jh-reorder-right">Right master</label>
+        </div>
+      </div>
+      <div class="jh-toolbar-end">
+        <span class="jh-diff-count" id="jh-diff-count" aria-live="polite"></span>
+        <button type="button" class="jh-icon-btn" id="jh-diff-prev" aria-label="Previous difference (Alt+↑)" title="Previous difference (Alt+↑)" disabled>
+          <svg class="jh-icon" aria-hidden="true"><use href="#jh-i-up"/></svg>
+        </button>
+        <button type="button" class="jh-icon-btn" id="jh-diff-next" aria-label="Next difference (Alt+↓)" title="Next difference (Alt+↓)" disabled>
+          <svg class="jh-icon" aria-hidden="true"><use href="#jh-i-down"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="jh-diff-panes">
+      <div class="jh-diff-pane" data-side="left">
+        <div class="jh-pane-head">
+          <span class="jh-pane-title">Left</span>
+          <span class="jh-pane-notice" role="status" hidden>
+            <span class="jh-pane-notice-text"></span>
+            <button type="button" class="jh-link" data-pane="undo">Undo</button>
+            <button type="button" class="jh-notice-close" data-pane="dismiss" aria-label="Dismiss">×</button>
+          </span>
+          <span class="jh-pane-actions">
+            <button type="button" class="jh-icon-btn" data-pane="format" aria-label="Format Left" title="Format (Ctrl/⌘+Enter)"><svg class="jh-icon" aria-hidden="true"><use href="#jh-i-format"/></svg></button>
+            <button type="button" class="jh-icon-btn" data-pane="unescape" aria-label="Unescape Left" title="Unescape"><svg class="jh-icon" aria-hidden="true"><use href="#jh-i-unescape"/></svg></button>
+            <button type="button" class="jh-icon-btn" data-pane="copy" aria-label="Copy Left" title="Copy"><svg class="jh-icon" aria-hidden="true"><use href="#jh-i-copy"/></svg><span>Copy</span></button>
+            <button type="button" class="jh-icon-btn" data-pane="clear" aria-label="Clear Left" title="Clear"><svg class="jh-icon" aria-hidden="true"><use href="#jh-i-clear"/></svg></button>
+            <button type="button" class="jh-icon-btn" data-pane="open" aria-label="Load a file into Left" title="Load from file"><svg class="jh-icon" aria-hidden="true"><use href="#jh-i-open"/></svg></button>
+          </span>
+        </div>
+        <div class="jh-editor">
+          <div class="jh-gutter" aria-hidden="true"><div class="jh-gutter-lines"></div></div>
+          <div class="jh-input-wrap">
+            <div class="jh-diff-marks" aria-hidden="true"></div>
+            <div class="jh-error-band" hidden></div>
+            <textarea class="jh-input" spellcheck="false" autocomplete="off" autocapitalize="off" aria-label="Left JSON" placeholder="Paste, type or load JSON."></textarea>
+          </div>
+        </div>
+      </div>
+      <div class="jh-diff-pane" data-side="right">
+        <div class="jh-pane-head">
+          <span class="jh-pane-title">Right</span>
+          <span class="jh-pane-notice" role="status" hidden>
+            <span class="jh-pane-notice-text"></span>
+            <button type="button" class="jh-link" data-pane="undo">Undo</button>
+            <button type="button" class="jh-notice-close" data-pane="dismiss" aria-label="Dismiss">×</button>
+          </span>
+          <span class="jh-pane-actions">
+            <button type="button" class="jh-icon-btn" data-pane="format" aria-label="Format Right" title="Format (Ctrl/⌘+Enter)"><svg class="jh-icon" aria-hidden="true"><use href="#jh-i-format"/></svg></button>
+            <button type="button" class="jh-icon-btn" data-pane="unescape" aria-label="Unescape Right" title="Unescape"><svg class="jh-icon" aria-hidden="true"><use href="#jh-i-unescape"/></svg></button>
+            <button type="button" class="jh-icon-btn" data-pane="copy" aria-label="Copy Right" title="Copy"><svg class="jh-icon" aria-hidden="true"><use href="#jh-i-copy"/></svg><span>Copy</span></button>
+            <button type="button" class="jh-icon-btn" data-pane="clear" aria-label="Clear Right" title="Clear"><svg class="jh-icon" aria-hidden="true"><use href="#jh-i-clear"/></svg></button>
+            <button type="button" class="jh-icon-btn" data-pane="open" aria-label="Load a file into Right" title="Load from file"><svg class="jh-icon" aria-hidden="true"><use href="#jh-i-open"/></svg></button>
+          </span>
+        </div>
+        <div class="jh-editor">
+          <div class="jh-gutter" aria-hidden="true"><div class="jh-gutter-lines"></div></div>
+          <div class="jh-input-wrap">
+            <div class="jh-diff-marks" aria-hidden="true"></div>
+            <div class="jh-error-band" hidden></div>
+            <textarea class="jh-input" spellcheck="false" autocomplete="off" autocapitalize="off" aria-label="Right JSON" placeholder="Paste the JSON to compare against here, type it, or load a file."></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+    <input type="file" class="jh-file" id="jh-diff-file" accept=".json,.txt,.log,application/json,text/plain" hidden>
   </section>
 </main>
 

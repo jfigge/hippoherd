@@ -25,6 +25,7 @@
  *   StatusBar  (status-bar.js)  valid summary, or the error with its jump links
  *   TreeView   (tree-view.js)   the tree, its toolbar and detail bar (jQuery)
  *   TreeFilter (tree-filter.js) the filter box over the tree (jQuery)
+ *   DiffView   (diff-view.js)   the Diff tab: two editable panes, compared
  *
  * When validation runs (docs/features/05): on paste, on Format/Minify, and
  * 400 ms after typing stops — except above LIVE_LIMIT, where typing does not
@@ -40,6 +41,7 @@ import { StatusBar } from "./status-bar.js";
 import { Settings } from "./settings.js";
 import { TreeView } from "./tree-view.js";
 import { TreeFilter } from "./tree-filter.js";
+import { DiffView } from "./diff-view.js";
 import { debounce, nextFrame, utf8Length } from "./util.js";
 
 const TYPING_DEBOUNCE_MS = 400;
@@ -49,6 +51,9 @@ const LIVE_LIMIT = 5 * 1024 * 1024;
 
 /** Above this many characters, say "Validating…" and let it paint first. */
 const SHOW_BUSY_ABOVE = 512 * 1024;
+
+/** The tabs, in the order they sit in the bar. */
+const TABS = ["tree", "text", "diff"];
 
 const THEMES = ["system", "light", "dark"];
 const THEME_UI = {
@@ -84,7 +89,13 @@ class App {
 
     this.status = new StatusBar(document.getElementById("jh-status"), {
       onJump: (start, end, line, column) => this.jumpToText(start, end, line, column),
+      onDiffJump: (side, start, end) => this.diffView.panes[side].jumpTo(start, end),
       onValidate: () => this.validate(),
+    });
+
+    this.diffView = new DiffView(document.getElementById("jh-panel-diff"), {
+      status: this.status,
+      settings: this.settings,
     });
 
     const $tree = $("#jh-panel-tree");
@@ -285,8 +296,20 @@ class App {
   // ── Navigation between views ─────────────────────────────────────────────
 
   switchTab(name) {
+    const from = this.tab;
+    if (from === name) return;
+
+    // Leaving Diff: Text and Tree carry on with the Left pane's text.
+    if (from === "diff") {
+      const left = this.diffView.leave();
+      if (left !== this.textView.text) {
+        this.dropUndo();
+        this.replaceText(left);
+      }
+    }
+
     this.tab = name;
-    for (const id of ["text", "tree"]) {
+    for (const id of TABS) {
       const on = id === name;
       const tab = document.getElementById(`jh-tab-${id}`);
       tab.classList.toggle("jh-tab--active", on);
@@ -294,6 +317,14 @@ class App {
       tab.tabIndex = on ? 0 : -1;
       document.getElementById(`jh-panel-${id}`).hidden = !on;
     }
+
+    // Entering Diff: whatever is in the editor goes into the Left pane.
+    if (name === "diff") {
+      this.validateSoon.flush();
+      this.diffView.enter(this.textView.text);
+      return;
+    }
+    if (from === "diff") this.validate(); // puts the Text/Tree status back
     if (name === "tree") {
       this.validateSoon.flush();
       this.syncTree();
@@ -319,14 +350,14 @@ class App {
   // ── Header, tabs and settings ────────────────────────────────────────────
 
   bindChrome() {
-    const tabs = [document.getElementById("jh-tab-text"), document.getElementById("jh-tab-tree")];
-    tabs.forEach((tab, i) => {
-      tab.addEventListener("click", () => this.switchTab(i === 0 ? "text" : "tree"));
+    TABS.forEach((id, i) => {
+      const tab = document.getElementById(`jh-tab-${id}`);
+      tab.addEventListener("click", () => this.switchTab(id));
       tab.addEventListener("keydown", (e) => {
         if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
-        const other = tabs[1 - i];
-        other.focus();
-        this.switchTab(other === tabs[0] ? "text" : "tree");
+        const next = TABS[(i + (e.key === "ArrowRight" ? 1 : TABS.length - 1)) % TABS.length];
+        document.getElementById(`jh-tab-${next}`).focus();
+        this.switchTab(next);
       });
     });
 

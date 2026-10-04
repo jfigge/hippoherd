@@ -34,6 +34,14 @@
   --match: #fff1a8;
   --match-current: #ffd24d;
   --match-row: #fff8d6;
+  --diff-added: #e3f7e8;
+  --diff-missing: #fde9e7;
+  --diff-changed: #fdf3c8;
+  --diff-type: #eee4fb;
+  --diff-added-ink: #1a7f37;
+  --diff-missing-ink: #c4271d;
+  --diff-changed-ink: #8a5a00;
+  --diff-type-ink: #7e2fb8;
   --error: #c4271d;
   --error-bg: #fdecea;
   --warn: #8a5a00;
@@ -67,6 +75,14 @@
     --match: #5c4a12;
     --match-current: #8a6a10;
     --match-row: #2e2814;
+    --diff-added: #15301d;
+    --diff-missing: #3a1d1b;
+    --diff-changed: #3a3214;
+    --diff-type: #2e2140;
+    --diff-added-ink: #56d364;
+    --diff-missing-ink: #ff7b72;
+    --diff-changed-ink: #e3b341;
+    --diff-type-ink: #c98bf5;
     --error: #ff7b72;
     --error-bg: #3a1d1b;
     --warn: #e3b341;
@@ -91,6 +107,14 @@
   --match: #5c4a12;
   --match-current: #8a6a10;
   --match-row: #2e2814;
+  --diff-added: #15301d;
+  --diff-missing: #3a1d1b;
+  --diff-changed: #3a3214;
+  --diff-type: #2e2140;
+  --diff-added-ink: #56d364;
+  --diff-missing-ink: #ff7b72;
+  --diff-changed-ink: #e3b341;
+  --diff-type-ink: #c98bf5;
   --error: #ff7b72;
   --error-bg: #3a1d1b;
   --warn: #e3b341;
@@ -794,6 +818,191 @@ textarea {
 .jh-tree-message-hint {
   margin: 0 0 16px;
   color: var(--subtext);
+}
+
+/* ── Diff ───────────────────────────────────────────────────────────────── */
+
+.jh-reorder {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.jh-reorder-label {
+  color: var(--subtext);
+  font-size: 13px;
+}
+
+/* A segmented switch: native radio buttons, hidden, behind their labels —
+   so arrow keys move between the options and screen readers hear a group. */
+.jh-segmented {
+  position: relative;
+  display: inline-flex;
+  gap: 2px;
+  padding: 2px;
+  border: 1px solid var(--surface-1);
+  border-radius: 8px;
+  background: var(--mantle);
+}
+
+.jh-segmented-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.jh-segmented-option {
+  padding: 2px 12px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  color: var(--subtext);
+  font-size: 13px;
+  line-height: 20px;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+}
+
+.jh-segmented-option:hover {
+  color: var(--text);
+}
+
+.jh-segmented-input:checked + .jh-segmented-option {
+  border-color: var(--surface-2);
+  background: var(--surface-0);
+  color: var(--text);
+}
+
+.jh-segmented-input:focus-visible + .jh-segmented-option {
+  outline: 2px solid var(--brand);
+  outline-offset: 1px;
+}
+
+.jh-diff-count {
+  color: var(--subtext);
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.jh-diff-panes {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+.jh-diff-pane {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+}
+
+.jh-diff-pane + .jh-diff-pane {
+  border-left: 1px solid var(--surface-1);
+}
+
+.jh-pane-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 32px;
+  padding: 2px 6px 2px 12px;
+  border-bottom: 1px solid var(--surface-0);
+  background: var(--mantle);
+  font-size: 13px;
+}
+
+.jh-pane-title {
+  font-weight: 600;
+}
+
+.jh-pane-notice {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  padding: 0 4px 0 8px;
+  border-radius: 6px;
+  background: var(--selection);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.jh-pane-notice .jh-link {
+  font-size: 12px;
+}
+
+.jh-pane-notice .jh-notice-close {
+  margin-left: 0;
+  font-size: 15px;
+}
+
+.jh-pane-actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-left: auto;
+}
+
+.jh-pane-actions .jh-icon-btn {
+  gap: 4px;
+  font: 12px/20px var(--sans);
+}
+
+.jh-diff-pane .jh-editor {
+  flex: 1;
+  min-height: 0;
+}
+
+/* Row highlights behind the (transparent) textarea: one row per visible
+   line, moved as a block like the gutter. */
+.jh-diff-marks {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  pointer-events: none;
+}
+
+.jh-dmark {
+  height: var(--code-line);
+}
+
+.jh-dmark--added { background: var(--diff-added); }
+.jh-dmark--missing { background: var(--diff-missing); }
+.jh-dmark--changed { background: var(--diff-changed); }
+.jh-dmark--type { background: var(--diff-type); }
+
+/* A placeholder: hatched, so it reads as "something belongs here". */
+.jh-dmark--placeholder {
+  background: repeating-linear-gradient(135deg, var(--surface-1) 0 2px, transparent 2px 7px);
+}
+
+.jh-gutter-mark {
+  display: inline-block;
+  width: 1.2em;
+  margin-right: 2px;
+  text-align: center;
+  font-weight: 700;
+}
+
+.jh-gutter-line--added .jh-gutter-mark { color: var(--diff-added-ink); }
+.jh-gutter-line--missing .jh-gutter-mark { color: var(--diff-missing-ink); }
+.jh-gutter-line--changed .jh-gutter-mark { color: var(--diff-changed-ink); }
+.jh-gutter-line--type .jh-gutter-mark { color: var(--diff-type-ink); }
+
+.jh-status--diff .jh-status-main {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.jh-status-stale {
+  color: var(--muted);
+  font-style: italic;
 }
 
 /* ── Detail bar ─────────────────────────────────────────────────────────── */
