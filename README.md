@@ -18,6 +18,7 @@ get nothing".
 | Maze Hippo | Tap-to-clear arrow puzzle (iOS / Android) | — | [jfigge/mazehippo](https://github.com/jfigge/mazehippo) |
 | Mind Hippo | ML runtime written from scratch in Go | — | [jfigge/mindhippo](https://github.com/jfigge/mindhippo) |
 | Roll Hippo | Shake-to-roll dice tray (iOS / Android) | — | [jfigge/rollhippo](https://github.com/jfigge/rollhippo) |
+| JsonHippo | JSON viewer with pinpoint errors (web app) | — | [jfigge/jsonhippo](https://github.com/jfigge/jsonhippo) |
 
 ## What the site does
 

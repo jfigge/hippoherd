@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <!-- Same policy as every other hippoherd.com page (see mindhippo/index.html
+       for why each directive is or is not here). No frame-src: this page
+       shows screenshots, not a live preview. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#B65CF0" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <meta name="description" content="A JSON viewer that tells you exactly where it broke. Pinpoint error reporting, smart paste of escaped JSON, and a tree you can filter — free, in the browser, nothing uploaded." />
+  <title>JsonHippo — JSON viewer with pinpoint errors · Hippo Herd</title>
+  <link rel="canonical" href="https://hippoherd.com/jsonhippo/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Hippo Herd" />
+  <meta property="og:title" content="JsonHippo — JSON viewer with pinpoint errors · Hippo Herd" />
+  <meta property="og:description" content="Pinpoint error reporting, smart paste of escaped JSON, and a tree you can filter — free, in the browser, nothing uploaded." />
+  <meta property="og:url" content="https://hippoherd.com/jsonhippo/" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="JsonHippo — JSON viewer with pinpoint errors · Hippo Herd" />
+  <meta name="twitter:description" content="Pinpoint error reporting, smart paste of escaped JSON, and a tree you can filter — free, in the browser, nothing uploaded." />
+  <link rel="stylesheet" href="/site.css" />
+  <!-- The three screenshots sit in the site's .preview frame. site.css styles
+       that frame for a live iframe; these few rules adapt it to a still. -->
+  <style>
+    .shot-row { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 40px; align-items: center; margin-top: 56px; }
+    .shot-row:nth-of-type(even) { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); }
+    .shot-row:nth-of-type(even) .shot-text { order: 2; }
+    .shot-text h3 { font-size: 1.15rem; font-weight: 700; margin-bottom: 10px; }
+    .shot-text p { color: var(--subtext); font-size: 0.95rem; line-height: 1.75; margin-bottom: 12px; }
+    .shot-text .chip-brand { margin-bottom: 12px; }
+    .shot .preview { box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5); }
+    .shot img { display: block; width: 100%; height: auto; }
+    .section-body a { color: var(--brand); }
+    @media (max-width: 860px) {
+      .shot-row, .shot-row:nth-of-type(even) { grid-template-columns: 1fr; }
+      .shot-row:nth-of-type(even) .shot-text { order: 0; }
+    }
+  </style>
+</head>
+<body data-hippo-page="jsonhippo" style="--brand:#B65CF0">
+
+<nav class="site">
+  <a class="nav-logo" href="/">
+    <span class="logo-mark"><img src="/favicon.svg" width="32" height="32" alt=""></span>
+    <span class="nav-wordmark">Hippo Herd</span>
+  </a>
+  <div class="nav-right">
+    <details class="nav-dropdown">
+      <summary class="nav-link nav-dropdown-summary">
+        The Hippos
+        <svg class="nav-dropdown-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+      </summary>
+      <div class="nav-dropdown-menu">
+        <a class="nav-dropdown-item" href="/resthippo/"><img src="/marks/resthippo.svg" width="16" height="16" alt=""> Rest Hippo</a>
+        <a class="nav-dropdown-item" href="/chiphippo/"><img src="/marks/chiphippo.svg" width="16" height="16" alt=""> Chip Hippo</a>
+        <a class="nav-dropdown-item" href="/jumphippo/"><img src="/marks/jumphippo.svg" width="16" height="16" alt=""> Jump Hippo</a>
+        <a class="nav-dropdown-item" href="/keephippo/"><img src="/marks/keephippo.svg" width="16" height="16" alt=""> Keep Hippo</a>
+        <a class="nav-dropdown-item" href="/mazehippo/"><img src="/marks/mazehippo.svg" width="16" height="16" alt=""> Maze Hippo</a>
+        <a class="nav-dropdown-item" href="/mindhippo/"><img src="/marks/mindhippo.svg" width="16" height="16" alt=""> Mind Hippo</a>
+        <a class="nav-dropdown-item" href="/rollhippo/"><img src="/marks/rollhippo.svg" width="16" height="16" alt=""> Roll Hippo</a>
+        <a class="nav-dropdown-item" href="/scanhippo/"><img src="/marks/scanhippo.svg" width="16" height="16" alt=""> Scan Hippo</a>
+        <a class="nav-dropdown-item" href="/jsonhippo/" aria-current="page"><img src="/marks/jsonhippo.svg" width="16" height="16" alt=""> JsonHippo</a>
+      </div>
+    </details>
+    <a class="nav-link" href="https://github.com/jfigge" rel="noopener noreferrer">GitHub</a>
+    <a class="nav-link" href="https://github.com/sponsors/jfigge" rel="noopener noreferrer">Donate</a>
+    <a class="btn btn-primary" href="https://jsonhippo.com/" rel="noopener noreferrer">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      Launch
+    </a>
+  </div>
+</nav>
+
+<div class="hero">
+  <img class="hero-mark" src="/marks/jsonhippo.svg" width="84" height="84" alt="" />
+  <div class="hero-badge">
+    <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="3" aria-hidden="true"><circle cx="12" cy="12" r="9"/></svg> Web app — runs in your browser
+  </div>
+  <h1>JsonHippo</h1>
+  <p class="hero-desc"><strong>A JSON viewer that tells you exactly where it broke.</strong> “Invalid JSON” is useless when the input is five megabytes long. JsonHippo's parser is written by hand, character by character, so when it fails it says <em>where</em> — line, column, what it expected, what it found, and the path to it: <code>Line 123982, col 9: expected ',' or '}' but found string "zip" (in $.people[4321].address)</code>. Click that and the caret lands on the bad character. It also unescapes the JSON that APIs and logs hand back as a string, and its tree can be filtered.</p>
+  <div class="hero-actions">
+    <a class="btn btn-primary" href="https://jsonhippo.com/" rel="noopener noreferrer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg> Launch JsonHippo</a>
+    <a class="btn btn-ghost" href="https://github.com/jfigge/jsonhippo" rel="noopener noreferrer"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/></svg> View the source</a>
+  </div>
+  <p class="hero-platforms">Any modern browser &nbsp;·&nbsp; nothing to install, nothing uploaded &nbsp;·&nbsp; Apache-2.0</p>
+</div>
+
+<section class="section section-alt">
+  <div class="section-inner">
+    <p class="section-tag">Why it exists</p>
+    <h2 class="section-title">Three things other JSON viewers cannot do</h2>
+    <p class="section-body">JsonHippo is not trying to replace the viewer you already use. It exists for the three moments where that viewer gives up on you.</p>
+
+    <div class="shot-row">
+      <div class="shot-text">
+        <span class="chip chip-brand">Pinpoint errors</span>
+        <h3>It says where it broke — and takes you there</h3>
+        <p>One missing comma, 124,000 lines into a 5 MB file. JsonHippo reports the line and column of the token after the gap, what it expected, what it found, and the JSON path of the object it was in. The line is marked in the gutter; one click selects the bad token and scrolls it into view.</p>
+        <p>A file missing its last <code>}</code> points at the brace that was never closed — not at the end of the file, which says nothing. A <code>]</code> closing a <code>{</code> links back to where that <code>{</code> was opened.</p>
+      </div>
+      <div class="shot">
+        <div class="preview">
+          <div class="preview-chrome"><span class="preview-dot"></span><span class="preview-dot"></span><span class="preview-dot"></span><span class="preview-url">jsonhippo.com</span></div>
+          <img src="img/error-pinpoint.png" width="2360" height="1320" alt="JsonHippo's Text tab scrolled to line 123,982 of a 5 MB file. The line is highlighted in red, the string &quot;zip&quot; is selected, and the status bar reads: Line 123982, col 9: expected ',' or '}' but found string &quot;zip&quot; (in $.people[4321].address). Missing comma after the previous value?" loading="lazy" />
+        </div>
+      </div>
+    </div>
+
+    <div class="shot-row">
+      <div class="shot-text">
+        <span class="chip chip-brand">Smart paste</span>
+        <h3>Escaped JSON, unescaped on paste</h3>
+        <p>APIs and logs return JSON as a string: <code>"{\"id\":4321,\"event\":…}"</code>. Paste one and JsonHippo recognises it, unescapes it — twice, if it was escaped twice — and parses the result. It works on the bare form copied out of the middle of a log line, too.</p>
+        <p>It never changes your text silently: a notice says what it did, and Undo puts back exactly what you pasted. Ordinary JSON with <code>\"</code> inside its strings is never touched.</p>
+      </div>
+      <div class="shot">
+        <div class="preview">
+          <div class="preview-chrome"><span class="preview-dot"></span><span class="preview-dot"></span><span class="preview-dot"></span><span class="preview-url">jsonhippo.com</span></div>
+          <img src="img/smart-paste.png" width="2360" height="1320" alt="JsonHippo after pasting an API response that had been escaped twice. A notice reads: Unescaped 2 levels of escaped JSON. Undo. Below it, the response is formatted with one key per line, and the status bar says Valid JSON." loading="lazy" />
+        </div>
+      </div>
+    </div>
+
+    <div class="shot-row">
+      <div class="shot-text">
+        <span class="chip chip-brand">Filterable tree</span>
+        <h3>A tree you can actually search</h3>
+        <p>Type <code>zip</code> and the tree narrows to every zip in the document, each with the chain of objects that leads to it, and everything else folded away. Match keys, values or both; make it case-sensitive; use a regular expression; or type a path like <code>$.people[*].address.zip</code>.</p>
+        <p>The search runs over the whole document, not just the part on screen, so nothing hidden in a collapsed branch is missed. Step through the matches with Enter. Press Esc and the tree is back exactly as it was.</p>
+      </div>
+      <div class="shot">
+        <div class="preview">
+          <div class="preview-chrome"><span class="preview-dot"></span><span class="preview-dot"></span><span class="preview-dot"></span><span class="preview-url">jsonhippo.com</span></div>
+          <img src="img/tree-filter.png" width="2360" height="1320" alt="JsonHippo's Tree tab filtered by &quot;zip&quot;: 2 of 106 matches. Each person's object is open just far enough to show the zip inside its address; the second match is highlighted and its path, $.people[1].address.zip, is shown at the bottom with Copy path, Copy value and Show in text buttons." loading="lazy" />
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-inner">
+    <p class="section-tag">Also included</p>
+    <h2 class="section-title">The everyday tools, done carefully</h2>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="feature-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="8" y1="10" x2="21" y2="10"/><line x1="8" y1="14" x2="21" y2="14"/><line x1="3" y1="18" x2="21" y2="18"/></svg></div>
+        <h3>Format and minify</h3>
+        <p>Written out from the parse tree, not round-tripped through JavaScript values, so <code>12345678901234567890</code> keeps every digit and keys stay in their original order — duplicates included, and flagged.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></div>
+        <h3>Copy path, copy value</h3>
+        <p>Select any node to see its path. Copy the path, copy that subtree formatted, or jump to where it sits in the text.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></div>
+        <h3>Large files</h3>
+        <p>A 5 MB document parses in under a tenth of a second. The tree draws only what is open, starting from its first level, and the filter searches every node of it in a fraction of a second.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+        <h3>Hints that know the usual suspects</h3>
+        <p>Comments, single quotes, trailing commas, <code>True</code> for <code>true</code>, curly quotes from a word processor, and the invisible no-break space a chat app slipped in — each is named for what it is.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+        <h3>Nothing leaves your machine</h3>
+        <p>A static page: no server, no account, no tracking. Files you load are read in the browser and never uploaded.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M7 14h10"/></svg></div>
+        <h3>Keyboard first</h3>
+        <p><kbd>/</kbd> to filter, <kbd>Enter</kbd> for the next match, arrow keys through the tree, <kbd>Ctrl</kbd>+<kbd>Enter</kbd> to format. Light and dark themes follow your system.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section section-alt">
+  <div class="section-inner">
+    <p class="section-tag">Credit</p>
+    <h2 class="section-title">Standing on a favourite</h2>
+    <p class="section-body">JsonHippo is inspired by <a href="https://jsonviewer.stack.hu/" rel="noopener noreferrer">jsonviewer.stack.hu</a>, the online JSON viewer its author has used for years. Its tree view is the part of that tool this one most wanted to keep — and to be able to filter.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-inner">
+    <p class="section-tag">Where to go next</p>
+    <h2 class="section-title">JsonHippo, everywhere else</h2>
+    <p class="section-body">The herd page is the introduction. These are the places the project actually lives.</p>
+    <div class="link-row">
+      <a class="link-card" href="https://jsonhippo.com/" rel="noopener noreferrer">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        <span>jsonhippo.com<small>The app itself</small></span>
+      </a>
+      <a class="link-card" href="https://github.com/jfigge/jsonhippo" rel="noopener noreferrer">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/></svg>
+        <span>jfigge/jsonhippo<small>Source, issues and releases</small></span>
+      </a>
+      <a class="link-card" href="https://github.com/jfigge/jsonhippo/blob/main/docs/USAGE.md" rel="noopener noreferrer">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        <span>User guide<small>Every feature and every error code</small></span>
+      </a>
+      <a class="link-card" href="https://github.com/jfigge/jsonhippo/blob/main/LICENSE" rel="noopener noreferrer">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        <span>Licence<small>Apache-2.0</small></span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<div class="herd-nav">
+  <a href="/scanhippo/">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+    <img src="/marks/scanhippo.svg" width="32" height="32" alt="" />
+    <span><small>Previous</small>Scan Hippo</span>
+  </a>
+  <a href="/resthippo/">
+    <span style="text-align:right"><small>Next</small>Rest Hippo</span>
+    <img src="/marks/resthippo.svg" width="32" height="32" alt="" />
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+  </a>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo">
+      <span class="logo-mark"><img src="/favicon.svg" width="28" height="28" alt=""></span>
+      <span class="footer-name">Hippo Herd</span>
+    </div>
+    <p style="margin-bottom:14px">
+      <a href="/resthippo/">Rest Hippo</a>
+      &nbsp;·&nbsp;
+      <a href="/chiphippo/">Chip Hippo</a>
+      &nbsp;·&nbsp;
+      <a href="/jumphippo/">Jump Hippo</a>
+      &nbsp;·&nbsp;
+      <a href="/keephippo/">Keep Hippo</a>
+      &nbsp;·&nbsp;
+      <a href="/mazehippo/">Maze Hippo</a>
+      &nbsp;·&nbsp;
+      <a href="/mindhippo/">Mind Hippo</a>
+      &nbsp;·&nbsp;
+      <a href="/rollhippo/">Roll Hippo</a>
+      &nbsp;·&nbsp;
+      <a href="/scanhippo/">Scan Hippo</a>
+      &nbsp;·&nbsp;
+      <a href="/jsonhippo/">JsonHippo</a>
+    </p>
+    <p style="margin-bottom:14px">
+      <a href="https://github.com/jfigge" rel="noopener noreferrer">GitHub</a>
+      &nbsp;·&nbsp;
+      <a href="https://github.com/sponsors/jfigge" rel="noopener noreferrer">Donate</a>
+      &nbsp;·&nbsp;
+      <a href="/privacy.html">Privacy</a>
+    </p>
+    <p>Copyright &copy; 2026 Jason Figge. Every hippo is free and open source.<br>
+    No telemetry, no accounts, no tracking — on the apps or on this site.</p>
+    <p style="margin-top:14px">Crafted with <a class="cc-referral" href="https://claude.ai/code" rel="noopener noreferrer">Claude&nbsp;Code</a>.</p>
+  </div>
+</footer>
+
+<script src="/nav.js" defer></script>
+</body>
+</html>

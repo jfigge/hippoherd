@@ -51,6 +51,7 @@ const HERD = [
   "mindhippo",
   "rollhippo",
   "scanhippo",
+  "jsonhippo",
 ];
 
 const OWNER = "jfigge";

@@ -575,13 +575,86 @@ export const HERD = [
       },
       {
         icon: "terminal",
-        title: "114 checks, no hardware",
+        title: "126 checks, no hardware",
         body: "Frame bytes, pacing, timeouts, DTC and PID codecs and the filter register encoding — plus an integration suite that compiles the three real sketches unmodified and runs them against each other on a simulated bus.",
       },
       {
         icon: "phone",
         title: "A seam where the app goes",
         body: "Everything the tester prints goes through a single <code>Print *</code>, so moving the console to a Bluetooth LE characteristic is a one-line change. The app is not built yet, and is not going to a store when it is.",
+      },
+    ],
+  },
+  {
+    slug: "jsonhippo",
+    name: "JsonHippo",
+    // Hue 276, found the way Maze's and Scan's were: the midpoint of the
+    // widest arc still free once Scan took 94 — the 64 degrees between Rest at
+    // 246 and Maze at 310. Readable as accent text on #1c1c1c (4.69:1) with the
+    // white hippo still clear on top of it (3.63:1). It must stay in step with
+    // the same value in scripts/make-marks.mjs: that one paints the mark, this
+    // one paints the page the mark sits on.
+    color: "#B65CF0",
+    tagline: "JSON viewer with pinpoint errors",
+
+    // The product page leads with screenshots, which hippoPage() has no layout
+    // for, so — like Roll, Maze and Scan — the page is written in
+    // jfigge/jsonhippo (site/hippoherd/) and arrives here by `make site` in
+    // that repository. Everything else about this entry still does its job:
+    // the card on the index, the nav dropdown, the footer, the 404 list, the
+    // sitemap and the previous/next links.
+    //
+    // `domain` stays null for now. Unlike Roll and Scan, JsonHippo is meant to
+    // have a home of its own — the app runs from a static site, and
+    // jsonhippo.com is the plan — but that site is not live yet, and `domain`
+    // turns on the live iframe preview of it. Set it (and add the host to
+    // ALLOWED in website/preview.js) once it is.
+    externalSite: true,
+
+    domain: null,
+    docs: null,
+    stack: "HTML · vanilla JS · jQuery",
+    license: "Apache-2.0",
+    platforms: ["Any modern browser"],
+    // Built and tested, but not hosted anywhere and never released.
+    status: "development",
+    stores: [],
+
+    lead: "Pinpoint errors for JSON that will not parse — line, column, what was expected and the path to it — plus smart paste of escaped JSON and a tree you can filter. A static page: nothing is uploaded.",
+
+    blurb:
+      "“Invalid JSON” is useless when the input is five megabytes long. JsonHippo's tokenizer and parser are written by hand, character by character, so when a document fails it says <em>where</em>: <code>Line 123982, col 9: expected ',' or '}' but found string \"zip\" (in $.people[4321].address)</code> — and one click puts the caret on the bad character. It also recognises the JSON that APIs and logs hand back as an escaped string and unescapes it on paste, and its tree can be filtered by key, value, regex or path. Inspired by jsonviewer.stack.hu, which its author has used for years.",
+
+    features: [
+      {
+        icon: "alert",
+        title: "Says where it broke",
+        body: "Line, column, expected and found, and the JSON path — for every one of seventeen error codes. A file missing its last <code>}</code> points at the brace that never closed, not at the end of the file.",
+      },
+      {
+        icon: "code",
+        title: "Smart paste",
+        body: "Escaped JSON — <code>\"{\\\"id\\\":7}\"</code> — is unescaped on paste, as many times as it was escaped, with an Undo. Ordinary JSON with escaped quotes inside its strings is never touched.",
+      },
+      {
+        icon: "search",
+        title: "A tree you can filter",
+        body: "Narrow the tree to the keys or values that match — plain text, regex, or a path like <code>$.items[*].name</code> — with each match's ancestors kept so you can see where it sits.",
+      },
+      {
+        icon: "layers",
+        title: "Built for big files",
+        body: "A 5 MB document parses in under a tenth of a second; the tree draws only what is open; the filter searches every node, drawn or not.",
+      },
+      {
+        icon: "terminal",
+        title: "Every digit kept",
+        body: "Format and minify are written from the parse tree, so <code>12345678901234567890</code> keeps its digits and keys keep their order, duplicates included and flagged.",
+      },
+      {
+        icon: "lock",
+        title: "Nothing leaves the browser",
+        body: "No server, no account, no tracking. Files are read locally and never uploaded.",
       },
     ],
   },
