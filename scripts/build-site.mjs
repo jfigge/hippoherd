@@ -111,6 +111,7 @@ const ICONS = {
   chevron: '<polyline points="6 9 12 15 18 9"/>',
   arrowLeft: '<line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>',
   arrowRight: '<line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>',
+  play: '<polygon points="6 4 20 12 6 20 6 4"/>',
 };
 
 const icon = (name, size = 20, extra = "") =>
@@ -142,6 +143,13 @@ const OS_META = {
 // ── Shared chrome ────────────────────────────────────────────────────────────
 
 const repoUrl = (slug) => `https://github.com/${OWNER}/${slug}`;
+
+// Where a hippo's page is on this site: /<slug>/, unless `page` (see
+// content/hippos.mjs) moves it because /<slug>/ is taken — JsonHippo's is the
+// app itself. Every link to a hippo goes through here, so a moved page is
+// moved everywhere: the card, the nav, the footer, the 404 list, the sitemap
+// and the previous/next links.
+const pageUrl = (hippo) => hippo.page || `/${hippo.slug}/`;
 
 // How many hippos there are, in words, because the two places that say it out
 // loud say it in prose. Derived from HERD rather than typed: both sentences
@@ -183,7 +191,7 @@ const STATUS_LABEL = {
 function navDropdown(current) {
   const items = HERD.map((x) => {
     const here = x.slug === current ? ' aria-current="page"' : "";
-    return `        <a class="nav-dropdown-item" href="/${x.slug}/"${here}><img src="/marks/${x.slug}.svg" width="16" height="16" alt=""> ${h(x.name)}</a>`;
+    return `        <a class="nav-dropdown-item" href="${pageUrl(x)}"${here}><img src="/marks/${x.slug}.svg" width="16" height="16" alt=""> ${h(x.name)}</a>`;
   }).join("\n");
 
   return `    <details class="nav-dropdown">
@@ -223,7 +231,7 @@ function footer() {
       <span class="footer-name">Hippo Herd</span>
     </div>
     <p style="margin-bottom:14px">
-      ${HERD.map((x) => `<a href="/${x.slug}/">${h(x.name)}</a>`).join("\n      &nbsp;·&nbsp;\n      ")}
+      ${HERD.map((x) => `<a href="${pageUrl(x)}">${h(x.name)}</a>`).join("\n      &nbsp;·&nbsp;\n      ")}
     </p>
     <p style="margin-bottom:14px">
       <a href="https://github.com/${OWNER}" rel="noopener noreferrer">GitHub</a>
@@ -340,7 +348,7 @@ function hippoCard(x) {
         <div class="hippo-card-head">
           <img class="hippo-card-mark" src="/marks/${x.slug}.svg" width="46" height="46" alt="" />
           <div>
-            <h3 class="hippo-card-name"><a href="/${x.slug}/">${h(x.name)}</a></h3>
+            <h3 class="hippo-card-name"><a href="${pageUrl(x)}">${h(x.name)}</a></h3>
             <p class="hippo-card-tagline">${h(x.tagline)}</p>
           </div>
         </div>
@@ -352,7 +360,7 @@ function hippoCard(x) {
           <span class="chip">${x.platforms.map(h).join(" · ")}</span>
         </div>
         <div class="hippo-card-actions">
-          <a class="btn btn-primary" href="/${x.slug}/">${x.webApp ? "Launch" : "Learn more"}</a>
+          <a class="btn btn-primary" href="${pageUrl(x)}">${x.webApp ? "Launch" : "Learn more"}</a>
           ${action}
         </div>
       </article>`;
@@ -628,6 +636,12 @@ function callout(x) {
 
 function links(x) {
   const rows = [];
+  if (x.app) {
+    rows.push(`      <a class="link-card" href="${h(x.app)}">
+        ${icon("play", 16)}
+        <span>hippoherd.com${h(x.app)}<small>The app, in your browser</small></span>
+      </a>`);
+  }
   if (x.domain) {
     rows.push(`      <a class="link-card" href="https://${h(x.domain)}/" rel="noopener noreferrer">
         ${icon("external", 16)}
@@ -664,17 +678,42 @@ function herdNav(x) {
   const prev = HERD[(i - 1 + HERD.length) % HERD.length];
   const next = HERD[(i + 1) % HERD.length];
   return `<div class="herd-nav">
-  <a href="/${prev.slug}/">
+  <a href="${pageUrl(prev)}">
     ${icon("arrowLeft", 16)}
     <img src="/marks/${prev.slug}.svg" width="32" height="32" alt="" />
     <span><small>Previous</small>${h(prev.name)}</span>
   </a>
-  <a href="/${next.slug}/">
+  <a href="${pageUrl(next)}">
     <span style="text-align:right"><small>Next</small>${h(next.name)}</span>
     <img src="/marks/${next.slug}.svg" width="32" height="32" alt="" />
     ${icon("arrowRight", 16)}
   </a>
 </div>`;
+}
+
+// The hero's buttons. A hippo that also runs on this site (`app`) leads with
+// Launch: it is one click from using it, where a download is several. Launch
+// opens the app in this tab, as a webApp's card does. With three buttons the
+// row wraps on a phone, so such a hippo drops "Back to the herd" — the herd is
+// in the nav and at the foot of the page.
+function heroActions(x) {
+  const actions = [];
+  if (x.app) {
+    actions.push(`<a class="btn btn-primary" href="${h(x.app)}">${icon("play", 16)} Launch ${h(x.name)}</a>`);
+  }
+  actions.push(
+    shipped(x)
+      ? `<a class="btn ${x.app ? "btn-ghost" : "btn-primary"}" href="#downloads">${icon("download", 16)} Download</a>`
+      : x.repoPrivate
+        ? `<a class="btn btn-primary" href="#downloads">${icon("clock", 16)} Release status</a>`
+        : `<a class="btn btn-primary" href="${repoUrl(x.slug)}" rel="noopener noreferrer">${GITHUB_MARK} View the source</a>`,
+  );
+  if (x.domain) {
+    actions.push(`<a class="btn btn-ghost" href="https://${h(x.domain)}/" rel="noopener noreferrer">${icon("external", 16)} ${h(x.domain)}</a>`);
+  } else if (!x.app) {
+    actions.push(`<a class="btn btn-ghost" href="/#herd">${icon("grid", 16)} Back to the herd</a>`);
+  }
+  return actions;
 }
 
 // A filled dot for a hippo that has shipped, a hollow one for a hippo that has
@@ -697,18 +736,7 @@ function hippoPage(x) {
   <h1>${h(x.name)}</h1>
   <p class="hero-desc">${x.blurb}</p>
   <div class="hero-actions">
-    ${
-      shipped(x)
-        ? `<a class="btn btn-primary" href="#downloads">${icon("download", 16)} Download</a>`
-        : x.repoPrivate
-          ? `<a class="btn btn-primary" href="#downloads">${icon("clock", 16)} Release status</a>`
-          : `<a class="btn btn-primary" href="${repoUrl(x.slug)}" rel="noopener noreferrer">${GITHUB_MARK} View the source</a>`
-    }
-    ${
-      x.domain
-        ? `<a class="btn btn-ghost" href="https://${h(x.domain)}/" rel="noopener noreferrer">${icon("external", 16)} ${h(x.domain)}</a>`
-        : `<a class="btn btn-ghost" href="/#herd">${icon("grid", 16)} Back to the herd</a>`
-    }
+    ${heroActions(x).join("\n    ")}
   </div>
   <p class="hero-platforms">${x.platforms.map(h).join(" · ")} &nbsp;·&nbsp; ${h(x.stack)} &nbsp;·&nbsp; ${h(x.license)}</p>
 </div>
@@ -751,7 +779,7 @@ ${herdNav(x)}`;
   return layout({
     title: `${x.name} — ${x.tagline} · Hippo Herd`,
     description: x.lead,
-    canonical: `${SITE}/${x.slug}/`,
+    canonical: `${SITE}${pageUrl(x)}`,
     brand: x.color,
     bodyAttrs: ` data-hippo-page="${x.slug}"`,
     content,
@@ -845,7 +873,7 @@ function notFoundPage() {
   <div class="section-inner">
     <div class="link-row" style="margin-top:0">
 ${HERD.map(
-  (x) => `      <a class="link-card" href="/${x.slug}/" style="--brand:${x.color}">
+  (x) => `      <a class="link-card" href="${pageUrl(x)}" style="--brand:${x.color}">
         <img src="/marks/${x.slug}.svg" width="20" height="20" alt="" />
         <span>${h(x.name)}<small>${h(x.tagline)}</small></span>
       </a>`,
@@ -875,7 +903,9 @@ function sitemap() {
 
   const urls = [
     SITE + "/",
-    ...HERD.map((x) => `${SITE}/${x.slug}/`),
+    ...HERD.map((x) => `${SITE}${pageUrl(x)}`),
+    // A hippo that runs here is a page here too.
+    ...HERD.filter((x) => x.app).map((x) => `${SITE}${x.app}`),
     ...ownDocs,
     SITE + "/privacy.html",
   ];
@@ -913,9 +943,17 @@ await emit(`${OUT}/index.html`, indexPage());
 // are all still generated from content/hippos.mjs exactly as before. What it
 // does not get is an index.html from hippoPage(), which would otherwise
 // overwrite the real page on every deploy — quietly, and with a stub.
+//
+// `page` moves the page and `app` names where the hippo itself runs on this
+// site, and the two must never be the same place: the app's files are copied in
+// from its own repository, and its index.html would be overwritten here, on
+// every deploy, by a page about it.
 for (const x of HERD) {
   if (x.externalSite) continue;
-  await emit(`${OUT}/${x.slug}/index.html`, hippoPage(x));
+  if (x.app && x.app === pageUrl(x)) {
+    throw new Error(`${x.slug}: its page and its app are both at ${x.app} — set \`page\` in content/hippos.mjs`);
+  }
+  await emit(`${OUT}${pageUrl(x)}index.html`, hippoPage(x));
 }
 await emit(`${OUT}/privacy.html`, privacyPage());
 await emit(`${OUT}/404.html`, notFoundPage());

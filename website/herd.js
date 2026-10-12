@@ -32,8 +32,8 @@
     // Firmware for one board, and no release to download — `desktop: false`
     // is what stops the card offering a desktop installer for it.
     scanhippo: { name: "Scan Hippo", desktop: false }, // Arduino firmware
-    // A web page: nothing to install, so no desktop installer either.
-    jsonhippo: { name: "JsonHippo", desktop: false }, // runs in the browser
+    // Runs in the browser here, and ships desktop installers as well.
+    jsonhippo: { name: "JsonHippo", desktop: true },
   };
 
   var DL_ICON =

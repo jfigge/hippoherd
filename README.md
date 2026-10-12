@@ -18,7 +18,7 @@ get nothing".
 | Maze Hippo | Tap-to-clear arrow puzzle (iOS / Android) | — | [jfigge/mazehippo](https://github.com/jfigge/mazehippo) |
 | Mind Hippo | ML runtime written from scratch in Go | — | [jfigge/mindhippo](https://github.com/jfigge/mindhippo) |
 | Roll Hippo | Shake-to-roll dice tray ([App Store](https://apps.apple.com/us/app/roll-hippo/id6798933169); Android to come) | — | [jfigge/rollhippo](https://github.com/jfigge/rollhippo) |
-| JsonHippo | JSON viewer with pinpoint errors — a web app that runs here | [hippoherd.com/jsonhippo](https://hippoherd.com/jsonhippo/) | [jfigge/jsonhippo](https://github.com/jfigge/jsonhippo) |
+| JsonHippo | JSON viewer with pinpoint errors — runs here, and on the desktop | [hippoherd.com/jsonhippo](https://hippoherd.com/jsonhippo/) (the app) | [jfigge/jsonhippo](https://github.com/jfigge/jsonhippo) |
 
 ## What the site does
 
@@ -109,15 +109,31 @@ result, so the hero and the six boards on that page are the current game by
 construction. `make site` there re-renders them before it copies, which is why
 nothing here ever needs to know they exist.
 
-### `website/jsonhippo/`: the page is the app
+### `website/jsonhippo/`: the app, with its page inside it
 
 JsonHippo is a static web app, and `hippoherd.com/jsonhippo/` is where it
-runs — not a page about it. Its entry carries `externalSite: true`, so the
-generator never writes the directory, and `webApp: true`, so its card says
-"Runs in your browser" instead of a version and its button is **Launch**
-rather than **Learn more**. The files are the app's `dist/`, copied in by
-`make site` in [jfigge/jsonhippo](https://github.com/jfigge/jsonhippo) with
-`rsync --delete`; do not edit them here.
+runs. It also ships desktop installers, so it is otherwise an ordinary hippo,
+modelled like Rest Hippo and Chip Hippo: a generated page, a version on its
+card, and downloads from its GitHub Releases through `versions.json`. Two
+fields in its entry make that fit:
+
+- `app: "/jsonhippo/"` — the app runs there. Its page leads with a
+  **Launch** button that opens it, and lists it under "Where to go next".
+- `page: "/jsonhippo/about/"` — the generated page goes there, because
+  `/jsonhippo/` is taken. The card, nav, footer, 404 list, sitemap and
+  previous/next links all follow it. `build-site.mjs` refuses a `page` that
+  lands on the `app`.
+
+Everything in `website/jsonhippo/` **except `about/`** is the app's `dist/`,
+copied in by `make site` in
+[jfigge/jsonhippo](https://github.com/jfigge/jsonhippo) with `rsync --delete`
+that excludes `about/`; do not edit those files here. `about/index.html` is
+generated here like any hippo page. The installers are never copied in:
+jsonhippo's Release workflow publishes them to its GitHub Releases, and the
+daily deploy picks them up like every other hippo's.
+
+(`webApp: true`, which JsonHippo carried until it had desktop builds, is still
+supported for a hippo that is a web page and nothing else.)
 
 ### Adding a hippo
 

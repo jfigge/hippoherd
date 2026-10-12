@@ -50,14 +50,32 @@
 //                       Do not set this and expect `node scripts/build-site.mjs`
 //                       to produce the page — nothing here will.
 //
-//   webApp: true        The hippo IS a web page: website/<slug>/ holds the app
-//                       itself, not a page about it. Its card says "Runs in
-//                       your browser" instead of a version (there is nothing to
-//                       download, so no release to count), and its buttons
-//                       open the app and its source instead of "Learn more"
-//                       and a release. Always paired with externalSite: the
-//                       app is copied in from its own repository. JsonHippo is
-//                       the first.
+//   webApp: true        The hippo IS a web page and nothing else:
+//                       website/<slug>/ holds the app itself, not a page about
+//                       it. Its card says "Runs in your browser" instead of a
+//                       version (there is nothing to download, so no release
+//                       to count), and its buttons open the app and its source
+//                       instead of "Learn more" and a release. Always paired
+//                       with externalSite: the app is copied in from its own
+//                       repository. No hippo is one today — JsonHippo was, until
+//                       it shipped desktop builds, and is now `app` + `page`.
+//
+//   app: "/<path>/"     The hippo ALSO runs on this site, at that path — its
+//                       files copied in from its own repository, as a webApp's
+//                       are — while being an ordinary hippo otherwise, with a
+//                       generated page, releases and downloads. Its page leads
+//                       with a Launch button that opens the app (in the same
+//                       tab, as a webApp's card does), and lists it under
+//                       "Where to go next".
+//
+//   page: "/<path>/"    Where the generated page goes, when /<slug>/ is taken.
+//                       Every link to the hippo — card, nav, footer, 404,
+//                       sitemap, previous/next — follows it. It exists for
+//                       `app`: JsonHippo's app has been at /jsonhippo/ since it
+//                       launched, so its page is /jsonhippo/about/, inside the
+//                       app's directory. jfigge/jsonhippo's `make site` copies
+//                       the app around about/ rather than deleting it. The
+//                       generator refuses a page that lands on the app.
 
 export const OWNER = "jfigge";
 export const HERD_COLOR = "#2BC4B0";
@@ -620,40 +638,45 @@ export const HERD = [
     color: "#B65CF0",
     tagline: "JSON viewer with pinpoint errors",
 
-    // JsonHippo is a static web app, and hippoherd.com/jsonhippo/ is where it
-    // runs: the index card is its advertisement, and clicking it opens the app
-    // itself, not a page about it. The files are built in jfigge/jsonhippo and
-    // arrive here by `make site` in that repository (an rsync --delete of its
-    // dist/), which is why the generator must never write this directory.
-    // Everything else about this entry still does its job: the card, the nav
-    // dropdown, the footer, the 404 list, the sitemap and the previous/next
-    // links — all of which now lead straight into the app.
-    externalSite: true,
-    webApp: true,
+    // JsonHippo runs here, at hippoherd.com/jsonhippo/, and ships as a desktop
+    // app too — so it is modelled like Rest Hippo and Chip Hippo, with a
+    // generated page, a version and downloads, rather than as a webApp whose
+    // card opens the app. Two things are its own:
+    //
+    //   app   the web app, at /jsonhippo/. Built in jfigge/jsonhippo and
+    //         copied in by `make site` there (an rsync --delete of its dist/
+    //         that leaves about/ alone); never written by this generator.
+    //   page  /jsonhippo/about/, because /jsonhippo/ is the app. The card,
+    //         nav, footer and the rest all lead here; the page's Launch
+    //         button leads on to the app.
+    //
+    // The downloads come from jfigge/jsonhippo's GitHub Releases through
+    // versions.json, like every other hippo's; its Release workflow publishes
+    // them when that repo's package.json version moves.
+    app: "/jsonhippo/",
+    page: "/jsonhippo/about/",
 
     // `domain` stays null: the app's home IS this site. If jsonhippo.com is
     // bought later, set it here and add the host to ALLOWED in
     // website/preview.js.
     domain: null,
-    docs: null,
-    stack: "HTML · vanilla JS · jQuery",
+    docs: "https://github.com/jfigge/jsonhippo/blob/main/docs/USAGE.md",
+    stack: "Electron · Vanilla JS · jQuery",
     license: "Apache-2.0",
-    platforms: ["Any modern browser"],
-    // Live at hippoherd.com/jsonhippo/. A web app has no GitHub release to
-    // track; with webApp set, "released" only means "no status chip".
+    platforms: ["macOS", "Windows", "Linux", "Web"],
     status: "released",
     stores: [],
 
-    lead: "Pinpoint errors for JSON that will not parse — line, column, what was expected and the path to it — plus smart paste of escaped JSON and a tree you can filter. A static page: nothing is uploaded.",
+    lead: "Pinpoint errors for JSON that will not parse — line, column, what was expected and the path to it — plus smart paste of escaped JSON, a tree you can filter, and a diff that ignores order. In your browser or on your desktop; nothing is uploaded.",
 
     blurb:
-      "“Invalid JSON” is useless when the input is five megabytes long. JsonHippo's tokenizer and parser are written by hand, character by character, so when a document fails it says <em>where</em>: <code>Line 123982, col 9: expected ',' or '}' but found string \"zip\" (in $.people[4321].address)</code> — and one click puts the caret on the bad character. It also recognises the JSON that APIs and logs hand back as an escaped string and unescapes it on paste, and its tree can be filtered by key, value, regex or path. Inspired by jsonviewer.stack.hu, which its author has used for years.",
+      "“Invalid JSON” is useless when the input is five megabytes long. JsonHippo's tokenizer and parser are written by hand, character by character, so when a document fails it says <em>where</em>: <code>Line 123982, col 9: expected ',' or '}' but found string \"zip\" (in $.people[4321].address)</code> — and one click puts the caret on the bad character. It also recognises the JSON that APIs and logs hand back as an escaped string and unescapes it on paste, filters its tree by key, value, regex or path, and compares two documents by content rather than by line. Launch it right here in the browser, or install it: the desktop app is the same page in its own window, and it makes no network request at all. Inspired by jsonviewer.stack.hu, which its author has used for years.",
 
     features: [
       {
         icon: "alert",
         title: "Says where it broke",
-        body: "Line, column, expected and found, and the JSON path — for every one of seventeen error codes. A file missing its last <code>}</code> points at the brace that never closed, not at the end of the file.",
+        body: "A hand-written parser gives the line, column, expected and found, and the JSON path — for every one of seventeen error codes. A file missing its last <code>}</code> points at the brace that never closed, not at the end of the file.",
       },
       {
         icon: "code",
@@ -664,6 +687,21 @@ export const HERD = [
         icon: "search",
         title: "A tree you can filter",
         body: "Narrow the tree to the keys or values that match — plain text, regex, or a path like <code>$.items[*].name</code> — with each match's ancestors kept so you can see where it sits.",
+      },
+      {
+        icon: "shuffle",
+        title: "A diff that ignores order",
+        body: "Members match by key and array elements by content, so key order and array order are never differences — a record that moved and changed one field shows as one changed field. Both panes are editable, and Reorder lays one side out in the other's order.",
+      },
+      {
+        icon: "book",
+        title: "A schema from a sample",
+        body: "The Schema tab infers a JSON Schema from a representative document: properties in the order they appear, <code>required</code> where a key is always present, ready to copy and validate against elsewhere.",
+      },
+      {
+        icon: "shield",
+        title: "Warnings for valid JSON",
+        body: "Duplicate keys, empty keys, and numbers that change when read as a 64-bit float — <code>12345678901234567890</code> becomes <code>12345678901234567000</code> — are legal JSON and almost always mistakes, so each is flagged with where it is.",
       },
       {
         icon: "layers",
@@ -677,8 +715,8 @@ export const HERD = [
       },
       {
         icon: "lock",
-        title: "Nothing leaves the browser",
-        body: "No server, no account, no tracking. Files are read locally and never uploaded.",
+        title: "Nothing leaves your machine",
+        body: "No server, no account, no tracking — in the browser or the desktop app, which runs offline and opens links in your own browser. Files are read locally and never uploaded.",
       },
     ],
   },
