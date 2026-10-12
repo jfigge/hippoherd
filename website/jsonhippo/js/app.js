@@ -412,10 +412,14 @@ class App {
       this.settings.indent = indent.value;
     });
 
+    // The Unescape button only shows while Auto-unescape is off.
     const auto = document.getElementById("jh-auto-unescape");
+    const unescapeButton = document.getElementById("jh-unescape");
     auto.checked = this.settings.autoUnescape;
+    unescapeButton.hidden = auto.checked;
     auto.addEventListener("change", () => {
       this.settings.autoUnescape = auto.checked;
+      unescapeButton.hidden = auto.checked;
     });
 
     // Off means no lint work at all, so turning it on (or off) parses again.
@@ -440,6 +444,22 @@ class App {
       const next = THEMES[(THEMES.indexOf(this.settings.theme) + 1) % THEMES.length];
       this.settings.theme = next;
       applyTheme(next);
+    });
+
+    // The brand hippo opens About. Esc and Close dismiss it natively; a click
+    // on the backdrop lands on the <dialog> itself, so that closes it too.
+    // The desktop shell loads the page as index.html?desktop=<version>
+    // (electron/main.js); the web page has no version to show.
+    const about = document.getElementById("jh-about");
+    const desktop = new URLSearchParams(location.search).get("desktop");
+    if (desktop) {
+      const version = document.getElementById("jh-about-version");
+      version.textContent = `Version ${desktop} · Desktop`;
+      version.hidden = false;
+    }
+    document.getElementById("jh-about-open").addEventListener("click", () => about.showModal());
+    about.addEventListener("click", (e) => {
+      if (e.target === about) about.close();
     });
   }
 }

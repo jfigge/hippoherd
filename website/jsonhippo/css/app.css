@@ -187,12 +187,17 @@ textarea {
   border-bottom: 1px solid var(--surface-0);
 }
 
+/* A button (it opens About), dressed as the plain brand mark it was. */
 .jh-brand {
   display: flex;
   align-items: center;
   gap: 9px;
+  padding: 0;
+  border: 0;
+  border-radius: 7px;
+  background: none;
   color: var(--text);
-  text-decoration: none;
+  cursor: pointer;
 }
 
 .jh-logo {
@@ -218,6 +223,78 @@ textarea {
   display: flex;
   gap: 6px;
   margin-left: auto;
+}
+
+/* ── About ──────────────────────────────────────────────────────────────── */
+
+.jh-about {
+  width: 400px;
+  max-width: calc(100vw - 32px);
+  padding: 28px 28px 22px;
+  border: 1px solid var(--surface-1);
+  border-radius: 12px;
+  background: var(--bg);
+  color: var(--text);
+  text-align: center;
+  box-shadow: 0 12px 40px rgb(0 0 0 / 0.3);
+}
+
+.jh-about::backdrop {
+  background: rgb(0 0 0 / 0.45);
+}
+
+.jh-about-logo {
+  display: block;
+  margin: 0 auto 12px;
+  border-radius: 20px;
+}
+
+.jh-about-name {
+  margin: 0;
+  color: var(--accent);
+  font-size: 22px;
+  letter-spacing: 0.01em;
+}
+
+.jh-about-version {
+  margin: 2px 0 0;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 12px;
+}
+
+.jh-about-tagline {
+  margin: 10px 0 0;
+  color: var(--subtext);
+  font-size: 14px;
+}
+
+.jh-about-desc {
+  margin: 6px 0 0;
+  font-size: 13px;
+}
+
+.jh-about-links {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  margin: 16px 0 0;
+  font-size: 13px;
+}
+
+.jh-about-links a {
+  color: var(--accent);
+}
+
+.jh-about-credit {
+  margin: 16px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.jh-about form {
+  margin-top: 18px;
 }
 
 .jh-tabs {

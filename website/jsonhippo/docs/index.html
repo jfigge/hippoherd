@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <!-- The user guide, served at hippoherd.com/jsonhippo/docs/ beside the app
+       and linked from its About dialog and the desktop Help menu. It says the
+       same things as docs/USAGE.md: edit the two together.
+
+       The app's stylesheet supplies the themes, header and buttons, and
+       guide.css lays out the page. Same rules as the app: no inline script
+       or style, so the same strict policy applies. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="The JsonHippo user guide: pasting and smart paste of escaped JSON, reading an error, warnings, the tree and its filter, JSON Schema inference, comparing two documents, keyboard shortcuts and the error reference.">
+  <meta name="color-scheme" content="light dark">
+  <title>User guide — JsonHippo</title>
+  <link rel="canonical" href="https://hippoherd.com/jsonhippo/docs/">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Hippo Herd">
+  <meta property="og:title" content="JsonHippo — user guide">
+  <meta property="og:description" content="Smart paste, reading an error, warnings, the tree and its filter, JSON Schema inference, Diff, keyboard shortcuts and every error code.">
+  <meta property="og:url" content="https://hippoherd.com/jsonhippo/docs/">
+  <meta name="twitter:card" content="summary">
+  <link rel="icon" type="image/svg+xml" href="../img/jsonhippo.svg">
+  <link rel="stylesheet" href="../css/app.css">
+  <link rel="stylesheet" href="../css/guide.css">
+  <!-- The theme pinned in the app (System, Light or Dark) applies here too. -->
+  <script src="../js/theme.js"></script>
+</head>
+<body class="jh-guide">
+
+<svg class="jh-sprite" aria-hidden="true" focusable="false">
+  <symbol id="jh-i-open-app" viewBox="0 0 16 16"><path d="M9.5 2.5h4v4M13.5 2.5L7.5 8.5M11.5 9.5v3a1 1 0 0 1-1 1h-7a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1h3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="jh-i-home" viewBox="0 0 16 16"><path d="M2 7.5L8 2.5l6 5M3.5 6.5v7h3.5v-4h2v4h3.5v-7" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="jh-i-github" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/></symbol>
+</svg>
+
+<header class="jh-header">
+  <a class="jh-brand" href="../" title="Open JsonHippo">
+    <img class="jh-logo" src="../img/jsonhippo.svg" width="28" height="28" alt="">
+    <span class="jh-name">JsonHippo</span>
+  </a>
+  <span class="jh-tagline">User guide</span>
+  <nav class="jh-header-actions" aria-label="Elsewhere">
+    <a class="jh-btn jh-btn--ghost" href="../">
+      <svg class="jh-icon" aria-hidden="true"><use href="#jh-i-open-app"/></svg>
+      <span>Open JsonHippo</span>
+    </a>
+    <a class="jh-btn jh-btn--ghost" href="https://hippoherd.com/" title="Hippo Herd">
+      <svg class="jh-icon" aria-hidden="true"><use href="#jh-i-home"/></svg>
+      <span>Hippo Herd</span>
+    </a>
+    <a class="jh-btn jh-btn--ghost" href="https://github.com/jfigge/jsonhippo" rel="noopener noreferrer" title="Source on GitHub">
+      <svg class="jh-icon" aria-hidden="true"><use href="#jh-i-github"/></svg>
+      <span>GitHub</span>
+    </a>
+  </nav>
+</header>
+
+<div class="jh-guide-layout">
+
+<nav class="jh-guide-toc" aria-labelledby="jh-guide-toc-title">
+  <h2 id="jh-guide-toc-title">Contents</h2>
+  <ol>
+    <li><a href="#getting-json-in">Getting JSON in</a></li>
+    <li><a href="#smart-paste">Smart paste: escaped JSON</a></li>
+    <li><a href="#reading-an-error">Reading an error</a></li>
+    <li><a href="#warnings">Warnings</a></li>
+    <li><a href="#format">Format, minify, copy</a></li>
+    <li><a href="#schema">Inferring a JSON Schema</a></li>
+    <li><a href="#tree">The tree</a></li>
+    <li><a href="#filter">Filtering the tree</a></li>
+    <li><a href="#diff">Comparing two documents</a></li>
+    <li><a href="#keyboard">Keyboard</a></li>
+    <li><a href="#themes">Themes</a></li>
+    <li><a href="#error-reference">Error reference</a></li>
+  </ol>
+</nav>
+
+<main class="jh-guide-body">
+
+<h1>Using JsonHippo</h1>
+
+<p class="jh-guide-lede">JsonHippo is one page with four tabs. <strong>Text</strong> is where JSON goes
+in and where errors are shown; <strong>Tree</strong> is where you explore it;
+<strong>Schema</strong> shows a <strong>JSON Schema</strong> that describes it; <strong>Diff</strong>
+compares two documents side by side.</p>
+
+<p>Valid JSON is also checked for likely mistakes (<strong>warnings</strong>). Everything
+happens in your browser: nothing you paste or load is uploaded anywhere.</p>
+
+<!-- ─────────────────────────────────────────────────────────────────────── -->
+<section aria-labelledby="getting-json-in">
+<h2 id="getting-json-in">Getting JSON in</h2>
+
+<ul>
+  <li><strong>Paste</strong> into the Text tab, or type.</li>
+  <li><strong>Load from file</strong> reads a file from your computer (a leading byte order
+    mark is dropped).</li>
+  <li>The text area always accepts what you give it, valid or not. You have to
+    see broken JSON to fix it.</li>
+</ul>
+
+<p>JsonHippo checks the text when you paste, when you press Format or Minify, and
+400&nbsp;ms after you stop typing. Above 5&nbsp;MB it stops checking while you type,
+because the text area itself slows down at that size; the status bar offers
+<strong>Validate now</strong> instead.</p>
+</section>
+
+<!-- ─────────────────────────────────────────────────────────────────────── -->
+<section aria-labelledby="smart-paste">
+<h2 id="smart-paste">Smart paste: escaped JSON</h2>
+
+<p>APIs and logs often return JSON as a <em>string</em>, with every quote escaped:</p>
+
+<pre><code>"{\"id\":7,\"tags\":[\"a\",\"b\"]}"</code></pre>
+
+<p>Paste that and JsonHippo unescapes it and shows the JSON inside. It handles:</p>
+
+<ul>
+  <li><strong>quoted</strong> strings like the one above;</li>
+  <li><strong>bare</strong> escaped JSON with no outer quotes, as copied out of the middle of a
+    log line: <code>{\"id\":7}</code>;</li>
+  <li>JSON that was <strong>escaped more than once</strong> (up to 5 levels);</li>
+  <li>escaped JSON that was <strong>pretty-printed before it was quoted</strong>, so its line
+    breaks were never escaped — they are kept as line breaks.</li>
+</ul>
+
+<p>Only the escapes have to be right (<code>\"</code>, <code>\\</code>, <code>\n</code>,
+<code>\u00e9</code> and the rest). Anything else odd in the pasted text, such as a stray
+unescaped <code>"</code>, is passed through as it is, and the parser then reports it at its
+exact position, with a hint that names a stray quote as one.</p>
+
+<p>A notice says what happened (“Unescaped 2 levels of escaped JSON”) with an
+<strong>Undo</strong> that puts back exactly what you pasted. Undo stays available through
+Format and Minify; typing in the text drops it, since restoring the original
+would throw your edits away.</p>
+
+<p>Smart paste only acts when the paste replaces all of the text (an empty box,
+or everything selected). It never touches ordinary JSON, even JSON with <code>\"</code>
+inside its strings, and it leaves a plain string such as <code>"hello"</code> alone — that
+is valid JSON already.</p>
+
+<ul>
+  <li><strong>Unescape</strong> on the toolbar does the same thing on demand.</li>
+  <li><strong>Auto-unescape</strong> (the checkbox on the toolbar) turns the automatic
+    behaviour off.</li>
+</ul>
+
+<p>If the unescaped text is itself broken, the error is reported against the
+unescaped text, and Undo is still there.</p>
+</section>
+
+<!-- ─────────────────────────────────────────────────────────────────────── -->
+<section aria-labelledby="reading-an-error">
+<h2 id="reading-an-error">Reading an error</h2>
+
+<p>When the JSON is invalid the status bar says exactly where and why:</p>
+
+<pre><code>Line 42, col 8: expected ',' or '}' but found string "name" (in $.items[3])
+Missing comma after the previous value?</code></pre>
+
+<ul>
+  <li><strong>Line, col</strong> — where the problem is. Columns count characters (an emoji
+    counts as two, as it does everywhere in JavaScript).</li>
+  <li><strong>expected … but found …</strong> — what the parser needed at that point, and what
+    was actually there.</li>
+  <li><strong>(in $.items[3])</strong> — the JSON path of the place it happened.</li>
+  <li>The second line is a <strong>hint</strong>: a plain-English guess at the cause.</li>
+</ul>
+
+<p>In the text, the line is marked in the gutter and highlighted, and the bad
+token is underlined. <strong>Click the error</strong> to put the caret on the exact
+character with the bad token selected — this works the same in a file of
+several megabytes. For a bracket that does not match, or one that is never
+closed, a second link, <strong>Go to the opener</strong>, jumps to the <code>{</code> or
+<code>[</code> involved.</p>
+
+<p>Only the first error is reported. Fix it and the next one, if any, appears.</p>
+
+<p>Valid JSON gets a summary instead — “Valid JSON — 1,284 keys, depth 7,
+2.1 MB” — and the count of any warnings.</p>
+</section>
+
+<!-- ─────────────────────────────────────────────────────────────────────── -->
+<section aria-labelledby="warnings">
+<h2 id="warnings">Warnings</h2>
+
+<p>An <strong>error</strong> means “this is not JSON”. A <strong>warning</strong> means “this is
+JSON, but look here”: something the grammar allows that is almost always a mistake.
+With <strong>Warnings</strong> ticked in the Text toolbar — it is, until you untick it —
+JsonHippo looks for:</p>
+
+<div class="jh-guide-table">
+<table>
+  <thead>
+    <tr><th>Warning</th><th>Example</th><th>Why it matters</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><strong>Duplicate key</strong></td><td><code>{"id": 1, "id": 2}</code></td><td>Only one of the values survives a parse — the last, in most parsers — and the other is lost without a word. Every repeat is flagged, with where the key was first defined.</td></tr>
+    <tr><td><strong>Empty key</strong></td><td><code>{"": 1}</code></td><td>Legal, but usually a field name that went missing.</td></tr>
+    <tr><td><strong>Precision loss</strong></td><td><code>12345678901234567890</code>, <code>3.141592653589793238</code>, <code>1e400</code></td><td>The number changes when it is read the way JavaScript — and most JSON libraries, by default — read every number: as a 64-bit float. The warning says what it becomes.</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p>Precision loss in detail:</p>
+
+<ul>
+  <li>An <strong>integer</strong> (written without a fraction or an exponent) beyond
+    ±9,007,199,254,740,991 (2<sup>53</sup> − 1): <code>12345678901234567890</code> becomes
+    <code>12345678901234567000</code>. Even one that happens to be exact, such as
+    <code>9007199254740992</code>, is flagged: past that point not every integer is.</li>
+  <li><strong>Any other number</strong> that does not survive the round trip — read as a
+    64-bit float, then written back the shortest way that reads the same:
+    too many digits (<code>3.141592653589793238</code> → <code>3.141592653589793</code>), too large
+    (<code>1e400</code> → <code>Infinity</code>), too small (<code>1e-400</code> → <code>0</code>).
+    <code>1.50</code> and <code>1E+2</code> are fine: written back they are <code>1.5</code> and
+    <code>100</code>, the same numbers.</li>
+  <li>Seventeen-digit numbers such as <code>0.10000000000000001</code>, the way C’s
+    <code>%.17g</code> writes them, are flagged too: they read back as <code>0.1</code>.</li>
+</ul>
+
+<p>JsonHippo itself never rounds anything — Format and Minify keep every digit as
+written. The warning is about what happens to the number elsewhere.</p>
+
+<p>Warnings never get in the way: the tree, Format and everything else work as
+usual. They show up:</p>
+
+<ul>
+  <li><strong>In the status bar</strong>: “⚠ 3 warnings”, and the first one, which you can
+    click to jump to it.</li>
+  <li><strong>In a list</strong>: click the count to see every warning — where it is, what
+    kind, what it says, and its JSON path. Click one to put the caret on it.
+    <kbd>Esc</kbd> or × closes the list. It shows the first 1,000; the count
+    includes them all.</li>
+  <li><strong>In the Text gutter</strong>: the line number turns amber, with a ▲. Hover over
+    it for what the warnings on that line are.</li>
+  <li><strong>In the tree</strong>: a ⚠ after the row. Select the row and the detail bar says
+    what it is.</li>
+</ul>
+
+<p>Untick <strong>Warnings</strong> to turn the checks off altogether: nothing is checked and
+nothing is shown. The setting is remembered.</p>
+</section>
+
+<!-- ─────────────────────────────────────────────────────────────────────── -->
+<section aria-labelledby="format">
+<h2 id="format">Format, minify, copy</h2>
+
+<ul>
+  <li><strong>Format</strong> pretty-prints with the indent chosen in the <strong>Indent</strong>
+    menu (2 spaces, 4 spaces or a tab). Shortcut:
+    <kbd>Ctrl</kbd>/<kbd>⌘</kbd>+<kbd>Enter</kbd>.</li>
+  <li><strong>Minify</strong> removes all whitespace outside strings.</li>
+  <li>Both are written from the parsed document, so numbers keep every digit
+    (<code>12345678901234567890</code> stays as it is), strings keep their escapes, and keys
+    stay in their original order, duplicates included.</li>
+  <li>Neither changes invalid text; they show the error instead.</li>
+  <li><strong>Copy</strong> copies the text; <strong>Clear</strong> empties it.</li>
+</ul>
+</section>
+
+<!-- ─────────────────────────────────────────────────────────────────────── -->
+<section aria-labelledby="schema">
+<h2 id="schema">Inferring a JSON Schema</h2>
+
+<p>The <strong>Schema</strong> tab shows a <a href="https://json-schema.org/" rel="noopener noreferrer">JSON Schema</a>
+inferred from the JSON in the Text tab: paste a representative document, and take away
+a spec to validate against elsewhere. It is worked out afresh each time you
+open the tab, and your JSON is never changed. The schema is read-only;
+<strong>Copy</strong> takes it. If the JSON is invalid, the tab shows the error instead,
+with <strong>Go to error</strong>.</p>
+
+<p>What the schema says, place by place:</p>
+
+<ul>
+  <li><strong>Objects</strong>: <code>"type": "object"</code>, their <code>"properties"</code> in the
+    order the keys first appear, and <code>"required"</code>: the keys present in
+    <strong>every</strong> object at that place.</li>
+  <li><strong>Arrays</strong>: <code>"type": "array"</code> and one <code>"items"</code> schema for all
+    their elements. Elements that differ are merged: a key in only some of the
+    objects is optional; a key in all of them is required.</li>
+  <li><strong>Values</strong>: <code>"string"</code>, <code>"boolean"</code>, <code>"null"</code>, and
+    <code>"integer"</code> while every number at that place is written as an integer —
+    <code>"number"</code> as soon as one is written with a fraction or an exponent
+    (<code>1.0</code> included: written that way, it says the field is not an integer).</li>
+  <li><strong>Several types</strong> at one place make a list:
+    <code>"type": ["string", "null"]</code>.</li>
+</ul>
+
+<pre><code>[{"id": 1, "tag": "a"}, {"id": 2, "tag": null, "score": 9.5}]</code></pre>
+
+<p>becomes</p>
+
+<pre><code>{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "id": { "type": "integer" },
+      "tag": { "type": ["string", "null"] },
+      "score": { "type": "number" }
+    },
+    "required": ["id", "tag"]
+  }
+}</code></pre>
+
+<p>(laid out more compactly here than Format writes it).</p>
+
+<p>Two options sit in the Schema toolbar, and changing either infers the schema
+again:</p>
+
+<ul>
+  <li><strong>Draft</strong>: 2020-12 (the default) or draft-07. Only the <code>$schema</code> line
+    differs; everything else is written the same way in both.</li>
+  <li><strong>Required keys</strong>: untick it to leave out every <code>"required"</code> list,
+    making every property optional.</li>
+</ul>
+
+<p>Both are remembered. The schema is indented like Format (the <strong>Indent</strong> choice
+in the Text toolbar).</p>
+</section>
+
+<!-- ─────────────────────────────────────────────────────────────────────── -->
+<section aria-labelledby="tree">
+<h2 id="tree">The tree</h2>
+
+<p>The Tree tab shows the document as a collapsible tree. It opens with the root
+and its first level; containers fill in when you open them, so large
+documents stay quick. Arrays with more than 10,000 items show them a page at a
+time, with <strong>Show more</strong> and <strong>Show all</strong> at the end.</p>
+
+<p>The tree is kept plain so the data reads first. An object or array row shows a
+<code>{ }</code> or <code>[ ]</code> mark and its key; a value row shows a small dot, the key
+and the value — the value itself says what type it is (<code>"text"</code>, <code>12</code>,
+<code>true</code>, <code>null</code>). Array items are labelled with their index, and the root
+with <strong>JSON</strong>. Control characters in strings are shown as symbols (a newline
+is <code>␊</code>).</p>
+
+<p>The two buttons and the menu at the right of the toolbar:</p>
+
+<ul>
+  <li><strong>Expand all</strong> (the down-chevron) opens everything; it asks first above
+    5,000 nodes.</li>
+  <li><strong>Collapse all</strong> (the up-chevron) closes everything but the root.</li>
+  <li><strong>Level…</strong> opens every container above the level you pick (level 1 is the
+    root’s children).</li>
+</ul>
+
+<p>Select a row to see its <strong>path</strong> in the bar at the bottom, with its type and,
+for an object or array, its size (<code>object · 5 keys</code>), plus:</p>
+
+<ul>
+  <li><strong>Copy path</strong> — e.g. <code>$.items[3]["first name"]</code>;</li>
+  <li><strong>Copy value</strong> — that node formatted on its own;</li>
+  <li><strong>Show in text</strong> — switches to Text with the node’s key (or value) selected.</li>
+</ul>
+
+<p>If the JSON is invalid, the Tree tab shows the error rather than a partial
+tree, with <strong>Go to error</strong>.</p>
+</section>
+
+<!-- ─────────────────────────────────────────────────────────────────────── -->
+<section aria-labelledby="filter">
+<h2 id="filter">Filtering the tree</h2>
+
+<p>Type in the filter box (or press <kbd>/</kbd> on the Tree tab to jump to it).
+The tree narrows to the nodes that match, each with the chain of containers
+that leads to it; everything else is folded away, and a container that has
+lost some children says how many it still shows: <code>1 of 9</code>.</p>
+
+<ul>
+  <li><strong>Keys &amp; values / Keys / Values</strong> — the menu beside the box: what to
+    match against. Values are strings, numbers (as written), <code>true</code>,
+    <code>false</code> and <code>null</code>.</li>
+  <li><strong>Aa</strong> — match case. Off by default.</li>
+  <li><strong>.*</strong> — treat the filter as a regular expression. A broken regex is
+    reported under the box and the tree is left as it was.</li>
+  <li><strong>Paths</strong> — start the filter with <code>$</code> to match by path instead:
+    <code>$.items[*].name</code>, <code>$["first name"]</code>, <code>$..zip</code>
+    (<code>..</code> means “at any depth”).</li>
+</ul>
+
+<p>The search covers the whole document, including branches that are collapsed or
+not yet drawn, so the match count is always complete. Where a filtered
+container has more than 500 matching children it shows them a page at a time;
+stepping to a match further down draws up to it.</p>
+
+<ul>
+  <li><kbd>Enter</kbd> / <kbd>Shift</kbd>+<kbd>Enter</kbd> (or the arrows) — next
+    and previous match.</li>
+  <li><kbd>Esc</kbd> — clear the filter. The tree goes back exactly as it was
+    before you started filtering.</li>
+</ul>
+</section>
+
+<!-- ─────────────────────────────────────────────────────────────────────── -->
+<section aria-labelledby="diff">
+<h2 id="diff">Comparing two documents (Diff)</h2>
+
+<p>The <strong>Diff</strong> tab splits the editor into two panes, <strong>Left</strong> and
+<strong>Right</strong>. Whatever was in the Text editor goes into Left; Right starts empty
+(and keeps what you put in it while you visit the other tabs). Switching back to Text
+or Tree carries on with the Left pane’s JSON.</p>
+
+<p>The comparison is about content, never order:</p>
+
+<ul>
+  <li><strong>Object members match by key.</strong> <code>{"name": "A", "age": 3}</code> and
+    <code>{"age": 3, "name": "A"}</code> are the same.</li>
+  <li><strong>Array elements match by content.</strong> <code>[1, 2]</code> and <code>[2, 1]</code>
+    are the same array. Equal elements pair first; of what is left, an object pairs
+    with the most similar object on the other side — shared keys and equal values
+    count, and an equal <code>id</code> (or <code>uuid</code>, <code>key</code>, <code>code</code>…)
+    pairs two records outright. So a record that moved <em>and</em> had one field
+    changed shows as one changed field. Two objects with the same keys but no value
+    in common are treated as different records.</li>
+  <li><strong>Values compare as JSON values.</strong> <code>"3"</code> and <code>3</code> are a
+    <strong>type change</strong>; <code>1.0</code> and <code>1</code> are the same number;
+    <code>"\u00e9"</code> and <code>"é"</code> are the same string.</li>
+</ul>
+
+<p>Each difference is highlighted on its row and marked in the gutter:</p>
+
+<div class="jh-guide-table">
+<table>
+  <thead>
+    <tr><th>Mark</th><th>Colour</th><th>Means</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><span class="jh-guide-mark jh-guide-mark--missing">−</span></td><td>red</td><td><strong>missing</strong> — only on the Left</td></tr>
+    <tr><td><span class="jh-guide-mark jh-guide-mark--added">+</span></td><td>green</td><td><strong>added</strong> — only on the Right</td></tr>
+    <tr><td><span class="jh-guide-mark jh-guide-mark--changed">~</span></td><td>amber</td><td><strong>changed</strong> — same key (or paired element), different value</td></tr>
+    <tr><td><span class="jh-guide-mark jh-guide-mark--type">≠</span></td><td>purple</td><td><strong>type change</strong> — e.g. a string on one side, a number on the other</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p>The status bar sums them up — “3 differences: 1 added, 1 missing, 1 changed”
+— or says <strong>Documents match</strong>. ▲/▼ (or <kbd>Alt</kbd>+<kbd>↑</kbd> /
+<kbd>Alt</kbd>+<kbd>↓</kbd>) step from one difference to the next, and the two
+panes scroll together.</p>
+
+<h3 id="diff-editors">Both panes are editors</h3>
+
+<p>Type, paste and delete in either pane. The panes are compared again about 1.5
+seconds after you stop typing — not on every keystroke. If a pane’s JSON is
+invalid at that point, the status bar shows the parser’s exact error for that
+pane (click it to jump there), and the last good comparison stays on screen
+until it is fixed.</p>
+
+<p>A pasted, loaded or carried-over document is laid out one value per line, so
+the two sides can line up row for row; what you type is never reformatted.
+Each pane has its own <strong>Format</strong>, <strong>Unescape</strong>, <strong>Copy</strong>,
+<strong>Clear</strong> and <strong>Load from file</strong> buttons, and smart paste works in
+each one.</p>
+
+<h3 id="diff-placeholders">Placeholders</h3>
+
+<p>Where one side has a member or element the other lacks, the other side shows
+a <strong>hatched placeholder</strong> row, so both panes stay aligned and the gap is easy
+to see. Placeholders are only drawn: they are never part of the pane’s JSON,
+and they are left out of Copy, of a copy or cut you make yourself, and of the
+text carried back to the Text tab.</p>
+
+<p><strong>Typing into a placeholder turns it into a real line</strong> on the first
+keystroke. JsonHippo indents it like the line opposite and adds the comma the
+document will need — on the line above if the new member is now the last one,
+after your text if more follow. Paste the missing member in, pause, and the
+difference disappears.</p>
+
+<h3 id="diff-reorder">Reorder</h3>
+
+<pre><code>Reorder   ( Left master | [Off] | Right master )</code></pre>
+
+<ul>
+  <li><strong>Off</strong> (the default): each pane keeps its own order. Reordered members are
+    still not counted as differences; they just sit on different rows.</li>
+  <li><strong>Left master</strong>: Left is the reference, and the <strong>Right pane is
+    rewritten</strong> in Left’s order — keys and array elements, at every level.
+    Anything only on the Right goes after the matched members, in its own order. Now
+    everything lines up row for row and only the real differences stand out.</li>
+  <li><strong>Right master</strong>: the same the other way round.</li>
+</ul>
+
+<p>Reordering changes order only: every key, string (escapes included) and number
+(as written) is kept exactly. The rewritten pane keeps following the master as
+you edit the master. Once you edit the rewritten pane yourself, it is left
+alone. Moving back to Off restores its original order — unless you have edited
+it, in which case your edits are kept.</p>
+</section>
+
+<!-- ─────────────────────────────────────────────────────────────────────── -->
+<section aria-labelledby="keyboard">
+<h2 id="keyboard">Keyboard</h2>
+
+<div class="jh-guide-table">
+<table>
+  <thead>
+    <tr><th>Where</th><th>Key</th><th>Does</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Text, or a Diff pane</td><td><kbd>Ctrl</kbd>/<kbd>⌘</kbd>+<kbd>Enter</kbd></td><td>Format</td></tr>
+    <tr><td>Tabs</td><td><kbd>←</kbd> <kbd>→</kbd></td><td>Switch between Tree, Text, Schema and Diff</td></tr>
+    <tr><td>Diff</td><td><kbd>Alt</kbd>+<kbd>↑</kbd> / <kbd>Alt</kbd>+<kbd>↓</kbd></td><td>Previous / next difference</td></tr>
+    <tr><td>Tree tab</td><td><kbd>/</kbd></td><td>Focus the filter</td></tr>
+    <tr><td>Filter</td><td><kbd>Enter</kbd> / <kbd>Shift</kbd>+<kbd>Enter</kbd></td><td>Next / previous match</td></tr>
+    <tr><td>Filter or tree</td><td><kbd>Esc</kbd></td><td>Clear the filter</td></tr>
+    <tr><td>Warnings list</td><td><kbd>Esc</kbd></td><td>Close it</td></tr>
+    <tr><td>Tree</td><td><kbd>↑</kbd> <kbd>↓</kbd></td><td>Previous / next row</td></tr>
+    <tr><td>Tree</td><td><kbd>→</kbd></td><td>Open a container, or move into it</td></tr>
+    <tr><td>Tree</td><td><kbd>←</kbd></td><td>Close a container, or move to its parent</td></tr>
+    <tr><td>Tree</td><td><kbd>Enter</kbd> or <kbd>Space</kbd></td><td>Select the row</td></tr>
+    <tr><td>Tree</td><td><kbd>Home</kbd> / <kbd>End</kbd></td><td>First / last row</td></tr>
+  </tbody>
+</table>
+</div>
+</section>
+
+<!-- ─────────────────────────────────────────────────────────────────────── -->
+<section aria-labelledby="themes">
+<h2 id="themes">Themes</h2>
+
+<p>The theme follows your system’s light or dark setting. The button in the
+header cycles <strong>System → Light → Dark</strong>, and the choice is remembered —
+this guide follows it too.</p>
+
+<p>Clicking the hippo at the top left opens <strong>About</strong>. The desktop app’s About
+also shows its version.</p>
+</section>
+
+<!-- ─────────────────────────────────────────────────────────────────────── -->
+<section aria-labelledby="error-reference">
+<h2 id="error-reference">Error reference</h2>
+
+<p>Every error JsonHippo reports, with an example that causes it and how to fix
+it. The first ten come from the parser (structure); the last seven from the
+tokenizer (the characters themselves).</p>
+
+<div class="jh-guide-table">
+<table>
+  <thead>
+    <tr><th>Code</th><th>Example</th><th>What it means</th><th>Fix</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>EXPECTED_VALUE</code></td><td><code>[1,,2]</code>, <code>{"a":}</code></td><td>A value was needed and something else was there.</td><td>Put a value in the gap, or remove the extra comma.</td></tr>
+    <tr><td><code>EXPECTED_KEY</code></td><td><code>{a:1}</code>, <code>{'a':1}</code>, <code>{1:2}</code></td><td>An object member must start with a key, and keys must be double-quoted strings.</td><td>Write the key in double quotes: <code>{"a":1}</code>.</td></tr>
+    <tr><td><code>EXPECTED_COLON</code></td><td><code>{"a" 1}</code></td><td>A key must be followed by <code>:</code>.</td><td>Add the colon: <code>{"a": 1}</code>.</td></tr>
+    <tr><td><code>EXPECTED_COMMA_OR_CLOSE</code></td><td><code>{"a":1 "b":2}</code>, <code>[1 2]</code></td><td>After a value comes <code>,</code> or the closing bracket. Most often a comma is missing.</td><td>Add the comma between the two values.</td></tr>
+    <tr><td><code>TRAILING_COMMA</code></td><td><code>[1,2,]</code>, <code>{"a":1,}</code></td><td>JSON does not allow a comma after the last item.</td><td>Delete the comma before the closing bracket.</td></tr>
+    <tr><td><code>MISMATCHED_CLOSE</code></td><td><code>[1,2}</code></td><td>A closing bracket does not match the one that opened the container. The hint says where that one was opened.</td><td>Use the matching closer (<code>]</code> for <code>[</code>, <code>}</code> for <code>{</code>), or add the missing opener.</td></tr>
+    <tr><td><code>UNCLOSED_CONTAINER</code></td><td><code>{"a": [1, 2</code></td><td>The input ended with a <code>{</code> or <code>[</code> still open. The error points at that opener, not the end of the file.</td><td>Add the missing <code>}</code> or <code>]</code>. The hint lists every container still open.</td></tr>
+    <tr><td><code>TRAILING_CONTENT</code></td><td><code>{} {}</code>, <code>{"a":1}x</code></td><td>Something follows the end of the JSON value.</td><td>Remove it, or wrap several values in an array: <code>[{}, {}]</code>.</td></tr>
+    <tr><td><code>EMPTY_INPUT</code></td><td>(only whitespace)</td><td>There is no JSON at all. Reported by Format and Minify.</td><td>Paste or type some JSON.</td></tr>
+    <tr><td><code>MAX_DEPTH</code></td><td>10,001 nested <code>[</code></td><td>Nesting deeper than 10,000 levels.</td><td>Almost certainly generated by mistake; flatten the structure.</td></tr>
+    <tr><td><code>UNTERMINATED_STRING</code></td><td><code>{"name": "Ada</code> and the line ends</td><td>A string has no closing quote before the end of its line. The error points at the <strong>opening</strong> quote.</td><td>Add the closing <code>"</code>.</td></tr>
+    <tr><td><code>BAD_ESCAPE</code></td><td><code>"C:\Users"</code></td><td>A backslash is followed by something that is not a JSON escape. JSON allows <code>\" \\ \/ \b \f \n \r \t \uXXXX</code>.</td><td>Escape the backslash itself: <code>"C:\\Users"</code>.</td></tr>
+    <tr><td><code>BAD_UNICODE_ESCAPE</code></td><td><code>"caf\u00g9"</code></td><td><code>\u</code> must be followed by exactly four hex digits.</td><td>Fix the digits: <code>"caf\u00e9"</code>.</td></tr>
+    <tr><td><code>CONTROL_CHAR_IN_STRING</code></td><td>a raw tab or line break inside <code>"…"</code></td><td>Control characters must be escaped inside strings.</td><td>Write <code>\t</code> for a tab and <code>\n</code> for a line break.</td></tr>
+    <tr><td><code>BAD_NUMBER</code></td><td><code>01</code>, <code>1.</code>, <code>-</code>, <code>1e</code>, <code>0x1F</code></td><td>A number that breaks JSON’s number rules: no leading zeros, digits after a decimal point and in an exponent, no hex.</td><td>Write it as JSON allows: <code>1</code>, <code>1.0</code>, <code>-1</code>, <code>1e5</code>, <code>31</code>.</td></tr>
+    <tr><td><code>BAD_LITERAL</code></td><td><code>tru</code>, <code>True</code>, <code>undefined</code>, <code>NaN</code></td><td>A bare word that is not <code>true</code>, <code>false</code> or <code>null</code>.</td><td>Fix the spelling (lower-case), use <code>null</code> for undefined, or quote it if it is text.</td></tr>
+    <tr><td><code>UNEXPECTED_CHAR</code></td><td><code>'</code>, <code>#</code>, <code>@</code>, a no-break space</td><td>A character that cannot start anything in JSON. The hint names the usual causes: single quotes, comments, curly quotes, invisible characters.</td><td>Delete it or replace it, as the hint suggests.</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p>And the warnings, which do not stop the JSON being valid (see
+<a href="#warnings">Warnings</a>):</p>
+
+<div class="jh-guide-table">
+<table>
+  <thead>
+    <tr><th>Code</th><th>Example</th><th>What it means</th><th>Fix</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>DUPLICATE_KEY</code></td><td><code>{"id": 1, "id": 2}</code></td><td>The same key twice in one object. Most programs keep only the last one.</td><td>Rename or remove one of them.</td></tr>
+    <tr><td><code>EMPTY_KEY</code></td><td><code>{"": 1}</code></td><td>A key that is the empty string.</td><td>Give it its name.</td></tr>
+    <tr><td><code>NUMBER_PRECISION</code></td><td><code>12345678901234567890</code>, <code>1e400</code></td><td>A number that changes when read as a 64-bit float.</td><td>If every digit matters, send it as a string: <code>"12345678901234567890"</code>.</td></tr>
+  </tbody>
+</table>
+</div>
+</section>
+
+<footer class="jh-guide-footer">
+  <p>Copyright © 2026 Jason Figge · Apache-2.0 ·
+    <a href="https://github.com/jfigge/jsonhippo" rel="noopener noreferrer">Source on GitHub</a></p>
+</footer>
+
+</main>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,247 @@
+/* JsonHippo — guide.css
+ *
+ * The user guide (docs/index.html). Loaded after app.css, so the guide gets
+ * the app's two themes, its header and its buttons without copying a single
+ * colour. Everything here is scoped to body.jh-guide.
+ *
+ * app.css makes <body> a full-height flex box that never scrolls (the app
+ * scrolls inside its panes); the guide is a document, so that is undone first.
+ */
+
+/* ── Page ───────────────────────────────────────────────────────────────── */
+
+html:has(body.jh-guide) {
+  height: auto;
+  scroll-padding-top: 16px;
+}
+
+body.jh-guide {
+  display: block;
+  height: auto;
+  overflow: visible;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.jh-guide a {
+  color: var(--accent);
+}
+
+.jh-guide .jh-header a.jh-brand {
+  text-decoration: none;
+}
+
+/* ── Layout: contents beside the prose, above it on a narrow screen ────── */
+
+.jh-guide-layout {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  gap: 48px;
+  align-items: start;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 32px 24px 80px;
+}
+
+.jh-guide-toc {
+  position: sticky;
+  top: 24px;
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.jh-guide-toc h2 {
+  margin: 0 0 10px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.jh-guide-toc ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.jh-guide-toc a {
+  display: block;
+  padding: 4px 0 4px 10px;
+  border-left: 2px solid var(--surface-0);
+  color: var(--subtext);
+  text-decoration: none;
+}
+
+.jh-guide-toc a:hover {
+  border-left-color: var(--brand);
+  color: var(--text);
+}
+
+.jh-guide-body {
+  max-width: 76ch;
+}
+
+/* ── Prose ──────────────────────────────────────────────────────────────── */
+
+.jh-guide-body h1 {
+  margin: 0 0 12px;
+  color: var(--accent);
+  font-size: 30px;
+  line-height: 1.2;
+}
+
+.jh-guide-lede {
+  margin: 0 0 8px;
+  color: var(--subtext);
+  font-size: 17px;
+}
+
+.jh-guide-body section {
+  padding-top: 8px;
+}
+
+.jh-guide-body h2 {
+  margin: 40px 0 12px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--surface-0);
+  font-size: 22px;
+  line-height: 1.3;
+}
+
+.jh-guide-body h3 {
+  margin: 28px 0 8px;
+  font-size: 17px;
+}
+
+.jh-guide-body p,
+.jh-guide-body ul,
+.jh-guide-body ol {
+  margin: 0 0 14px;
+}
+
+.jh-guide-body li {
+  margin-bottom: 4px;
+}
+
+.jh-guide-body code {
+  padding: 1px 4px;
+  border-radius: 4px;
+  background: var(--mantle);
+  font-family: var(--mono);
+  font-size: 0.88em;
+}
+
+.jh-guide-body pre {
+  margin: 0 0 16px;
+  padding: 12px 14px;
+  overflow-x: auto;
+  border: 1px solid var(--surface-0);
+  border-radius: 8px;
+  background: var(--mantle);
+  font-family: var(--mono);
+  font-size: var(--code-size);
+  line-height: var(--code-line);
+}
+
+.jh-guide-body pre code {
+  padding: 0;
+  background: none;
+  font-size: inherit;
+}
+
+.jh-guide-body kbd {
+  display: inline-block;
+  min-width: 1.6em;
+  padding: 0 5px;
+  border: 1px solid var(--surface-2);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  background: var(--mantle);
+  font-family: var(--sans);
+  font-size: 0.85em;
+  line-height: 1.5;
+  text-align: center;
+}
+
+/* ── Tables ─────────────────────────────────────────────────────────────── */
+
+/* The wrapper scrolls sideways, so a wide table never widens the page. */
+.jh-guide-table {
+  margin: 0 0 18px;
+  overflow-x: auto;
+}
+
+.jh-guide-body table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.jh-guide-body th,
+.jh-guide-body td {
+  padding: 7px 10px;
+  border: 1px solid var(--surface-1);
+  text-align: left;
+  vertical-align: top;
+}
+
+.jh-guide-body th {
+  background: var(--mantle);
+  font-weight: 600;
+}
+
+.jh-guide-body td code {
+  white-space: nowrap;
+}
+
+/* The Diff marks, in the colours the Diff tab draws them in. */
+.jh-guide-mark {
+  font-family: var(--mono);
+  font-weight: 700;
+}
+
+.jh-guide-mark--missing { color: var(--diff-missing-ink); }
+.jh-guide-mark--added { color: var(--diff-added-ink); }
+.jh-guide-mark--changed { color: var(--diff-changed-ink); }
+.jh-guide-mark--type { color: var(--diff-type-ink); }
+
+/* ── Footer ─────────────────────────────────────────────────────────────── */
+
+.jh-guide-footer {
+  margin-top: 56px;
+  padding-top: 16px;
+  border-top: 1px solid var(--surface-0);
+  color: var(--muted);
+  font-size: 13px;
+}
+
+/* ── Narrow screens ─────────────────────────────────────────────────────── */
+
+@media (max-width: 800px) {
+  .jh-guide-layout {
+    display: block;
+    padding: 20px 16px 60px;
+  }
+
+  .jh-guide-toc {
+    position: static;
+    max-height: none;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--surface-0);
+  }
+
+  .jh-guide .jh-tagline {
+    display: none;
+  }
+}
+
+@media (max-width: 560px) {
+  .jh-guide .jh-header-actions .jh-btn span {
+    display: none;
+  }
+}

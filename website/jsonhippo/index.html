@@ -55,16 +55,21 @@
   <symbol id="jh-i-system" viewBox="0 0 16 16"><circle cx="8" cy="8" r="5.5" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 2.5a5.5 5.5 0 0 1 0 11z" fill="currentColor"/></symbol>
   <symbol id="jh-i-sun" viewBox="0 0 16 16"><circle cx="8" cy="8" r="3" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 1.5v1.5M8 13v1.5M1.5 8H3M13 8h1.5M3.4 3.4l1 1M11.6 11.6l1 1M3.4 12.6l1-1M11.6 4.4l1-1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></symbol>
   <symbol id="jh-i-moon" viewBox="0 0 16 16"><path d="M13 9.5A5.5 5.5 0 0 1 6.5 3a5.5 5.5 0 1 0 6.5 6.5z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></symbol>
+  <symbol id="jh-i-home" viewBox="0 0 16 16"><path d="M2 7.5L8 2.5l6 5M3.5 6.5v7h3.5v-4h2v4h3.5v-7" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   <symbol id="jh-i-github" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/></symbol>
 </svg>
 
 <header class="jh-header">
-  <a class="jh-brand" href="./" aria-label="JsonHippo home">
+  <button type="button" class="jh-brand" id="jh-about-open" aria-haspopup="dialog" title="About JsonHippo">
     <img class="jh-logo" src="img/jsonhippo.svg" width="28" height="28" alt="">
     <span class="jh-name">JsonHippo</span>
-  </a>
+  </button>
   <span class="jh-tagline">A JSON viewer that tells you exactly where it broke</span>
   <div class="jh-header-actions">
+    <a class="jh-btn jh-btn--ghost" href="https://hippoherd.com/" title="Hippo Herd">
+      <svg class="jh-icon" aria-hidden="true"><use href="#jh-i-home"/></svg>
+      <span>Hippo Herd</span>
+    </a>
     <button type="button" class="jh-btn jh-btn--ghost" id="jh-theme" aria-label="Theme: follow the system">
       <svg class="jh-icon" aria-hidden="true"><use href="#jh-i-system"/></svg>
       <span class="jh-theme-label">System</span>
@@ -75,6 +80,25 @@
     </a>
   </div>
 </header>
+
+<!-- About, opened from the brand hippo. The links open a new tab (the system
+     browser, on desktop) so the JSON in this one is never lost. -->
+<dialog class="jh-about" id="jh-about" aria-labelledby="jh-about-name">
+  <img class="jh-about-logo" src="img/jsonhippo.svg" width="96" height="96" alt="">
+  <h2 class="jh-about-name" id="jh-about-name">JsonHippo</h2>
+  <p class="jh-about-version" id="jh-about-version" hidden></p>
+  <p class="jh-about-tagline">A JSON viewer that tells you exactly where it broke</p>
+  <p class="jh-about-desc">Nothing you paste leaves this machine.</p>
+  <p class="jh-about-links">
+    <a href="https://hippoherd.com/" target="_blank" rel="noopener noreferrer">Hippo Herd</a>
+    <a href="https://hippoherd.com/jsonhippo/docs/" target="_blank" rel="noopener noreferrer">User guide</a>
+    <a href="https://github.com/jfigge/jsonhippo" target="_blank" rel="noopener noreferrer">Source on GitHub</a>
+  </p>
+  <p class="jh-about-credit">Copyright © 2026 Jason Figge · Apache-2.0</p>
+  <form method="dialog">
+    <button type="submit" class="jh-btn" autofocus>Close</button>
+  </form>
+</dialog>
 
 <div class="jh-tabs" role="tablist" aria-label="View">
   <!-- Tree comes first in the bar, but the page opens on Text: that is
@@ -96,7 +120,7 @@
       <button type="button" class="jh-btn" data-action="minify" title="Remove all whitespace">
         <svg class="jh-icon" aria-hidden="true"><use href="#jh-i-minify"/></svg><span>Minify</span>
       </button>
-      <button type="button" class="jh-btn" data-action="unescape" title="Unescape escaped JSON">
+      <button type="button" class="jh-btn" id="jh-unescape" data-action="unescape" title="Unescape escaped JSON">
         <svg class="jh-icon" aria-hidden="true"><use href="#jh-i-unescape"/></svg><span>Unescape</span>
       </button>
       <span class="jh-toolbar-sep" aria-hidden="true"></span>
