@@ -382,14 +382,15 @@ export const HERD = [
   {
     slug: "markhippo",
     name: "MarkHippo",
-    // Hue 65.5, found the way Maze's, Scan's and Json's were: the midpoint of
-    // the widest arc still free — the 57 degrees between Keep at 37 and Scan
-    // at 94. A hue that close to yellow only reaches both bars when it is
-    // deep, hence the olive: accent text on #1c1c1c at 4.71:1, the white
-    // hippo on top of it at 3.62:1. It must stay in step with the same value
-    // in scripts/make-marks.mjs, and with --brand in jfigge/markhippo's
-    // src/css/app.css.
-    color: "#818E00",
+    // Orange, hue 25.7: the colour of MarkHippo's own logo and app
+    // (src/img/markhippo.svg, and --brand in its src/css/app.css), chosen
+    // there rather than found in a gap on the wheel the way Maze's, Scan's
+    // and Json's were — it sits 11 degrees short of Keep's amber at 37, and
+    // is told apart from it by being deeper and redder. Accent text on
+    // #1c1c1c at 4.74:1, the white hippo on top of it at 3.59:1. It must
+    // stay in step with the same value in scripts/make-marks.mjs, and with
+    // --brand in jfigge/markhippo's src/css/app.css.
+    color: "#E06000",
     tagline: "Markdown editor on its own parser",
 
     // Modelled on JsonHippo: the web app runs here, at /markhippo/, copied in
@@ -398,15 +399,19 @@ export const HERD = [
     // /markhippo/about/. Its user guide ships inside the app, at
     // /markhippo/docs/ — on this site, so the sitemap lists it.
     //
-    // The desktop app (the same page in Electron) is a later milestone, so for
-    // now the platforms are the web alone and there are no downloads. When
-    // the Electron build ships: add the desktop platforms, flip `desktop` for
-    // it in website/herd.js, and move status on.
+    // The desktop app (the same page in Electron, with files saved in place
+    // and the user's own plugins) is built — jfigge/markhippo's electron/, and
+    // its Release workflow, JsonHippo's — but has no release yet, so the
+    // platforms are still the web alone and there are no downloads; the
+    // callout says it is coming. When its first Release is out: add the
+    // desktop platforms ("macOS", "Windows", "Linux" before "Web", as
+    // JsonHippo's), flip `desktop` for it in website/herd.js, move status on,
+    // and drop the callout.
     app: "/markhippo/",
     page: "/markhippo/about/",
     domain: null,
     docs: "https://hippoherd.com/markhippo/docs/",
-    stack: "Vanilla JS",
+    stack: "Electron · Vanilla JS",
     license: "GPL-3.0",
     platforms: ["Web"],
     status: "development",
@@ -415,7 +420,12 @@ export const HERD = [
     lead: "Write markdown on the left, read it rendered on the right. MarkHippo reads it with its own CommonMark parser — every one of the spec's 652 examples, byte for byte — built to drive highlighting, autocomplete and navigation from the same tree. In your browser; nothing is uploaded.",
 
     blurb:
-      "Open a <code>.md</code> file on a Mac and you get plain text. MarkHippo renders it: a split pane with the markdown on the left and the document on the right, updated a moment after you stop typing. Underneath is a parser written for it rather than borrowed — the whole of CommonMark 0.31.2, with every block and inline element knowing exactly which characters of the source it came from, and only the blocks around an edit reparsed as you type. That one tree renders the preview, colours the editor and drives autocomplete that teaches the syntax as you type — <code>/</code> for headings, lists and code blocks, the languages on a code fence — and lays out the outline, the minimap and synced scrolling. The core knows no markdown at all — it hosts plugins, and CommonMark is the first of them.",
+      "Open a <code>.md</code> file on a Mac and you get plain text. MarkHippo renders it: a split pane with the markdown on the left and the document on the right, updated a moment after you stop typing. Underneath is a parser written for it rather than borrowed — the whole of CommonMark 0.31.2, with every block and inline element knowing exactly which characters of the source it came from, and only the blocks around an edit reparsed as you type. That one tree renders the preview, colours the editor and drives autocomplete that teaches the syntax as you type — <code>/</code> for headings, lists and code blocks, the languages on a code fence — and lays out the outline, the minimap and synced scrolling. The core knows no markdown at all — it hosts plugins, and CommonMark is the first of them. Paste a screenshot and it goes into the document; print it, save it as a PDF, or export it as an HTML page, RTF for Pages and Word, or plain text.",
+
+    callout: {
+      title: "A desktop app is on its way",
+      body: "The same page in its own window, for macOS, Windows and Linux: files opened and saved in place, pasted pictures kept in a folder beside the document, and your own plugins loaded from a folder. Its installers appear here with its first release; until then, MarkHippo runs right here in your browser.",
+    },
 
     features: [
       {
@@ -446,7 +456,7 @@ export const HERD = [
       {
         icon: "network",
         title: "Everything is a plugin",
-        body: "The core only hosts plugins. CommonMark is one, written against the same API a third party would use: new blocks, inline syntax, renderers for fenced languages like <code>mermaid</code>, and autocomplete suggestions.",
+        body: "The core only hosts plugins. CommonMark is one, written against the same API a third party would use: new blocks, inline syntax, renderers for fenced languages like <code>mermaid</code>, and autocomplete suggestions. The desktop app loads your own, from a folder.",
       },
       {
         icon: "grid",
@@ -462,6 +472,11 @@ export const HERD = [
         icon: "activity",
         title: "Tables, math and diagrams",
         body: "GitHub's tables, task lists, strikethrough, bare links and footnotes, LaTeX math drawn as MathML, and Mermaid diagrams — each a plugin you can switch off, all working offline.",
+      },
+      {
+        icon: "send",
+        title: "Pictures in, documents out",
+        body: "Paste a screenshot or drop a picture and it goes into the document, which stays one self-contained file. Print it or save a PDF, export a single HTML page, RTF for Pages and Word, or plain text, or copy it as rich text into an email.",
       },
       {
         icon: "lock",

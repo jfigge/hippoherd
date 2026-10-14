@@ -180,17 +180,17 @@ const HIPPOS = {
   },
   markhippo: {
     name: "MarkHippo",
-    // Hue 65.5 — the midpoint of the 57-degree arc between Keep at 37 and
-    // Scan at 94, the widest left once Json took 276. See the same value, and
-    // the same note, in content/hippos.mjs.
-    color: "#818E00",
-    eye: "#818E00",
-    // M↓ across the snout: the Markdown mark, the one symbol the format has.
-    // Copied character for character from jfigge/markhippo's
-    // src/img/markhippo.svg, which is that project's drawing of record (its
-    // favicon and in-app logo). If that file changes, this copies it.
+    // Orange, hue 25.7 — the colour of MarkHippo's own logo and app. See
+    // the same value, and the same note, in content/hippos.mjs.
+    color: "#E06000",
+    eye: "#E06000",
+    // The Markdown mark across the snout, as one wide M whose right stroke
+    // ends in the down arrow's head. Copied character for character from
+    // jfigge/markhippo's src/img/markhippo.svg, which is that project's
+    // drawing of record (its favicon, in-app logo and desktop icons). If that
+    // file changes, this copies it.
     motif: (c) =>
-      `<path d="M200 370 L200 306 L229 342 L258 306 L258 370 M296 306 L296 368 M278 350 L296 368 L314 350" fill="none" stroke="${c}" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/>`,
+      `<path d="M200 370 L200 306 L256 346 L312 306 L312 370 M294 352 L312 370 L330 352" fill="none" stroke="${c}" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/>`,
   },
 };
 

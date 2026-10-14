@@ -55,13 +55,16 @@ export class PreviewView {
   // `taskAttribute`: the attribute the renderer puts a task checkbox's
   // source offset in (its `taskAttribute` option); `onTask(offset)` is
   // called when one is clicked. `onUpdate()` runs after each new HTML is in
-  // place (the plugins' enhancers).
-  constructor(el, scroller, { taskAttribute, onTask, onUpdate } = {}) {
+  // place (the plugins' enhancers). `rewrite(root)` adjusts the sanitized
+  // HTML before it goes in — the desktop app points the document's own
+  // images at the files beside it.
+  constructor(el, scroller, { taskAttribute, onTask, onUpdate, rewrite } = {}) {
     this.el = el;
     this.scroller = scroller ?? el;
     this.taskAttribute = taskAttribute;
     this.onTask = onTask ?? (() => {});
     this.onUpdate = onUpdate ?? (() => {});
+    this.rewrite = rewrite ?? (() => {});
     el.addEventListener("click", (e) => this.click(e));
   }
 
@@ -69,6 +72,7 @@ export class PreviewView {
     const template = document.createElement("template");
     template.innerHTML = html;
     sanitize(template.content);
+    this.rewrite(template.content);
     // Keep the reader where they were: replacing the content resets nothing
     // the browser would preserve on its own.
     const top = this.scroller.scrollTop;

@@ -21,7 +21,7 @@
  * palettes.js — the Hippo palette: MarkHippo's own colours, the default.
  *
  * Its dark mode is the Hippo family's palette (the one hippoherd.com uses)
- * and its light mode the daylight counterpart, with the brand olive as the
+ * and its light mode the daylight counterpart, with the brand orange as the
  * accent. These are the same values app.css and syntax.css carry as their
  * defaults, for the first paint before any script has run; keep them in
  * step. Other palettes come from plugins (`api.theme`), the bundled ones
@@ -42,9 +42,9 @@ export const HIPPO = {
     "--text": "#1f1f24",
     "--subtext": "#57575f",
     "--muted": "#6e6e76",
-    "--accent": "#5e6800",
-    "--selection": "#eef2c4",
-    "--quote-bar": "#c8cf8a",
+    "--accent": "#a84800",
+    "--selection": "#fde4d0",
+    "--quote-bar": "#eeb183",
     "--error": "#c4271d",
     "--md-code": "#0f7a80",
     "--tk-keyword": "#8839ef",
@@ -70,9 +70,9 @@ export const HIPPO = {
     "--text": "#e8e8e8",
     "--subtext": "#b0b0b0",
     "--muted": "#8a8a8a",
-    "--accent": "#c3d11a",
-    "--selection": "#3b3f14",
-    "--quote-bar": "#5c6414",
+    "--accent": "#ff9a52",
+    "--selection": "#4a2a12",
+    "--quote-bar": "#80410f",
     "--error": "#ff7b72",
     "--md-code": "#94e2d5",
     "--tk-keyword": "#cba6f7",

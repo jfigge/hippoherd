@@ -71,6 +71,7 @@
       </button>
       <div class="mh-menu" id="mh-export-menu" role="menu" aria-labelledby="mh-export" hidden>
         <button type="button" role="menuitem" data-value="print">Print or save as PDF…<span class="mh-menu-hint">Ctrl/⌘+P</span></button>
+        <button type="button" role="menuitem" data-value="pdf" id="mh-export-pdf" hidden>PDF<span class="mh-menu-hint">.pdf</span></button>
         <button type="button" role="menuitem" data-value="html">HTML page<span class="mh-menu-hint">.html</span></button>
         <button type="button" role="menuitem" data-value="rtf">Rich text, for Pages or Word<span class="mh-menu-hint">.rtf</span></button>
         <button type="button" role="menuitem" data-value="text">Plain text<span class="mh-menu-hint">.txt</span></button>
@@ -116,6 +117,7 @@
     <a href="docs/" target="_blank" rel="noopener noreferrer">User guide</a>
     <a href="https://github.com/jfigge/markhippo" target="_blank" rel="noopener noreferrer">Source on GitHub</a>
   </p>
+  <p class="mh-about-version" id="mh-about-version" hidden></p>
   <p class="mh-about-credit">Designed by Jason, Coded by Claude<br>Copyright © 2026 Jason Figge · GPL-3.0</p>
   <p class="mh-about-support">
     <a href="https://github.com/sponsors/jfigge" target="_blank" rel="noopener noreferrer"><span aria-hidden="true">♥</span> Support MarkHippo…</a>
@@ -126,11 +128,16 @@
 </dialog>
 
 <!-- The plugins, listed from the running host. On the web the set is the
-     bundled one; the desktop app will add the user's own. -->
+     bundled one; the desktop app adds the user's own (js/desktop.js). -->
 <dialog class="mh-plugins" id="mh-plugins" aria-labelledby="mh-plugins-title">
   <h2 class="mh-plugins-title" id="mh-plugins-title">Plugins</h2>
-  <p class="mh-plugins-intro">Everything MarkHippo understands comes from a plugin, CommonMark included. The web app runs the plugins bundled with it; the desktop app will also load your own.</p>
+  <p class="mh-plugins-intro">Everything MarkHippo understands comes from a plugin, CommonMark included. The web app runs the plugins bundled with it; the desktop app also loads your own.</p>
   <ul class="mh-plugin-list" id="mh-plugin-list"></ul>
+  <div class="mh-plugins-desktop" id="mh-plugins-desktop" hidden>
+    <p>To add a plugin, put its <code>.js</code> file, or its folder, in your plugins folder, then reload.</p>
+    <button type="button" class="mh-btn" id="mh-plugins-folder">Open plugins folder</button>
+    <button type="button" class="mh-btn" id="mh-plugins-reload">Reload plugins</button>
+  </div>
   <form method="dialog">
     <button type="submit" class="mh-btn">Done</button>
   </form>

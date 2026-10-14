@@ -95,8 +95,6 @@ export const SKIPPED = new Set([
   "video",
 ]);
 
-export const isElement = (node, name) => node.nodeType === ELEMENT && (name === undefined || node.localName === name);
-
 export const elements = (node) => [...node.childNodes].filter((child) => child.nodeType === ELEMENT);
 
 export function hasClass(node, name) {

@@ -30,6 +30,9 @@
 
 export const HIGHLIGHT_DELAY_MS = 150;
 export const RENDER_DELAY_MS = 1000;
+// The document is kept in the browser's storage after a longer pause: with
+// pictures in it, it can be megabytes, and the write blocks the page.
+export const STORE_DELAY_MS = 2000;
 
 // A debounced `fn`: each call restarts the wait. `.flush()` runs a pending
 // call now; `.cancel()` drops it.

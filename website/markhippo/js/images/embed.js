@@ -37,10 +37,10 @@
 const reImageDefinition = /^\[image-(\d+)\]: /;
 
 // The label for a new image: image-N, one past the highest the text
-// already defines.
+// already defines. Labels match whatever their case, as CommonMark's do.
 export function nextImageLabel(text) {
   let max = 0;
-  for (const m of text.matchAll(/^ {0,3}\[image-(\d+)\]:/gm)) max = Math.max(max, Number(m[1]));
+  for (const m of text.matchAll(/^ {0,3}\[image-(\d+)\]:/gim)) max = Math.max(max, Number(m[1]));
   return `image-${max + 1}`;
 }
 

@@ -97,7 +97,8 @@ function opaque(g, canvas) {
   return true;
 }
 
-function dataUrl(blob) {
+// A blob as a data: URL.
+export function dataUrl(blob) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = () => resolve(reader.result);

@@ -32,9 +32,15 @@
  * Printing never prints the page itself: the document is put in a print
  * area (#mh-print), which the print stylesheet shows alone, in the light
  * colours of the palette in use.
+ *
+ * In the desktop app (desktop.js) the shell prints, makes PDFs and holds
+ * the clipboard, and the document's own pictures — files beside it, which
+ * no export could reach by their relative paths — go into every export as
+ * data: URLs.
  */
 
 import { enhance } from "./enhance.js";
+import { dataUrl } from "./image-import.js";
 import { sanitize } from "./preview-view.js";
 import { htmlPage, pageCss } from "./export/page.js";
 import { toRtf } from "./export/rtf.js";
@@ -49,13 +55,20 @@ export class Exporter {
   // plugins' registry (its enhancers); `colours()`: the light colours of
   // the palette in use; `title()`: the document's title; `printArea`: the
   // element printing shows; `preview`: the preview's element.
-  constructor({ render, registry, colours, title, printArea, preview }) {
+  //
+  // The desktop app's: `localImages(root)` puts the document's own pictures
+  // in `root` as data: URLs; `printer()` prints the print area and settles
+  // when done; `clipboard(html, text)` copies.
+  constructor({ render, registry, colours, title, printArea, preview, localImages, printer, clipboard }) {
     this.render = render;
     this.registry = registry;
     this.colours = colours;
     this.title = title;
     this.printArea = printArea;
     this.preview = preview;
+    this.localImages = localImages ?? (async () => {});
+    this.printer = printer ?? null;
+    this.clipboard = clipboard ?? null;
     window.addEventListener("beforeprint", () => this.beforePrint());
     window.addEventListener("afterprint", () => this.afterPrint());
   }
@@ -70,14 +83,14 @@ export class Exporter {
 
   // The document finished by the enhancers, in the light theme. They need
   // it in the page while they work, so it waits there out of sight.
-  async finished() {
+  async finished(tree = this.tree()) {
     const stage = document.createElement("div");
     stage.className = "mh-export-stage";
     stage.setAttribute("aria-hidden", "true");
-    stage.append(this.tree());
+    stage.append(tree);
     document.body.append(stage);
     try {
-      await enhance(stage, this.registry(), { dark: false });
+      await Promise.all([enhance(stage, this.registry(), { dark: false }), this.localImages(stage)]);
     } finally {
       stage.remove();
     }
@@ -88,18 +101,21 @@ export class Exporter {
     return toText(this.tree());
   }
 
-  rtf() {
-    return toRtf(this.tree(), { title: this.title() });
+  async rtf() {
+    const tree = this.tree();
+    await this.localImages(tree);
+    return toRtf(tree, { title: this.title() });
   }
 
   async html() {
     const tree = this.tree();
     const used = this.registry().enhancers.filter((e) => e.stylesheet && tree.querySelector(e.selector));
-    const stage = await this.finished();
-    const sheets = await Promise.all([...STYLESHEETS.map((href) => new URL(href, document.baseURI).href), ...used.map((e) => e.stylesheet)].map(stylesheet));
+    // The styles are read while the enhancers work.
+    const sheets = Promise.all([...STYLESHEETS.map((href) => new URL(href, document.baseURI).href), ...used.map((e) => e.stylesheet)].map(stylesheet));
+    const [stage, css] = await Promise.all([this.finished(tree), sheets]);
     const computed = getComputedStyle(document.documentElement);
     const vars = { ...Object.fromEntries(PAGE_VARS.map((name) => [name, computed.getPropertyValue(name).trim()])), ...this.colours() };
-    return htmlPage({ title: this.title(), body: stage.innerHTML, css: [...sheets, pageCss(vars)].join("\n") });
+    return htmlPage({ title: this.title(), body: stage.innerHTML, css: [...css, pageCss(vars)].join("\n") });
   }
 
   // Rich text (the finished HTML) and plain text together, for pasting
@@ -107,6 +123,10 @@ export class Exporter {
   // rendered, without waiting for the enhancers.
   async copy() {
     const text = this.text();
+    if (this.clipboard) {
+      await this.clipboard((await this.finished()).innerHTML, text);
+      return;
+    }
     if (window.ClipboardItem && navigator.clipboard?.write) {
       // The HTML is a promise, so the copy keeps the click's permission
       // while the enhancers work (Safari requires this).
@@ -125,7 +145,29 @@ export class Exporter {
   async print() {
     const stage = await this.finished();
     this.fill([...stage.childNodes]);
-    window.print();
+    if (!this.printer) {
+      window.print();
+      return;
+    }
+    await this.printing(() => this.printer());
+  }
+
+  // The document as a PDF, which `save()` (the desktop app's) makes from
+  // the print area and saves; answers what it does.
+  async pdf(save) {
+    const stage = await this.finished();
+    this.fill([...stage.childNodes]);
+    return this.printing(save);
+  }
+
+  // Printing done by the shell, which fires no print events of its own.
+  async printing(run) {
+    this.beforePrint();
+    try {
+      return await run();
+    } finally {
+      this.afterPrint();
+    }
   }
 
   // Printing started from the browser (its menu), with no time to finish a
@@ -175,15 +217,6 @@ async function stylesheet(href) {
   }
   css = css.replace(/url\(\s*(['"]?)([^'")]+)\1\s*\)/g, (m, _q, url) => (inlined.has(url) ? `url("${inlined.get(url)}")` : m));
   return `/* ${href.split("/").pop()} */\n${css}`;
-}
-
-function dataUrl(blob) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = () => reject(reader.error);
-    reader.readAsDataURL(blob);
-  });
 }
 
 // Copy `data` ({ type: string }) the old way: a copy command whose event

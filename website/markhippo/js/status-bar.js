@@ -40,15 +40,18 @@ export class StatusBar {
   note(text, { warn = false } = {}) {
     clearTimeout(this.timer);
     this.show(text, warn);
-    this.timer = setTimeout(() => this.show(this.lasting, Boolean(this.lasting)), NOTE_MS);
+    this.timer = setTimeout(() => {
+      this.timer = 0;
+      this.show(this.lasting, Boolean(this.lasting));
+    }, NOTE_MS);
   }
 
-  // A warning that stays until it is withdrawn with an empty `text`.
+  // A warning that stays until it is withdrawn with an empty `text`. A note
+  // showing keeps its few seconds; the warning follows it.
   warning(text) {
     if (text === this.lasting) return;
     this.lasting = text;
-    clearTimeout(this.timer);
-    this.show(text, true);
+    if (!this.timer) this.show(text, true);
   }
 
   show(text, warn) {

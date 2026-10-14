@@ -38,10 +38,12 @@
       <li><a href="#themes">Themes</a></li>
       <li><a href="#images">Images</a></li>
       <li><a href="#files">Opening, saving and exporting</a></li>
+      <li><a href="#desktop">The desktop app</a></li>
       <li><a href="#keys">Keyboard</a></li>
       <li><a href="#syntax">What markdown it understands</a></li>
       <li><a href="#privacy">Privacy and safety</a></li>
       <li><a href="#plugins">Under the hood: one parser, plugins</a></li>
+      <li><a href="#your-plugins">Your own plugins</a></li>
       <li><a href="#coming">Coming next</a></li>
     </ol>
   </nav>
@@ -83,6 +85,7 @@
 
   <h2 id="images">Images</h2>
   <p>Paste a screenshot or a copied picture into the editor, or drop image files on it, and they go into the document: at the cursor when pasted, where you let go when dropped. The picture's description (its alt text) is selected afterwards, so you can type one straight away; it is what screen readers say and what shows if the picture can't.</p>
+  <p>In the <a href="#desktop">desktop app</a>, once a document is saved, a picture you paste or drop is saved as a file in an <code>assets</code> folder beside it and linked by its path, such as <code>![login screen](assets/login-screen.png)</code>. The rest of this section is about the web, and about documents not yet saved.</p>
   <p>On the web there is no folder beside your document for pictures to go in, so they go in the document itself, written out as data. To keep your text readable, that data is not put where the picture is but at the end of the document, as a numbered reference:</p>
   <pre><code>Here is the login screen: ![login screen][image-1]
 …
@@ -109,6 +112,17 @@
   </ul>
   <p>Exports are always in your palette's light colours, as on paper, whatever the mode. Math and diagrams are drawn in the HTML page, the print and the copy; in RTF and plain text, math is its LaTeX and a diagram its Mermaid source.</p>
 
+  <h2 id="desktop">The desktop app</h2>
+  <p>MarkHippo is also a desktop app for macOS, Windows and Linux; its installers go on <a href="https://hippoherd.com/markhippo/about/">its page on Hippo Herd</a> with its first release. It is this same page, in a window of its own, and it adds what a browser cannot do:</p>
+  <ul>
+    <li><strong>Files.</strong> Open a <code>.md</code> file by double-clicking it, by dropping it on the window or the app's icon, or with <strong>File → Open…</strong>. <strong>Save</strong> writes it back in place, and <strong>Save As…</strong> makes a copy. The title bar shows when there are unsaved changes, and the app asks before closing or opening another document over them. The document you had open is opened again next time.</li>
+    <li><strong>Pictures beside the document.</strong> Once a document is saved, pasted or dropped pictures go in an <code>assets</code> folder beside it (see <a href="#images">Images</a>). Pictures a document already links to by a path, such as <code>images/diagram.png</code>, show in the preview too.</li>
+    <li><strong>Exports where you choose.</strong> Each export is saved through the usual Save dialog. <strong>Export → PDF</strong> makes a PDF directly, without the print dialog. Pictures beside the document go inside the HTML page, the RTF and the PDF.</li>
+    <li><strong>Your own plugins.</strong> See <a href="#your-plugins">Your own plugins</a>.</li>
+    <li><strong>A menu bar</strong> with the commands, the views (Outline, Minimap, Sync scroll) and the user guide, which opens in a window of its own.</li>
+  </ul>
+  <p>The desktop app makes no network requests except for pictures a document shows from the web. Links open in your browser.</p>
+
   <h2 id="keys">Keyboard</h2>
   <table>
     <thead><tr><th scope="col">Keys</th><th scope="col">Does</th></tr></thead>
@@ -121,6 +135,7 @@
       <tr><td><kbd>Ctrl</kbd>/<kbd>⌘</kbd>+<kbd>O</kbd></td><td>Open a file</td></tr>
       <tr><td><kbd>Ctrl</kbd>/<kbd>⌘</kbd>+<kbd>S</kbd></td><td>Save (download) the markdown</td></tr>
       <tr><td><kbd>Ctrl</kbd>/<kbd>⌘</kbd>+<kbd>P</kbd></td><td>Print the document, or save it as a PDF</td></tr>
+      <tr><td><kbd>Ctrl</kbd>/<kbd>⌘</kbd>+<kbd>N</kbd>, <kbd>Ctrl</kbd>/<kbd>⌘</kbd>+<kbd>Shift</kbd>+<kbd>S</kbd></td><td>Desktop app: a new document; Save As</td></tr>
     </tbody>
   </table>
 
@@ -156,12 +171,23 @@
 
   <h2 id="plugins">Under the hood: one parser, plugins</h2>
   <p>MarkHippo does not use an off-the-shelf markdown library. Its parser builds a tree of the document in which every block and inline element records exactly where it sits in the source, down to the line and column. The preview is one consumer of that tree. Syntax highlighting in the editor, autocomplete, the outline, the minimap and synced scrolling all read the same tree, so every feature agrees on what the document says. The exports start from the preview's HTML, so anything a plugin can show, it can also export.</p>
-  <p>The core of MarkHippo knows no markdown at all. It only knows how to host plugins. CommonMark itself is a plugin, written against the same interface that any other plugin uses: a plugin can add block types, inline syntax, how they are coloured in the editor, renderers for fenced code, programming languages to colour, and the suggestions in the list at the cursor. The <a href="https://github.com/jfigge/markhippo/blob/main/docs/features/00-overview.md">developer overview</a> describes the interface.</p>
-  <p>The <strong>Plugins</strong> button in the header lists the plugins MarkHippo is running. CommonMark is required; the others can be switched off, and MarkHippo remembers your choice. On the web, MarkHippo runs only the plugins bundled with it; the desktop app will also load your own.</p>
+  <p>The core of MarkHippo knows no markdown at all. It only knows how to host plugins. CommonMark itself is a plugin, written against the same interface that any other plugin uses: a plugin can add block types, inline syntax, how they are coloured in the editor, renderers for fenced code, programming languages to colour, and the suggestions in the list at the cursor. The <a href="https://github.com/jfigge/markhippo/blob/main/docs/features/00-overview.md">developer overview</a> describes the interface, and <a href="#your-plugins">your own plugins</a> use it too.</p>
+  <p>The <strong>Plugins</strong> button in the header lists the plugins MarkHippo is running. CommonMark is required; the others can be switched off, and MarkHippo remembers your choice. On the web, MarkHippo runs only the plugins bundled with it; the desktop app also loads your own.</p>
+
+  <h2 id="your-plugins">Your own plugins</h2>
+  <p>The desktop app loads plugins from a folder of your own, so you can add syntax, colours for a language, suggestions or palettes. A plugin is one JavaScript file, or a folder with an <code>index.js</code> in it.</p>
+  <ol>
+    <li>Choose <strong>Plugins → Open Plugins Folder</strong>, or <strong>Open plugins folder</strong> in the Plugins list.</li>
+    <li>Put the plugin there.</li>
+    <li>Choose <strong>Plugins → Reload Plugins</strong>.</li>
+  </ol>
+  <p>Your plugins are listed with the bundled ones, marked <em>Yours</em>, and can be switched off the same way. A plugin that will not load or set up is listed with the reason, and everything else carries on without it.</p>
+  <p>Plugins run inside the editor's page. They cannot reach your files or the network, and nothing runs in the documents you export. They are still code, though, so install the ones you trust. <a href="https://github.com/jfigge/markhippo/blob/main/docs/PLUGINS.md">Writing a plugin</a> walks through an example that adds <code>==highlighted text==</code>.</p>
 
   <h2 id="coming">Coming next</h2>
   <ul>
-    <li>A desktop app that you can extend with your own plugins, and that keeps pasted pictures in a folder beside the document instead of inside it.</li>
+    <li>A choice of where pasted pictures go in the desktop app, as well as <code>assets</code>.</li>
+    <li>Export to Word (<code>.docx</code>).</li>
   </ul>
 </main>
 

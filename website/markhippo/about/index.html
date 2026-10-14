@@ -14,7 +14,7 @@
        claim it than to ship a directive the browser throws away unread. -->
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; frame-src https://resthippo.com https://chiphippo.com https://jumphippo.com https://keephippo.com; object-src 'none'; base-uri 'self'; form-action 'none'" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#818E00" />
+  <meta name="theme-color" content="#E06000" />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <meta name="description" content="Write markdown on the left, read it rendered on the right. MarkHippo reads it with its own CommonMark parser — every one of the spec's 652 examples, byte for byte — built to drive highlighting, autocomplete and navigation from the same tree. In your browser; nothing is uploaded." />
   <title>MarkHippo — Markdown editor on its own parser · Hippo Herd</title>
@@ -29,7 +29,7 @@
   <meta name="twitter:description" content="Write markdown on the left, read it rendered on the right. MarkHippo reads it with its own CommonMark parser — every one of the spec's 652 examples, byte for byte — built to drive highlighting, autocomplete and navigation from the same tree. In your browser; nothing is uploaded." />
   <link rel="stylesheet" href="/site.css" />
 </head>
-<body data-hippo-page="markhippo" style="--brand:#818E00">
+<body data-hippo-page="markhippo" style="--brand:#E06000">
 
 <nav class="site">
   <a class="nav-logo" href="/">
@@ -70,12 +70,12 @@
     <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><circle cx="12" cy="12" r="9"/></svg> In development · <span data-version-tag>—</span>
   </div>
   <h1>MarkHippo</h1>
-  <p class="hero-desc">Open a <code>.md</code> file on a Mac and you get plain text. MarkHippo renders it: a split pane with the markdown on the left and the document on the right, updated a moment after you stop typing. Underneath is a parser written for it rather than borrowed — the whole of CommonMark 0.31.2, with every block and inline element knowing exactly which characters of the source it came from, and only the blocks around an edit reparsed as you type. That one tree renders the preview, colours the editor and drives autocomplete that teaches the syntax as you type — <code>/</code> for headings, lists and code blocks, the languages on a code fence — and lays out the outline, the minimap and synced scrolling. The core knows no markdown at all — it hosts plugins, and CommonMark is the first of them.</p>
+  <p class="hero-desc">Open a <code>.md</code> file on a Mac and you get plain text. MarkHippo renders it: a split pane with the markdown on the left and the document on the right, updated a moment after you stop typing. Underneath is a parser written for it rather than borrowed — the whole of CommonMark 0.31.2, with every block and inline element knowing exactly which characters of the source it came from, and only the blocks around an edit reparsed as you type. That one tree renders the preview, colours the editor and drives autocomplete that teaches the syntax as you type — <code>/</code> for headings, lists and code blocks, the languages on a code fence — and lays out the outline, the minimap and synced scrolling. The core knows no markdown at all — it hosts plugins, and CommonMark is the first of them. Paste a screenshot and it goes into the document; print it, save it as a PDF, or export it as an HTML page, RTF for Pages and Word, or plain text.</p>
   <div class="hero-actions">
     <a class="btn btn-primary" href="/markhippo/"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="6 4 20 12 6 20 6 4"/></svg> Launch MarkHippo</a>
     <a class="btn btn-primary" href="https://github.com/jfigge/markhippo" rel="noopener noreferrer"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/></svg> View the source</a>
   </div>
-  <p class="hero-platforms">Web &nbsp;·&nbsp; Vanilla JS &nbsp;·&nbsp; GPL-3.0</p>
+  <p class="hero-platforms">Web &nbsp;·&nbsp; Electron · Vanilla JS &nbsp;·&nbsp; GPL-3.0</p>
 </div>
 
 <section class="section section-alt">
@@ -83,7 +83,10 @@
     <p class="section-tag">What it does</p>
     <h2 class="section-title">Markdown editor on its own parser</h2>
     <p class="section-body">Write markdown on the left, read it rendered on the right. MarkHippo reads it with its own CommonMark parser — every one of the spec's 652 examples, byte for byte — built to drive highlighting, autocomplete and navigation from the same tree. In your browser; nothing is uploaded.</p>
-
+    <div class="callout">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      <p><strong>A desktop app is on its way.</strong> The same page in its own window, for macOS, Windows and Linux: files opened and saved in place, pasted pictures kept in a folder beside the document, and your own plugins loaded from a folder. Its installers appear here with its first release; until then, MarkHippo runs right here in your browser.</p>
+    </div>
     <div class="feature-grid">
       <div class="feature-card">
         <div class="feature-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg></div>
@@ -118,7 +121,7 @@
       <div class="feature-card">
         <div class="feature-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="5" r="3"/><circle cx="5" cy="19" r="3"/><circle cx="19" cy="19" r="3"/><path d="M12 8v3M10 13l-3 3M14 13l3 3"/></svg></div>
         <h3>Everything is a plugin</h3>
-        <p>The core only hosts plugins. CommonMark is one, written against the same API a third party would use: new blocks, inline syntax, renderers for fenced languages like <code>mermaid</code>, and autocomplete suggestions.</p>
+        <p>The core only hosts plugins. CommonMark is one, written against the same API a third party would use: new blocks, inline syntax, renderers for fenced languages like <code>mermaid</code>, and autocomplete suggestions. The desktop app loads your own, from a folder.</p>
       </div>
 
       <div class="feature-card">
@@ -137,6 +140,12 @@
         <div class="feature-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
         <h3>Tables, math and diagrams</h3>
         <p>GitHub's tables, task lists, strikethrough, bare links and footnotes, LaTeX math drawn as MathML, and Mermaid diagrams — each a plugin you can switch off, all working offline.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></div>
+        <h3>Pictures in, documents out</h3>
+        <p>Paste a screenshot or drop a picture and it goes into the document, which stays one self-contained file. Print it or save a PDF, export a single HTML page, RTF for Pages and Word, or plain text, or copy it as rich text into an email.</p>
       </div>
 
       <div class="feature-card">

@@ -36,9 +36,20 @@ import { HtmlRenderer } from "../render/html.js";
 import { highlight } from "../highlight/highlight.js";
 import { complete } from "../complete/complete.js";
 
-export function createMarkHippo({ plugins = [] } = {}) {
+// `onError(plugin, err)`, when given, is told of a plugin that will not
+// install, and the rest are installed regardless; without it, the error is
+// thrown. (A plugin that fails part-way may have registered some of what it
+// registers: the app builds its host again without it.)
+export function createMarkHippo({ plugins = [], onError } = {}) {
   const registry = createRegistry();
-  for (const plugin of plugins) installPlugin(registry, plugin);
+  for (const plugin of plugins) {
+    try {
+      installPlugin(registry, plugin);
+    } catch (err) {
+      if (!onError) throw err;
+      onError(plugin, err);
+    }
+  }
 
   return {
     registry,

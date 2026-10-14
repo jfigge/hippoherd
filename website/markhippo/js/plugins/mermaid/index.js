@@ -55,6 +55,9 @@ function renderFence(node, r) {
 let mermaid = null;
 let configured = null;
 let counter = 0;
+// Each placed copy of a diagram gets ids of its own (see place()).
+let placements = 0;
+// theme + source → { svg, id } once drawn, or { error }.
 const cache = new Map();
 // Drawing goes one call at a time: Mermaid has a single configuration, and
 // the theme is part of it, so a light drawing (an export) and a dark one
@@ -69,9 +72,9 @@ function enhance(elements, context = {}) {
   const theme = context.dark ? "dark" : "default";
   const pending = [];
   for (const el of elements) {
-    const svg = cache.get(keyOf(theme, el));
-    if (svg === undefined) pending.push(el);
-    else place(el, svg);
+    const drawn = cache.get(keyOf(theme, el));
+    if (drawn === undefined) pending.push(el);
+    else place(el, drawn);
   }
   if (!pending.length) return undefined;
   const run = drawing.then(() => draw(pending, theme));
@@ -85,31 +88,37 @@ async function draw(elements, theme) {
     // Drawing is slow: not for a preview that has been redrawn since.
     if (!el.isConnected) continue;
     const key = keyOf(theme, el);
-    let svg = cache.get(key);
-    if (svg === undefined) {
+    let drawn = cache.get(key);
+    if (drawn === undefined) {
       if (configured !== theme) {
         mermaid.initialize({ startOnLoad: false, securityLevel: "strict", theme, fontFamily: "inherit" });
         configured = theme;
       }
       const id = `mh-mermaid-${++counter}`;
       try {
-        svg = (await mermaid.render(id, el.textContent)).svg;
+        drawn = { svg: (await mermaid.render(id, el.textContent)).svg, id };
       } catch (err) {
-        svg = { error: String(err?.message ?? err).slice(0, 400) };
+        drawn = { error: String(err?.message ?? err).slice(0, 400) };
       }
       // Mermaid draws in a scratch element of its own, which it can leave
       // behind when a diagram fails.
       el.ownerDocument.getElementById(`d${id}`)?.remove();
       if (cache.size > 100) cache.delete(cache.keys().next().value);
-      cache.set(key, svg);
+      cache.set(key, drawn);
     }
-    place(el, svg);
+    place(el, drawn);
   }
 }
 
 // The diagram in place of its source; or, if it could not be drawn, why
 // not, above the source.
-function place(el, svg) {
+//
+// The same drawing may be placed twice at once — the preview's and a
+// print's or an export's, in the same theme — and an SVG's markers and
+// styles are found by id (marker-end="url(#mh-mermaid-3_…)"), which would
+// find the other copy, hidden while printing. So every copy renames the
+// ids Mermaid gave it, all of which begin with its own.
+function place(el, drawn) {
   if (!el.isConnected) return;
   const doc = el.ownerDocument;
   const figure = doc.createElement("figure");
@@ -117,13 +126,13 @@ function place(el, svg) {
   // The block's own attributes (its source line, which synced scroll
   // steers by, whatever the renderer named it).
   for (const attr of el.attributes) if (attr.name !== "class") figure.setAttribute(attr.name, attr.value);
-  if (typeof svg === "string") {
-    figure.innerHTML = svg;
+  if (drawn.svg) {
+    figure.innerHTML = drawn.svg.replace(new RegExp(`${drawn.id}(?![0-9])`, "g"), `${drawn.id}-${++placements}`);
     figure.title = "Mermaid diagram";
   } else {
     const note = doc.createElement("pre");
     note.className = "mh-diagram-error";
-    note.textContent = `This diagram could not be drawn.\n${svg.error}`;
+    note.textContent = `This diagram could not be drawn.\n${drawn.error}`;
     figure.append(note, el.cloneNode(true));
   }
   el.replaceWith(figure);

@@ -12,11 +12,11 @@
  * js/theme-manager.js (and, before the first paint, js/theme.js), and the
  * Themes dialog edits them.
  *
- * The brand olive (#818E00, hue 65.5 — the midpoint of the widest arc left
- * on the herd's colour wheel, between Keep at 37 and Scan at 94) is used as
- * a fill: the white hippo on it is 3.62:1. Text in the accent uses --accent,
- * deepened for light (#5E6800, 6.08:1 on white) and brightened for dark
- * (#C3D11A, 10.1:1 on #1c1c1c), so it passes AA on both.
+ * The brand orange (#E06000, hue 25.7 — the logo's own, src/img/markhippo.svg)
+ * is used as a fill: the white hippo on it is 3.59:1. Text in the accent
+ * uses --accent, the same hue deepened for light (#A84800, 5.85:1 on white,
+ * 4.96:1 on the palest surface) and brightened for dark (#FF9A52, 8.11:1 on
+ * #1c1c1c), so it passes AA on both.
  *
  * Naming: mh- prefix; state classes are block--modifier.
  */
@@ -24,7 +24,7 @@
 /* ── Theme ──────────────────────────────────────────────────────────────── */
 
 :root {
-  --brand: #818e00;
+  --brand: #e06000;
   --on-brand: #ffffff;
 
   --bg: #ffffff;
@@ -36,10 +36,10 @@
   --text: #1f1f24;
   --subtext: #57575f;
   --muted: #6e6e76;
-  --accent: #5e6800;
-  --selection: #eef2c4;
+  --accent: #a84800;
+  --selection: #fde4d0;
   --code-bg: #f3f3f5;
-  --quote-bar: #c8cf8a;
+  --quote-bar: #eeb183;
   --error: #c4271d;
 
   --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
@@ -65,10 +65,10 @@
     --text: #e8e8e8;
     --subtext: #b0b0b0;
     --muted: #8a8a8a;
-    --accent: #c3d11a;
-    --selection: #3b3f14;
+    --accent: #ff9a52;
+    --selection: #4a2a12;
     --code-bg: #242424;
-    --quote-bar: #5c6414;
+    --quote-bar: #80410f;
     --error: #ff7b72;
     color-scheme: dark;
   }
@@ -84,10 +84,10 @@
   --text: #e8e8e8;
   --subtext: #b0b0b0;
   --muted: #8a8a8a;
-  --accent: #c3d11a;
-  --selection: #3b3f14;
+  --accent: #ff9a52;
+  --selection: #4a2a12;
   --code-bg: #242424;
-  --quote-bar: #5c6414;
+  --quote-bar: #80410f;
   --error: #ff7b72;
   color-scheme: dark;
 }
@@ -284,6 +284,10 @@ body {
 
 /* The item with the focus is the one marked: arrow keys and the pointer
    move the same mark. */
+.mh-menu [role="menuitem"][hidden] {
+  display: none;
+}
+
 .mh-menu [role="menuitem"]:hover,
 .mh-menu [role="menuitem"]:focus {
   background: var(--selection);
@@ -712,6 +716,12 @@ body {
   font-size: 12px;
 }
 
+.mh-about-version {
+  margin: 0 0 4px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
 .mh-about-support a {
   color: var(--accent);
   text-decoration: none;
@@ -795,6 +805,44 @@ body {
 
 .mh-plugin-desc {
   margin: 4px 0 0 24px;
+  color: var(--subtext);
+  font-size: 13px;
+}
+
+/* The desktop app: where a plugin of the user's came from, and why one is
+   not running. */
+.mh-plugin-source {
+  margin: 2px 0 0 24px;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 12px;
+}
+
+.mh-plugin-error {
+  margin: 4px 0 0 24px;
+  color: var(--error);
+  font-size: 13px;
+}
+
+.mh-plugin--failed {
+  border-color: color-mix(in srgb, var(--error) 45%, var(--surface-0));
+}
+
+.mh-plugins-desktop {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 16px;
+}
+
+.mh-plugins-desktop[hidden] {
+  display: none;
+}
+
+.mh-plugins-desktop p {
+  flex-basis: 100%;
+  margin: 0;
   color: var(--subtext);
   font-size: 13px;
 }

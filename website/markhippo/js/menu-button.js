@@ -61,7 +61,7 @@ export class MenuButton {
   }
 
   get items() {
-    return [...this.menu.querySelectorAll(ITEM)].filter((item) => !item.disabled);
+    return [...this.menu.querySelectorAll(ITEM)].filter((item) => !item.disabled && !item.hidden);
   }
 
   // Open with the item at `index` focused (negative counts from the end).
