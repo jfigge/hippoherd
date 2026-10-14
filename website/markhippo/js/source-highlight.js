@@ -121,6 +121,33 @@ export class SourceHighlight {
     }
     return line.getBoundingClientRect();
   }
+
+  // The offset in the text nearest the point (x, y) in client coordinates —
+  // where something dropped there should go. The line under the point,
+  // then, along it, the last character that starts at or before it.
+  offsetAt(x, y) {
+    const lines = this.pre.children;
+    if (!lines.length) return 0;
+    let lo = 0;
+    let hi = lines.length - 1;
+    while (lo < hi) {
+      const mid = (lo + hi + 1) >> 1;
+      if (lines[mid].getBoundingClientRect().top <= y) lo = mid;
+      else hi = mid - 1;
+    }
+    const start = lo === 0 ? 0 : nthLineStart(this.text, lo);
+    let end = this.text.indexOf("\n", start);
+    if (end === -1) end = this.text.length;
+    let a = start;
+    let b = end;
+    while (a < b) {
+      const mid = (a + b + 1) >> 1;
+      const rect = this.caretRect(mid);
+      if (rect && (y >= rect.bottom || (y >= rect.top && x >= rect.left))) a = mid;
+      else b = mid - 1;
+    }
+    return a;
+  }
 }
 
 // One line's HTML, its "\n" included. The break gives an empty line its

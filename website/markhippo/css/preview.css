@@ -2,6 +2,8 @@
  *
  * The rendered document. Everything is scoped under .mh-preview, because
  * the markdown's own HTML lands inside it and must not restyle the app.
+ * Exported HTML pages carry this file (js/exporter.js), so it holds the
+ * document's styles only; printing's are in app.css.
  */
 
 .mh-preview {
@@ -124,29 +126,6 @@
 .mh-preview :is(th, td) {
   padding: 6px 12px;
   border: 1px solid var(--surface-1);
-}
-
-/* Printing prints the document, not the editor. */
-@media print {
-  .mh-header,
-  .mh-status,
-  .mh-pane--source,
-  .mh-divider {
-    display: none;
-  }
-
-  .mh-main {
-    display: block;
-  }
-
-  .mh-pane--preview {
-    overflow: visible;
-  }
-
-  .mh-preview {
-    max-width: none;
-    padding: 0;
-  }
 }
 
 /* ── Extensions: task lists, footnotes, math, diagrams ─────────────────── */

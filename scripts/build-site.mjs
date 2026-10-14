@@ -2,17 +2,20 @@
 /*
  * Copyright 2026 Jason Figge
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * This file is part of Hippo Herd.
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * Hippo Herd is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or (at your option)
+ * any later version.
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Hippo Herd is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with Hippo Herd. If not, see <https://www.gnu.org/licenses/>.
  */
 
 // Build the whole site from content/hippos.mjs.
@@ -366,6 +369,29 @@ function hippoCard(x) {
       </article>`;
 }
 
+// The index grid: the hippos ready to use, then an "Experimental" divider, then
+// the ones flagged `experimental` in content/hippos.mjs. No flagged hippo, no
+// divider. The divider spans the whole row, so it always starts one of its own.
+//
+// The flagged hippos must already come last in HERD. Otherwise the grid would
+// list them in a different order from the nav dropdown, the footer and
+// previous/next, which all follow HERD as written.
+function herdGrid() {
+  const first = HERD.findIndex((x) => x.experimental);
+  const stray = first < 0 ? null : HERD.slice(first).find((x) => !x.experimental);
+  if (stray) {
+    throw new Error(`${stray.slug}: it follows an experimental hippo in HERD — move it above them, or flag it \`experimental\` too`);
+  }
+  const ready = HERD.filter((x) => !x.experimental).map(hippoCard);
+  const experimental = HERD.filter((x) => x.experimental).map(hippoCard);
+  if (!experimental.length) return ready.join("\n\n");
+  return [
+    ...ready,
+    `      <p class="herd-divider">Experimental</p>`,
+    ...experimental,
+  ].join("\n\n");
+}
+
 function indexPage() {
   const content = `${nav(null)}
 
@@ -411,7 +437,7 @@ function indexPage() {
     </div>
 
     <div class="herd-grid">
-${HERD.map(hippoCard).join("\n\n")}
+${herdGrid()}
     </div>
   </div>
 </section>
@@ -441,7 +467,7 @@ ${HERD.map(hippoCard).join("\n\n")}
       <div class="feature-card">
         <div class="feature-icon">${icon("code")}</div>
         <h3>Open source, free forever</h3>
-        <p>Apache 2.0 across the herd, MPL 2.0 for Keep Hippo. Every line is on GitHub — read it, fork it, build it yourself if you'd rather not trust a binary.</p>
+        <p>Apache 2.0 across most of the herd, GPL 3.0 for JsonHippo and MarkHippo, MPL 2.0 for Keep Hippo. Every line is on GitHub — read it, fork it, build it yourself if you'd rather not trust a binary.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon">${icon("monitor")}</div>

@@ -243,6 +243,65 @@ body {
   }
 }
 
+/* ── Menus (js/menu-button.js) ──────────────────────────────────────────── */
+
+.mh-menu-wrap {
+  position: relative;
+}
+
+.mh-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  z-index: 20;
+  min-width: 270px;
+  padding: 4px;
+  border: 1px solid var(--surface-1);
+  border-radius: 8px;
+  background: var(--mantle);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 22%);
+}
+
+.mh-menu[hidden] {
+  display: none;
+}
+
+.mh-menu [role="menuitem"] {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  width: 100%;
+  padding: 6px 10px;
+  border: 0;
+  border-radius: 5px;
+  background: none;
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+/* The item with the focus is the one marked: arrow keys and the pointer
+   move the same mark. */
+.mh-menu [role="menuitem"]:hover,
+.mh-menu [role="menuitem"]:focus {
+  background: var(--selection);
+  outline: none;
+}
+
+.mh-menu-hint {
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.mh-menu-sep {
+  height: 1px;
+  margin: 4px 6px;
+  background: var(--surface-0);
+}
+
 /* ── Split pane ─────────────────────────────────────────────────────────── */
 
 .mh-main {
@@ -429,6 +488,18 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
+.mh-status-note {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--accent);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mh-status-note--warn {
+  color: var(--error);
+}
+
 .mh-status-cursor {
   margin-left: auto;
 }
@@ -545,6 +616,49 @@ body {
   .mh-outline,
   .mh-toggle--outline {
     display: none;
+  }
+}
+
+/* ── Export and print (js/exporter.js) ─────────────────────────────────── */
+
+/* Where an export is finished by the plugins (math, diagrams): in the page,
+   as they need, but out of sight. */
+.mh-export-stage {
+  position: fixed;
+  top: 0;
+  left: -10000px;
+  width: 760px;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* Printing prints the document alone, put in the print area in the
+   palette's light colours — never the editor. */
+.mh-print {
+  display: none;
+}
+
+@media print {
+  html,
+  body {
+    height: auto;
+  }
+
+  body {
+    display: block;
+    background: none;
+  }
+
+  body > :not(.mh-print) {
+    display: none;
+  }
+
+  /* (Over preview.css's .mh-preview, which comes later.) */
+  .mh-preview.mh-print {
+    display: block;
+    max-width: none;
+    margin: 0;
+    padding: 0;
   }
 }
 

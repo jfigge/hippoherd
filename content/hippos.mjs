@@ -1,17 +1,20 @@
 /*
  * Copyright 2026 Jason Figge
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * This file is part of Hippo Herd.
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * Hippo Herd is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or (at your option)
+ * any later version.
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Hippo Herd is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with Hippo Herd. If not, see <https://www.gnu.org/licenses/>.
  */
 
 // The herd, as content. scripts/build-site.mjs turns this into website/.
@@ -76,6 +79,19 @@
 //                       app's directory. jfigge/jsonhippo's `make site` copies
 //                       the app around about/ rather than deleting it. The
 //                       generator refuses a page that lands on the app.
+//
+//   experimental: true  The index grid lists it below an "Experimental"
+//                       divider, apart from the hippos that are ready to use.
+//                       Keep Hippo and Scan Hippo carry it. Flagged hippos must
+//                       come last in HERD, and the generator refuses one that
+//                       does not: the grid, the nav dropdown, the footer and
+//                       previous/next all follow HERD's order, and a divider
+//                       halfway down would put the grid out of step with them.
+//
+// HERD's order IS the order on the site. The index grid is three across on a
+// desktop, so every three entries make a row: Rest, Chip and Jump on the first,
+// JsonHippo, MarkHippo and Mind on the second, Roll and Maze on the third, then
+// the divider, then Scan and Keep.
 
 export const OWNER = "jfigge";
 export const HERD_COLOR = "#2BC4B0";
@@ -269,141 +285,188 @@ export const HERD = [
   },
 
   {
-    slug: "keephippo",
-    name: "Keep Hippo",
-    color: "#F5A623",
-    tagline: "Vault-compatible secrets manager",
-    domain: "keephippo.com",
-    docs: "https://keephippo.com/docs/",
-    stack: "Go · single binary",
-    license: "MPL-2.0",
-    platforms: ["macOS", "Linux", "Windows"],
-    status: "prerelease",
+    slug: "jsonhippo",
+    name: "JsonHippo",
+    // Hue 276, found the way Maze's and Scan's were: the midpoint of the
+    // widest arc still free once Scan took 94 — the 64 degrees between Rest at
+    // 246 and Maze at 310. Readable as accent text on #1c1c1c (4.69:1) with the
+    // white hippo still clear on top of it (3.63:1). It must stay in step with
+    // the same value in scripts/make-marks.mjs: that one paints the mark, this
+    // one paints the page the mark sits on.
+    color: "#B65CF0",
+    tagline: "JSON viewer with pinpoint errors",
+
+    // JsonHippo runs here, at hippoherd.com/jsonhippo/, and ships as a desktop
+    // app too — so it is modelled like Rest Hippo and Chip Hippo, with a
+    // generated page, a version and downloads, rather than as a webApp whose
+    // card opens the app. Two things are its own:
+    //
+    //   app   the web app, at /jsonhippo/. Built in jfigge/jsonhippo and
+    //         copied in by `make site` there (an rsync --delete of its dist/
+    //         that leaves about/ alone); never written by this generator.
+    //   page  /jsonhippo/about/, because /jsonhippo/ is the app. The card,
+    //         nav, footer and the rest all lead here; the page's Launch
+    //         button leads on to the app.
+    //
+    // The downloads come from jfigge/jsonhippo's GitHub Releases through
+    // versions.json, like every other hippo's; its Release workflow publishes
+    // them when that repo's package.json version moves.
+    app: "/jsonhippo/",
+    page: "/jsonhippo/about/",
+
+    // `domain` stays null: the app's home IS this site. If jsonhippo.com is
+    // bought later, set it here and add the host to ALLOWED in
+    // website/preview.js.
+    domain: null,
+    docs: "https://github.com/jfigge/jsonhippo/blob/main/docs/USAGE.md",
+    stack: "Electron · Vanilla JS · jQuery",
+    license: "GPL-3.0",
+    platforms: ["macOS", "Windows", "Linux", "Web"],
+    status: "released",
     stores: [],
 
-    lead: "A from-scratch secrets manager that speaks HashiCorp Vault's HTTP API, so the Vault clients you already have keep working. Server, CLI and web console in one Go binary.",
+    lead: "Pinpoint errors for JSON that will not parse — line, column, what was expected and the path to it — plus smart paste of escaped JSON, a tree you can filter, and a diff that ignores order. In your browser or on your desktop; nothing is uploaded.",
 
     blurb:
-      "Keep Hippo replicates Vault's <strong>wire protocol</strong>, not just its ideas: the <code>/v1/</code> path model, the <code>X-Vault-Token</code> header, port 8200, and the <code>VAULT_ADDR</code> and <code>VAULT_TOKEN</code> environment variables. Point the real <code>vault</code> CLI at it and the commands work. Underneath is a first-party implementation of the parts that matter — a sealed storage barrier, Shamir unseal, secrets engines, auth methods, ACL policies, tokens and leases — shipped as a single Go binary with its own console and its own branding.",
-
-    callout: {
-      title: "Not audited",
-      body: 'Keep Hippo is an educational implementation of a secrets manager and has <strong>not</strong> undergone a security audit. Do not use it to protect real secrets until a release says otherwise — see <a href="https://github.com/jfigge/keephippo/blob/main/SECURITY.md" rel="noopener noreferrer">SECURITY.md</a>.',
-    },
+      "“Invalid JSON” is useless when the input is five megabytes long. JsonHippo's tokenizer and parser are written by hand, character by character, so when a document fails it says <em>where</em>: <code>Line 123982, col 9: expected ',' or '}' but found string \"zip\" (in $.people[4321].address)</code> — and one click puts the caret on the bad character. It also recognises the JSON that APIs and logs hand back as an escaped string and unescapes it on paste, filters its tree by key, value, regex or path, and compares two documents by content rather than by line. Launch it right here in the browser, or install it: the desktop app is the same page in its own window, and it makes no network request at all. Inspired by jsonviewer.stack.hu, which its author has used for years.",
 
     features: [
       {
-        icon: "terminal",
-        title: "Vault CLI parity",
-        body: "Every verb, <code>--format=json</code> included. Scripts written against <code>vault</code> run against <code>keephippo</code> without a diff.",
+        icon: "alert",
+        title: "Says where it broke",
+        body: "A hand-written parser gives the line, column, expected and found, and the JSON path — for every one of seventeen error codes. A file missing its last <code>}</code> points at the brace that never closed, not at the end of the file.",
       },
       {
-        icon: "lock",
-        title: "Barrier & Shamir seal",
-        body: "Storage sits behind an encrypted barrier that starts sealed. Unsealing takes a threshold of key shares, exactly as it should.",
+        icon: "code",
+        title: "Smart paste",
+        body: "Escaped JSON — <code>\"{\\\"id\\\":7}\"</code> — is unescaped on paste, as many times as it was escaped, with an Undo. Ordinary JSON with escaped quotes inside its strings is never touched.",
       },
       {
-        icon: "database",
-        title: "KV v1 and v2",
-        body: "Both engines, with versioning, soft delete and check-and-set on v2 — mounted at whatever path you choose.",
+        icon: "search",
+        title: "A tree you can filter",
+        body: "Narrow the tree to the keys or values that match — plain text, regex, or a path like <code>$.items[*].name</code> — with each match's ancestors kept so you can see where it sits.",
       },
       {
-        icon: "key",
-        title: "Auth methods",
-        body: "Token, userpass and approle, with the full token lifecycle: creation, renewal, revocation and orphaning.",
+        icon: "shuffle",
+        title: "A diff that ignores order",
+        body: "Members match by key and array elements by content, so key order and array order are never differences — a record that moved and changed one field shows as one changed field. Both panes are editable, and Reorder lays one side out in the other's order.",
+      },
+      {
+        icon: "book",
+        title: "A schema from a sample",
+        body: "The Schema tab infers a JSON Schema from a representative document: properties in the order they appear, <code>required</code> where a key is always present, ready to copy and validate against elsewhere.",
       },
       {
         icon: "shield",
-        title: "ACL policies",
-        body: "Path-based policies with capability lists, attached to tokens at login and enforced on every request.",
+        title: "Warnings for valid JSON",
+        body: "Duplicate keys, empty keys, and numbers that change when read as a 64-bit float — <code>12345678901234567890</code> becomes <code>12345678901234567000</code> — are legal JSON and almost always mistakes, so each is flagged with where it is.",
       },
       {
-        icon: "clock",
-        title: "Leases & transit",
-        body: "A real expiration manager that revokes on schedule, plus a transit engine for encryption-as-a-service against named keys.",
+        icon: "layers",
+        title: "Built for big files",
+        body: "A 5 MB document parses in under a tenth of a second; the tree draws only what is open; the filter searches every node, drawn or not.",
+      },
+      {
+        icon: "terminal",
+        title: "Every digit kept",
+        body: "Format and minify are written from the parse tree, so <code>12345678901234567890</code> keeps its digits and keys keep their order, duplicates included and flagged.",
+      },
+      {
+        icon: "lock",
+        title: "Nothing leaves your machine",
+        body: "No server, no account, no tracking — in the browser or the desktop app, which runs offline and opens links in your own browser. Files are read locally and never uploaded.",
       },
     ],
   },
 
   {
-    slug: "mazehippo",
-    name: "Maze Hippo",
-    // Hue 310, which was the only gap left in the herd's one-colour-per-app
-    // system between Rest at 246 and Roll at 351. Written down in three places
-    // in jfigge/mazehippo as well — the icon tool, the SVG of record and
-    // Android's adaptive-icon background resource — and in make-marks.mjs
-    // beside this. That repository is the authority; this copies it.
-    color: "#CA2BAF",
-    tagline: "Tap-to-clear arrow puzzle",
+    slug: "markhippo",
+    name: "MarkHippo",
+    // Hue 65.5, found the way Maze's, Scan's and Json's were: the midpoint of
+    // the widest arc still free — the 57 degrees between Keep at 37 and Scan
+    // at 94. A hue that close to yellow only reaches both bars when it is
+    // deep, hence the olive: accent text on #1c1c1c at 4.71:1, the white
+    // hippo on top of it at 3.62:1. It must stay in step with the same value
+    // in scripts/make-marks.mjs, and with --brand in jfigge/markhippo's
+    // src/css/app.css.
+    color: "#818E00",
+    tagline: "Markdown editor on its own parser",
 
-    // Maze Hippo has no site of its own and is not getting one: the page at
-    // hippoherd.com/mazehippo IS its site, which is why this generator does
-    // not write it. The files live in jfigge/mazehippo under website/ and
-    // arrive here by `make site` in that repository. Everything else about
-    // this entry still does its job — the card on the index, the nav
-    // dropdown, the footer, the 404 list and the previous/next links are all
-    // generated from it as usual.
+    // Modelled on JsonHippo: the web app runs here, at /markhippo/, copied in
+    // by `make site` in jfigge/markhippo (an rsync --delete of its dist/ that
+    // leaves about/ alone), and this generator writes the page about it at
+    // /markhippo/about/. Its user guide ships inside the app, at
+    // /markhippo/docs/ — on this site, so the sitemap lists it.
     //
-    // `domain` stays null even though the hippo has a website, because what
-    // `domain` drives is the "it has a home of its own" section and the live
-    // iframe preview — and pointing those at hippoherd.com/mazehippo would
-    // embed this site inside itself. Same reasoning as Roll Hippo's entry.
-    externalSite: true,
-
+    // The desktop app (the same page in Electron) is a later milestone, so for
+    // now the platforms are the web alone and there are no downloads. When
+    // the Electron build ships: add the desktop platforms, flip `desktop` for
+    // it in website/herd.js, and move status on.
+    app: "/markhippo/",
+    page: "/markhippo/about/",
     domain: null,
-    docs: null,
-    stack: "Flutter · Dart",
-    license: "Apache-2.0",
-    platforms: ["iOS", "Android"],
-    // "development" rather than "planned": the game is written — a hundred
-    // levels, both platforms, tests green — and what is outstanding is the
-    // App Store listing rather than the app. "Planned" reads as not started.
-    // Not "prerelease" either, which in STATUS_LABEL sits beside `shipped()`
-    // and means there is something to download; there are no releases on the
-    // repo, so that would point at a grid with nothing in it.
+    docs: "https://hippoherd.com/markhippo/docs/",
+    stack: "Vanilla JS",
+    license: "GPL-3.0",
+    platforms: ["Web"],
     status: "development",
     stores: [],
 
-    lead: "A small tap-to-clear puzzle, built mostly for the fun of building it. Tap an arrow and it threads itself off the board — unless something is in the way. A hundred levels, three lives, and no advertising anywhere in it.",
+    lead: "Write markdown on the left, read it rendered on the right. MarkHippo reads it with its own CommonMark parser — every one of the spec's 652 examples, byte for byte — built to drive highlighting, autocomplete and navigation from the same tree. In your browser; nothing is uploaded.",
 
     blurb:
-      "Maze Hippo is a grid of dots with arrows wound through it, and one rule: tap an arrow and it threads itself off the board the way it points, or it runs into another arrow's body, stops, turns red and costs one of three lives. It exists because the version of this on the app stores is usually buried in advertising — so this one has <strong>no ads, no accounts, no analytics and no network connection at all</strong>. The interesting part is underneath: there is no level data in it and no solver, because every level is computed from its number and generated along its own solution.",
-
-    callout: {
-      title: "You can never be stuck, and that is a theorem",
-      body: 'Removing an arrow can only ever free others, so an arrow that is free stays free. Whatever order the player taps in, the latest-placed arrow still standing was free when it was placed onto a board holding <em>more</em> than the one in front of them — so it is free now. <strong>There is always a legal move</strong>, a life is only ever lost to a wrong tap, and the game needs no undo button to be fair.',
-    },
+      "Open a <code>.md</code> file on a Mac and you get plain text. MarkHippo renders it: a split pane with the markdown on the left and the document on the right, updated a moment after you stop typing. Underneath is a parser written for it rather than borrowed — the whole of CommonMark 0.31.2, with every block and inline element knowing exactly which characters of the source it came from, and only the blocks around an edit reparsed as you type. That one tree renders the preview, colours the editor and drives autocomplete that teaches the syntax as you type — <code>/</code> for headings, lists and code blocks, the languages on a code fence — and lays out the outline, the minimap and synced scrolling. The core knows no markdown at all — it hosts plugins, and CommonMark is the first of them.",
 
     features: [
       {
-        icon: "zap",
-        title: "One rule, and it is visible",
-        body: "An arrow moves like a snake: the head steps and the body threads up behind it along the line the head already took. So whether it can leave depends on one straight line of dots and nothing else — its own bends cost it nothing — and the thing to check before tapping is a thing you can actually see.",
+        icon: "eye",
+        title: "Live preview, coloured source",
+        body: "Markdown on the left, coloured by the same parser as you type; the rendered document on the right, re-rendered when you pause. Leave a code fence open and everything below it turns to code on both sides, so the mistake shows itself. Fenced code is coloured in twenty languages.",
       },
       {
-        icon: "grid",
-        title: "No level data, and no solver",
-        body: "All hundred levels are computed from their number in a few milliseconds on the phone. Arrows are placed one at a time with a clear run to the edge, which makes <em>the reverse of the placement order a solution</em> — the level is generated along its own answer, so an unfinishable one is not something the generator can produce.",
+        icon: "search",
+        title: "Suggests the syntax as you type",
+        body: "Type <code>/</code> at the start of a line for headings, lists, quotes and code blocks, or mid-line for links and emphasis; open a code fence for its languages; Ctrl+Space anywhere. Each suggestion shows the markdown it stands for, so the list teaches as it helps.",
+      },
+      {
+        icon: "code",
+        title: "Its own CommonMark parser",
+        body: "No markdown-it, no marked. A hand-written two-phase parser passes all 652 examples of the CommonMark 0.31.2 spec, matching the reference HTML byte for byte.",
       },
       {
         icon: "layers",
-        title: "Difficulty is one number",
-        body: "Not size, but how many arrows can leave at once: at four there is nearly always an obvious move, at one there is never a choice. Ten levels at four, fifteen at three, twenty at two, and the last fifty-five at one.",
+        title: "One tree, exact positions",
+        body: "Every heading, list item, link and emphasis knows its line, column and offset in the source — the structure that highlighting, autocomplete, the outline, the minimap and synced scroll are built on.",
       },
       {
-        icon: "heart",
-        title: "Three lives, and a clock that waits",
-        body: "A wrong tap costs a life and leaves the board exactly as it was. The clock starts when you first touch an arrow rather than when the level appears — a board is read before it is played, and on a hard one for a good while.",
+        icon: "zap",
+        title: "Incremental reparse",
+        body: "Typing in a long document reparses only the blocks around the edit and splices them in — with a fuzz test holding the result identical to a full parse.",
+      },
+      {
+        icon: "network",
+        title: "Everything is a plugin",
+        body: "The core only hosts plugins. CommonMark is one, written against the same API a third party would use: new blocks, inline syntax, renderers for fenced languages like <code>mermaid</code>, and autocomplete suggestions.",
+      },
+      {
+        icon: "grid",
+        title: "Themes, light and dark",
+        body: "Hippo, Catppuccin, Grey and High contrast, each with a light and a dark version that follows your system or your choice — or make your own in the theme editor, with contrast checked as you pick, and share it as a file (Rest Hippo's theme files import too).",
+      },
+      {
+        icon: "move",
+        title: "Outline, minimap, synced scroll",
+        body: "An outline of the headings to jump between, a minimap of the whole document in the editor's colours, and an editor and preview that scroll together, heading for heading — all read from the same parse tree.",
       },
       {
         icon: "activity",
-        title: "A bed that does not repeat",
-        body: "Two synthesised loops, one of 97 seconds and one of 71. They share no factors, so the pair line up again only every hour and fifty-five minutes — two files under half a megabyte doing the work of a generative engine.",
+        title: "Tables, math and diagrams",
+        body: "GitHub's tables, task lists, strikethrough, bare links and footnotes, LaTeX math drawn as MathML, and Mermaid diagrams — each a plugin you can switch off, all working offline.",
       },
       {
-        icon: "offline",
-        title: "Nothing leaves the phone",
-        body: "No account, no network call, no telemetry, no advertising identifier, and no permission prompt of any kind. The Android package ships without the <code>INTERNET</code> permission, so the OS itself would refuse a connection the game tried to open.",
+        icon: "lock",
+        title: "Nothing leaves your machine",
+        body: "No server, no account, no tracking. Files are opened locally and never uploaded; scripts in a document's raw HTML never run.",
       },
     ],
   },
@@ -543,6 +606,90 @@ export const HERD = [
       },
     ],
   },
+
+  {
+    slug: "mazehippo",
+    name: "Maze Hippo",
+    // Hue 310, which was the only gap left in the herd's one-colour-per-app
+    // system between Rest at 246 and Roll at 351. Written down in three places
+    // in jfigge/mazehippo as well — the icon tool, the SVG of record and
+    // Android's adaptive-icon background resource — and in make-marks.mjs
+    // beside this. That repository is the authority; this copies it.
+    color: "#CA2BAF",
+    tagline: "Tap-to-clear arrow puzzle",
+
+    // Maze Hippo has no site of its own and is not getting one: the page at
+    // hippoherd.com/mazehippo IS its site, which is why this generator does
+    // not write it. The files live in jfigge/mazehippo under website/ and
+    // arrive here by `make site` in that repository. Everything else about
+    // this entry still does its job — the card on the index, the nav
+    // dropdown, the footer, the 404 list and the previous/next links are all
+    // generated from it as usual.
+    //
+    // `domain` stays null even though the hippo has a website, because what
+    // `domain` drives is the "it has a home of its own" section and the live
+    // iframe preview — and pointing those at hippoherd.com/mazehippo would
+    // embed this site inside itself. Same reasoning as Roll Hippo's entry.
+    externalSite: true,
+
+    domain: null,
+    docs: null,
+    stack: "Flutter · Dart",
+    license: "Apache-2.0",
+    platforms: ["iOS", "Android"],
+    // "development" rather than "planned": the game is written — a hundred
+    // levels, both platforms, tests green — and what is outstanding is the
+    // App Store listing rather than the app. "Planned" reads as not started.
+    // Not "prerelease" either, which in STATUS_LABEL sits beside `shipped()`
+    // and means there is something to download; there are no releases on the
+    // repo, so that would point at a grid with nothing in it.
+    status: "development",
+    stores: [],
+
+    lead: "A small tap-to-clear puzzle, built mostly for the fun of building it. Tap an arrow and it threads itself off the board — unless something is in the way. A hundred levels, three lives, and no advertising anywhere in it.",
+
+    blurb:
+      "Maze Hippo is a grid of dots with arrows wound through it, and one rule: tap an arrow and it threads itself off the board the way it points, or it runs into another arrow's body, stops, turns red and costs one of three lives. It exists because the version of this on the app stores is usually buried in advertising — so this one has <strong>no ads, no accounts, no analytics and no network connection at all</strong>. The interesting part is underneath: there is no level data in it and no solver, because every level is computed from its number and generated along its own solution.",
+
+    callout: {
+      title: "You can never be stuck, and that is a theorem",
+      body: 'Removing an arrow can only ever free others, so an arrow that is free stays free. Whatever order the player taps in, the latest-placed arrow still standing was free when it was placed onto a board holding <em>more</em> than the one in front of them — so it is free now. <strong>There is always a legal move</strong>, a life is only ever lost to a wrong tap, and the game needs no undo button to be fair.',
+    },
+
+    features: [
+      {
+        icon: "zap",
+        title: "One rule, and it is visible",
+        body: "An arrow moves like a snake: the head steps and the body threads up behind it along the line the head already took. So whether it can leave depends on one straight line of dots and nothing else — its own bends cost it nothing — and the thing to check before tapping is a thing you can actually see.",
+      },
+      {
+        icon: "grid",
+        title: "No level data, and no solver",
+        body: "All hundred levels are computed from their number in a few milliseconds on the phone. Arrows are placed one at a time with a clear run to the edge, which makes <em>the reverse of the placement order a solution</em> — the level is generated along its own answer, so an unfinishable one is not something the generator can produce.",
+      },
+      {
+        icon: "layers",
+        title: "Difficulty is one number",
+        body: "Not size, but how many arrows can leave at once: at four there is nearly always an obvious move, at one there is never a choice. Ten levels at four, fifteen at three, twenty at two, and the last fifty-five at one.",
+      },
+      {
+        icon: "heart",
+        title: "Three lives, and a clock that waits",
+        body: "A wrong tap costs a life and leaves the board exactly as it was. The clock starts when you first touch an arrow rather than when the level appears — a board is read before it is played, and on a hard one for a good while.",
+      },
+      {
+        icon: "activity",
+        title: "A bed that does not repeat",
+        body: "Two synthesised loops, one of 97 seconds and one of 71. They share no factors, so the pair line up again only every hour and fifty-five minutes — two files under half a megabyte doing the work of a generative engine.",
+      },
+      {
+        icon: "offline",
+        title: "Nothing leaves the phone",
+        body: "No account, no network call, no telemetry, no advertising identifier, and no permission prompt of any kind. The Android package ships without the <code>INTERNET</code> permission, so the OS itself would refuse a connection the game tried to open.",
+      },
+    ],
+  },
+
   {
     slug: "scanhippo",
     name: "Scan Hippo",
@@ -576,6 +723,7 @@ export const HERD = [
     license: "Apache-2.0",
     platforms: ["Arduino Nano ESP32"],
     status: "development",
+    experimental: true,
 
     // No stores, and this empty array is not waiting on a review queue the way
     // Roll Hippo's once was. The phone app is not going to be published: the
@@ -626,188 +774,61 @@ export const HERD = [
       },
     ],
   },
+
   {
-    slug: "jsonhippo",
-    name: "JsonHippo",
-    // Hue 276, found the way Maze's and Scan's were: the midpoint of the
-    // widest arc still free once Scan took 94 — the 64 degrees between Rest at
-    // 246 and Maze at 310. Readable as accent text on #1c1c1c (4.69:1) with the
-    // white hippo still clear on top of it (3.63:1). It must stay in step with
-    // the same value in scripts/make-marks.mjs: that one paints the mark, this
-    // one paints the page the mark sits on.
-    color: "#B65CF0",
-    tagline: "JSON viewer with pinpoint errors",
-
-    // JsonHippo runs here, at hippoherd.com/jsonhippo/, and ships as a desktop
-    // app too — so it is modelled like Rest Hippo and Chip Hippo, with a
-    // generated page, a version and downloads, rather than as a webApp whose
-    // card opens the app. Two things are its own:
-    //
-    //   app   the web app, at /jsonhippo/. Built in jfigge/jsonhippo and
-    //         copied in by `make site` there (an rsync --delete of its dist/
-    //         that leaves about/ alone); never written by this generator.
-    //   page  /jsonhippo/about/, because /jsonhippo/ is the app. The card,
-    //         nav, footer and the rest all lead here; the page's Launch
-    //         button leads on to the app.
-    //
-    // The downloads come from jfigge/jsonhippo's GitHub Releases through
-    // versions.json, like every other hippo's; its Release workflow publishes
-    // them when that repo's package.json version moves.
-    app: "/jsonhippo/",
-    page: "/jsonhippo/about/",
-
-    // `domain` stays null: the app's home IS this site. If jsonhippo.com is
-    // bought later, set it here and add the host to ALLOWED in
-    // website/preview.js.
-    domain: null,
-    docs: "https://github.com/jfigge/jsonhippo/blob/main/docs/USAGE.md",
-    stack: "Electron · Vanilla JS · jQuery",
-    license: "Apache-2.0",
-    platforms: ["macOS", "Windows", "Linux", "Web"],
-    status: "released",
+    slug: "keephippo",
+    name: "Keep Hippo",
+    color: "#F5A623",
+    tagline: "Vault-compatible secrets manager",
+    domain: "keephippo.com",
+    docs: "https://keephippo.com/docs/",
+    stack: "Go · single binary",
+    license: "MPL-2.0",
+    platforms: ["macOS", "Linux", "Windows"],
+    status: "prerelease",
+    experimental: true,
     stores: [],
 
-    lead: "Pinpoint errors for JSON that will not parse — line, column, what was expected and the path to it — plus smart paste of escaped JSON, a tree you can filter, and a diff that ignores order. In your browser or on your desktop; nothing is uploaded.",
+    lead: "A from-scratch secrets manager that speaks HashiCorp Vault's HTTP API, so the Vault clients you already have keep working. Server, CLI and web console in one Go binary.",
 
     blurb:
-      "“Invalid JSON” is useless when the input is five megabytes long. JsonHippo's tokenizer and parser are written by hand, character by character, so when a document fails it says <em>where</em>: <code>Line 123982, col 9: expected ',' or '}' but found string \"zip\" (in $.people[4321].address)</code> — and one click puts the caret on the bad character. It also recognises the JSON that APIs and logs hand back as an escaped string and unescapes it on paste, filters its tree by key, value, regex or path, and compares two documents by content rather than by line. Launch it right here in the browser, or install it: the desktop app is the same page in its own window, and it makes no network request at all. Inspired by jsonviewer.stack.hu, which its author has used for years.",
+      "Keep Hippo replicates Vault's <strong>wire protocol</strong>, not just its ideas: the <code>/v1/</code> path model, the <code>X-Vault-Token</code> header, port 8200, and the <code>VAULT_ADDR</code> and <code>VAULT_TOKEN</code> environment variables. Point the real <code>vault</code> CLI at it and the commands work. Underneath is a first-party implementation of the parts that matter — a sealed storage barrier, Shamir unseal, secrets engines, auth methods, ACL policies, tokens and leases — shipped as a single Go binary with its own console and its own branding.",
+
+    callout: {
+      title: "Not audited",
+      body: 'Keep Hippo is an educational implementation of a secrets manager and has <strong>not</strong> undergone a security audit. Do not use it to protect real secrets until a release says otherwise — see <a href="https://github.com/jfigge/keephippo/blob/main/SECURITY.md" rel="noopener noreferrer">SECURITY.md</a>.',
+    },
 
     features: [
       {
-        icon: "alert",
-        title: "Says where it broke",
-        body: "A hand-written parser gives the line, column, expected and found, and the JSON path — for every one of seventeen error codes. A file missing its last <code>}</code> points at the brace that never closed, not at the end of the file.",
+        icon: "terminal",
+        title: "Vault CLI parity",
+        body: "Every verb, <code>--format=json</code> included. Scripts written against <code>vault</code> run against <code>keephippo</code> without a diff.",
       },
       {
-        icon: "code",
-        title: "Smart paste",
-        body: "Escaped JSON — <code>\"{\\\"id\\\":7}\"</code> — is unescaped on paste, as many times as it was escaped, with an Undo. Ordinary JSON with escaped quotes inside its strings is never touched.",
+        icon: "lock",
+        title: "Barrier & Shamir seal",
+        body: "Storage sits behind an encrypted barrier that starts sealed. Unsealing takes a threshold of key shares, exactly as it should.",
       },
       {
-        icon: "search",
-        title: "A tree you can filter",
-        body: "Narrow the tree to the keys or values that match — plain text, regex, or a path like <code>$.items[*].name</code> — with each match's ancestors kept so you can see where it sits.",
+        icon: "database",
+        title: "KV v1 and v2",
+        body: "Both engines, with versioning, soft delete and check-and-set on v2 — mounted at whatever path you choose.",
       },
       {
-        icon: "shuffle",
-        title: "A diff that ignores order",
-        body: "Members match by key and array elements by content, so key order and array order are never differences — a record that moved and changed one field shows as one changed field. Both panes are editable, and Reorder lays one side out in the other's order.",
-      },
-      {
-        icon: "book",
-        title: "A schema from a sample",
-        body: "The Schema tab infers a JSON Schema from a representative document: properties in the order they appear, <code>required</code> where a key is always present, ready to copy and validate against elsewhere.",
+        icon: "key",
+        title: "Auth methods",
+        body: "Token, userpass and approle, with the full token lifecycle: creation, renewal, revocation and orphaning.",
       },
       {
         icon: "shield",
-        title: "Warnings for valid JSON",
-        body: "Duplicate keys, empty keys, and numbers that change when read as a 64-bit float — <code>12345678901234567890</code> becomes <code>12345678901234567000</code> — are legal JSON and almost always mistakes, so each is flagged with where it is.",
+        title: "ACL policies",
+        body: "Path-based policies with capability lists, attached to tokens at login and enforced on every request.",
       },
       {
-        icon: "layers",
-        title: "Built for big files",
-        body: "A 5 MB document parses in under a tenth of a second; the tree draws only what is open; the filter searches every node, drawn or not.",
-      },
-      {
-        icon: "terminal",
-        title: "Every digit kept",
-        body: "Format and minify are written from the parse tree, so <code>12345678901234567890</code> keeps its digits and keys keep their order, duplicates included and flagged.",
-      },
-      {
-        icon: "lock",
-        title: "Nothing leaves your machine",
-        body: "No server, no account, no tracking — in the browser or the desktop app, which runs offline and opens links in your own browser. Files are read locally and never uploaded.",
-      },
-    ],
-  },
-  {
-    slug: "markhippo",
-    name: "MarkHippo",
-    // Hue 65.5, found the way Maze's, Scan's and Json's were: the midpoint of
-    // the widest arc still free — the 57 degrees between Keep at 37 and Scan
-    // at 94. A hue that close to yellow only reaches both bars when it is
-    // deep, hence the olive: accent text on #1c1c1c at 4.71:1, the white
-    // hippo on top of it at 3.62:1. It must stay in step with the same value
-    // in scripts/make-marks.mjs, and with --brand in jfigge/markhippo's
-    // src/css/app.css.
-    color: "#818E00",
-    tagline: "Markdown editor on its own parser",
-
-    // Modelled on JsonHippo: the web app runs here, at /markhippo/, copied in
-    // by `make site` in jfigge/markhippo (an rsync --delete of its dist/ that
-    // leaves about/ alone), and this generator writes the page about it at
-    // /markhippo/about/. Its user guide ships inside the app, at
-    // /markhippo/docs/ — on this site, so the sitemap lists it.
-    //
-    // The desktop app (the same page in Electron) is a later milestone, so for
-    // now the platforms are the web alone and there are no downloads. When
-    // the Electron build ships: add the desktop platforms, flip `desktop` for
-    // it in website/herd.js, and move status on.
-    app: "/markhippo/",
-    page: "/markhippo/about/",
-    domain: null,
-    docs: "https://hippoherd.com/markhippo/docs/",
-    stack: "Vanilla JS",
-    license: "GPL-3.0",
-    platforms: ["Web"],
-    status: "development",
-    stores: [],
-
-    lead: "Write markdown on the left, read it rendered on the right. MarkHippo reads it with its own CommonMark parser — every one of the spec's 652 examples, byte for byte — built to drive highlighting, autocomplete and navigation from the same tree. In your browser; nothing is uploaded.",
-
-    blurb:
-      "Open a <code>.md</code> file on a Mac and you get plain text. MarkHippo renders it: a split pane with the markdown on the left and the document on the right, updated a moment after you stop typing. Underneath is a parser written for it rather than borrowed — the whole of CommonMark 0.31.2, with every block and inline element knowing exactly which characters of the source it came from, and only the blocks around an edit reparsed as you type. That one tree renders the preview, colours the editor and drives autocomplete that teaches the syntax as you type — <code>/</code> for headings, lists and code blocks, the languages on a code fence — and lays out the outline, the minimap and synced scrolling. The core knows no markdown at all — it hosts plugins, and CommonMark is the first of them.",
-
-    features: [
-      {
-        icon: "eye",
-        title: "Live preview, coloured source",
-        body: "Markdown on the left, coloured by the same parser as you type; the rendered document on the right, re-rendered when you pause. Leave a code fence open and everything below it turns to code on both sides, so the mistake shows itself. Fenced code is coloured in twenty languages.",
-      },
-      {
-        icon: "search",
-        title: "Suggests the syntax as you type",
-        body: "Type <code>/</code> at the start of a line for headings, lists, quotes and code blocks, or mid-line for links and emphasis; open a code fence for its languages; Ctrl+Space anywhere. Each suggestion shows the markdown it stands for, so the list teaches as it helps.",
-      },
-      {
-        icon: "code",
-        title: "Its own CommonMark parser",
-        body: "No markdown-it, no marked. A hand-written two-phase parser passes all 652 examples of the CommonMark 0.31.2 spec, matching the reference HTML byte for byte.",
-      },
-      {
-        icon: "layers",
-        title: "One tree, exact positions",
-        body: "Every heading, list item, link and emphasis knows its line, column and offset in the source — the structure that highlighting, autocomplete, the outline, the minimap and synced scroll are built on.",
-      },
-      {
-        icon: "zap",
-        title: "Incremental reparse",
-        body: "Typing in a long document reparses only the blocks around the edit and splices them in — with a fuzz test holding the result identical to a full parse.",
-      },
-      {
-        icon: "network",
-        title: "Everything is a plugin",
-        body: "The core only hosts plugins. CommonMark is one, written against the same API a third party would use: new blocks, inline syntax, renderers for fenced languages like <code>mermaid</code>, and autocomplete suggestions.",
-      },
-      {
-        icon: "grid",
-        title: "Themes, light and dark",
-        body: "Hippo, Catppuccin, Grey and High contrast, each with a light and a dark version that follows your system or your choice — or make your own in the theme editor, with contrast checked as you pick, and share it as a file (Rest Hippo's theme files import too).",
-      },
-      {
-        icon: "move",
-        title: "Outline, minimap, synced scroll",
-        body: "An outline of the headings to jump between, a minimap of the whole document in the editor's colours, and an editor and preview that scroll together, heading for heading — all read from the same parse tree.",
-      },
-      {
-        icon: "activity",
-        title: "Tables, math and diagrams",
-        body: "GitHub's tables, task lists, strikethrough, bare links and footnotes, LaTeX math drawn as MathML, and Mermaid diagrams — each a plugin you can switch off, all working offline.",
-      },
-      {
-        icon: "lock",
-        title: "Nothing leaves your machine",
-        body: "No server, no account, no tracking. Files are opened locally and never uploaded; scripts in a document's raw HTML never run.",
+        icon: "clock",
+        title: "Leases & transit",
+        body: "A real expiration manager that revokes on schedule, plus a transit engine for encryption-as-a-service against named keys.",
       },
     ],
   },

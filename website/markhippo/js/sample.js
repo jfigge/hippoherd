@@ -59,7 +59,8 @@ function hello(name) {
 An inline [link](https://hippoherd.com/ "Hippo Herd"), a [reference
 link][herd], and an autolink: <https://hippoherd.com/markhippo/>. Images
 are written the same way as links, with a \`!\` in front:
-\`![alt text](picture.png)\`.
+\`![alt text](picture.png)\`. Or paste a screenshot, or drop a picture on
+the editor: it goes into the document itself.
 
 [herd]: https://hippoherd.com/
 
@@ -95,4 +96,10 @@ flowchart LR
 Try deleting the closing fence of the code block above: everything after it
 becomes code, on both sides. That is the parser telling you exactly what it
 understood.
+
+## When it is done
+
+**Export** prints the document or saves it as a PDF, makes it an HTML page,
+rich text for Pages and Word, or plain text, or copies it, formatted, to
+paste into an email.
 `;

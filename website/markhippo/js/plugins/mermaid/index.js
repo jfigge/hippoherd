@@ -34,7 +34,8 @@
  * as text.
  *
  * Diagrams are cached by source and theme, so re-rendering the preview as
- * you type redraws only the diagram being edited.
+ * you type redraws only the diagram being edited. Exports draw them in the
+ * light theme whatever the page's mode.
  */
 
 import { tokenizer, words } from "../code/tokenizer.js";
@@ -55,53 +56,77 @@ let mermaid = null;
 let configured = null;
 let counter = 0;
 const cache = new Map();
+// Drawing goes one call at a time: Mermaid has a single configuration, and
+// the theme is part of it, so a light drawing (an export) and a dark one
+// (the preview) must not interleave.
+let drawing = Promise.resolve();
 
-async function enhance(elements, context = {}) {
+const keyOf = (theme, el) => theme + "\u0000" + el.textContent;
+
+// Diagrams already drawn go in at once, so a re-render while typing does
+// not flicker; the rest are drawn after any drawing already under way.
+function enhance(elements, context = {}) {
   const theme = context.dark ? "dark" : "default";
-  if (!mermaid) mermaid = (await import("../../../vendor/mermaid/mermaid.esm.min.mjs")).default;
-  if (configured !== theme) {
-    mermaid.initialize({ startOnLoad: false, securityLevel: "strict", theme, fontFamily: "inherit" });
-    configured = theme;
-  }
+  const pending = [];
   for (const el of elements) {
-    const source = el.textContent;
-    const key = theme + "\u0000" + source;
+    const svg = cache.get(keyOf(theme, el));
+    if (svg === undefined) pending.push(el);
+    else place(el, svg);
+  }
+  if (!pending.length) return undefined;
+  const run = drawing.then(() => draw(pending, theme));
+  drawing = run.catch(() => {});
+  return run;
+}
+
+async function draw(elements, theme) {
+  if (!mermaid) mermaid = (await import("../../../vendor/mermaid/mermaid.esm.min.mjs")).default;
+  for (const el of elements) {
+    // Drawing is slow: not for a preview that has been redrawn since.
+    if (!el.isConnected) continue;
+    const key = keyOf(theme, el);
     let svg = cache.get(key);
     if (svg === undefined) {
-      // Drawing is slow: not for a preview that has been redrawn since, nor
-      // once a newer call has switched Mermaid to the other theme.
-      if (!el.isConnected) continue;
-      if (configured !== theme) return;
+      if (configured !== theme) {
+        mermaid.initialize({ startOnLoad: false, securityLevel: "strict", theme, fontFamily: "inherit" });
+        configured = theme;
+      }
       const id = `mh-mermaid-${++counter}`;
       try {
-        svg = (await mermaid.render(id, source)).svg;
+        svg = (await mermaid.render(id, el.textContent)).svg;
       } catch (err) {
         svg = { error: String(err?.message ?? err).slice(0, 400) };
       }
       // Mermaid draws in a scratch element of its own, which it can leave
       // behind when a diagram fails.
       el.ownerDocument.getElementById(`d${id}`)?.remove();
-      if (configured !== theme) return;
       if (cache.size > 100) cache.delete(cache.keys().next().value);
       cache.set(key, svg);
     }
-    const doc = el.ownerDocument;
-    const figure = doc.createElement("figure");
-    figure.className = "mh-diagram";
-    // The block's own attributes (its source line, which synced scroll
-    // steers by, whatever the renderer named it).
-    for (const attr of el.attributes) if (attr.name !== "class") figure.setAttribute(attr.name, attr.value);
-    if (typeof svg === "string") {
-      figure.innerHTML = svg;
-      figure.title = "Mermaid diagram";
-    } else {
-      const note = doc.createElement("pre");
-      note.className = "mh-diagram-error";
-      note.textContent = `This diagram could not be drawn.\n${svg.error}`;
-      figure.append(note, el.cloneNode(true));
-    }
-    if (el.isConnected) el.replaceWith(figure);
+    place(el, svg);
   }
+}
+
+// The diagram in place of its source; or, if it could not be drawn, why
+// not, above the source.
+function place(el, svg) {
+  if (!el.isConnected) return;
+  const doc = el.ownerDocument;
+  const figure = doc.createElement("figure");
+  figure.className = "mh-diagram";
+  // The block's own attributes (its source line, which synced scroll
+  // steers by, whatever the renderer named it).
+  for (const attr of el.attributes) if (attr.name !== "class") figure.setAttribute(attr.name, attr.value);
+  if (typeof svg === "string") {
+    figure.innerHTML = svg;
+    figure.title = "Mermaid diagram";
+  } else {
+    const note = doc.createElement("pre");
+    note.className = "mh-diagram-error";
+    note.textContent = `This diagram could not be drawn.\n${svg.error}`;
+    figure.append(note, el.cloneNode(true));
+  }
+  el.replaceWith(figure);
 }
 
 // ── Colouring the source ─────────────────────────────────────────────────────

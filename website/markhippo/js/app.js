@@ -19,7 +19,7 @@
 
 /*
  * app.js — wires the page together: the editor, the parser host, the
- * preview, the status bar, files and the theme.
+ * preview, the status bar, files, images, export and the theme.
  *
  * Everything the parser and renderer do happens in MarkHippo's own modules
  * (core/, parser/, render/, plugins/); this file is only the page.
@@ -38,6 +38,11 @@ import footnotes from "./plugins/footnotes/index.js";
 import math from "./plugins/math/index.js";
 import mermaid from "./plugins/mermaid/index.js";
 import { enhance } from "./enhance.js";
+import { Exporter } from "./exporter.js";
+import { importImage, isImage } from "./image-import.js";
+import { altFromName, placeImage } from "./images/embed.js";
+import { MenuButton } from "./menu-button.js";
+import { normalizeLabel } from "./parser/normalize.js";
 import { ThemeDialog } from "./theme-dialog.js";
 import { ThemeManager } from "./theme-manager.js";
 import { Minimap } from "./minimap.js";
@@ -69,12 +74,15 @@ const storage = {
       return null;
     }
   },
+  // Answers whether it was kept.
   set(key, value) {
     try {
       window.localStorage.setItem(key, value);
+      return true;
     } catch {
       // Storage blocked or full: the document still works, it just will not
       // be there next time.
+      return false;
     }
   },
 };
@@ -104,6 +112,8 @@ const LINE_ATTRIBUTE = `data-line-${Math.random().toString(36).slice(2, 10)}`;
 // named afresh each session too.
 const TASK_ATTRIBUTE = `data-task-${Math.random().toString(36).slice(2, 10)}`;
 const RENDER_OPTIONS = { html: true, safe: true, sourceLines: LINE_ATTRIBUTE, headingIds: true, taskAttribute: TASK_ATTRIBUTE };
+// Exports have neither: nothing in them follows the editor.
+const EXPORT_OPTIONS = { html: true, safe: true, headingIds: true };
 
 // The last parse, and the text it was of; and the text the preview shows.
 let ast = null;
@@ -111,7 +121,7 @@ let parsedText = null;
 let renderedText = null;
 let filename = storage.get(STORE.filename) || "untitled.md";
 
-const status = new StatusBar({ parse: $("mh-status-parse"), doc: $("mh-status-doc"), cursor: $("mh-status-cursor") });
+const status = new StatusBar({ parse: $("mh-status-parse"), doc: $("mh-status-doc"), cursor: $("mh-status-cursor"), note: $("mh-status-note") });
 const preview = new PreviewView($("mh-preview"), document.querySelector(".mh-pane--preview"), {
   taskAttribute: TASK_ATTRIBUTE,
   onTask: toggleTask,
@@ -170,7 +180,9 @@ function parse() {
   editor.highlight(text, mh.highlight(ast));
   parsedText = text;
   status.parsed(stats, performance.now() - t0, ast);
-  storage.set(STORE.document, text);
+  // A document too big for the browser's storage (images, mostly) would
+  // come back as it last fitted: say so while it is true.
+  status.warning(storage.set(STORE.document, text) ? "" : "Too big to keep in this browser: Save to keep a copy");
   // The navigation trio reads the same tree.
   headings = outline(ast);
   outlineView.update(headings);
@@ -265,6 +277,9 @@ async function openFile(file) {
   load(await file.text(), file.name);
 }
 
+// The file name without its markdown extension, for exports.
+const baseName = () => filename.replace(/\.(md|markdown|mdown|mkd|txt)$/i, "") || "untitled";
+
 function download(text, name, type) {
   const blob = new Blob([text], { type: `${type};charset=utf-8` });
   const url = URL.createObjectURL(blob);
@@ -311,6 +326,9 @@ document.addEventListener("keydown", (e) => {
   } else if (key === "o") {
     e.preventDefault();
     ACTIONS.open();
+  } else if (key === "p") {
+    e.preventDefault();
+    runExport("print");
   }
 });
 
@@ -337,8 +355,114 @@ document.addEventListener("drop", (e) => {
   e.preventDefault();
   dragDepth = 0;
   drop.hidden = true;
-  openFile(e.dataTransfer.files[0]);
+  // Images go into the document — where they were dropped, on the editor,
+  // or at the caret; anything else is opened.
+  const files = [...e.dataTransfer.files];
+  const images = files.filter(isImage);
+  if (!images.length) {
+    openFile(files[0]);
+    return;
+  }
+  const onEditor = e.target instanceof Node && $("mh-source-scroll").contains(e.target);
+  addImages(images, onEditor ? editor.offsetAt(e.clientX, e.clientY) : null);
 });
+
+// ── Images ─────────────────────────────────────────────────────────────────
+
+// A pasted image (a screenshot, say) goes into the document. Anything with
+// text to paste pastes its text, as ever — a spreadsheet's cells come with
+// a picture of them, and the cells are what is wanted.
+editor.el.addEventListener("paste", (e) => {
+  const data = e.clipboardData;
+  if (!data || [...data.types].includes("text/plain")) return;
+  const images = [...data.files].filter(isImage);
+  if (!images.length) return;
+  e.preventDefault();
+  addImages(images, null);
+});
+
+// Each image into the document (images/embed.js), at `at` or in place of
+// the selection, then the preview at once. One image's alt text is left
+// selected, to type a description over.
+async function addImages(files, at) {
+  let from = at ?? editor.el.selectionStart;
+  let to = at ?? editor.el.selectionEnd;
+  let placed = null;
+  for (const file of files) {
+    let image;
+    try {
+      image = await importImage(file);
+    } catch (err) {
+      status.note(err.message, { warn: true });
+      continue;
+    }
+    // Reading it took a moment, in which the text may have changed.
+    const text = editor.value;
+    from = Math.min(from, text.length);
+    to = Math.min(Math.max(from, to), text.length);
+    placed = placeImage(text, from, to, { alt: altFromName(file.name), url: image.url }, defines);
+    if (placed.append) editor.editAt(text.length, text.length, placed.append);
+    editor.replaceRange(placed.from, placed.to, placed.insert);
+    from = to = placed.from + placed.insert.length;
+  }
+  if (!placed) return;
+  if (files.length === 1) editor.el.setSelectionRange(...placed.select);
+  else editor.el.setSelectionRange(from, from);
+  editor.reportCursor();
+  render();
+}
+
+// Whether `text` defines the reference `label` — that the definition at
+// its end has not been swallowed by something left open above it.
+const defines = (text, label) => Object.hasOwn(mh.parse(text).refs, normalizeLabel(`[${label}]`));
+
+// ── Export ─────────────────────────────────────────────────────────────────
+
+const exporter = new Exporter({
+  render: () => {
+    parse();
+    return mh.render(ast, EXPORT_OPTIONS);
+  },
+  registry: () => mh.registry,
+  colours: () => themes.current().light,
+  title: documentTitle,
+  printArea: $("mh-print"),
+  preview: $("mh-preview"),
+});
+
+// The document's first top-level heading, else its first heading, else
+// its file name.
+function documentTitle() {
+  parse();
+  return (headings.find((h) => h.level === 1) ?? headings[0])?.text || baseName();
+}
+
+const EXPORTS = {
+  print: () => exporter.print(),
+  html: async () => download(await exporter.html(), `${baseName()}.html`, "text/html"),
+  rtf: () => download(exporter.rtf(), `${baseName()}.rtf`, "application/rtf"),
+  text: () => download(exporter.text(), `${baseName()}.txt`, "text/plain"),
+  copy: async () => {
+    await exporter.copy();
+    status.note("Copied as rich text, to paste into an email or a document");
+  },
+};
+
+// Started inside the click or key that asked for it: copying is allowed
+// only there.
+function runExport(kind) {
+  const failed = (err) => {
+    console.warn("MarkHippo: export failed:", err);
+    status.note(`That did not work: ${err?.message ?? err}`, { warn: true });
+  };
+  try {
+    Promise.resolve(EXPORTS[kind]?.()).catch(failed);
+  } catch (err) {
+    failed(err);
+  }
+}
+
+new MenuButton($("mh-export"), $("mh-export-menu"), { onChoose: runExport });
 
 // ── Split pane ─────────────────────────────────────────────────────────────
 

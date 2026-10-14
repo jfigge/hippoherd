@@ -148,6 +148,10 @@ function renderFence(node, r) {
 
 // ── The enhancer: TeX → MathML ───────────────────────────────────────────────
 
+// What the MathML needs besides the browser: Temml's stylesheet (and its
+// one font). Exports carry it too.
+const STYLESHEET = new URL("../../../vendor/temml/Temml-Local.css", import.meta.url).href;
+
 let temml = null;
 // The first load, shared by every render that arrives while it runs (so the
 // stylesheet is added once).
@@ -158,7 +162,7 @@ function load(doc) {
   if (!loading) {
     const css = doc.createElement("link");
     css.rel = "stylesheet";
-    css.href = new URL("../../../vendor/temml/Temml-Local.css", import.meta.url).href;
+    css.href = STYLESHEET;
     doc.head.append(css);
     loading = import("../../../vendor/temml/temml.mjs").then(
       (m) => (temml = m.default),
@@ -225,7 +229,7 @@ export default {
     api.renderer("math_inline", renderInline);
     api.renderer("math_block", renderBlock);
     api.fenceRenderer("math", renderFence);
-    api.enhancer({ selector: ".math", run: enhance });
+    api.enhancer({ selector: ".math", run: enhance, stylesheet: STYLESHEET });
     api.highlighter("math_inline", highlightInline);
     api.highlighter("math_block", highlightBlock);
     api.completions({

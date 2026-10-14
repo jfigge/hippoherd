@@ -36,7 +36,8 @@
       <li><a href="#suggest">Suggestions as you type</a></li>
       <li><a href="#navigate">Finding your way around</a></li>
       <li><a href="#themes">Themes</a></li>
-      <li><a href="#files">Opening and saving</a></li>
+      <li><a href="#images">Images</a></li>
+      <li><a href="#files">Opening, saving and exporting</a></li>
       <li><a href="#keys">Keyboard</a></li>
       <li><a href="#syntax">What markdown it understands</a></li>
       <li><a href="#privacy">Privacy and safety</a></li>
@@ -80,14 +81,33 @@
   <p>Beside each text colour is its contrast against the background it's read on. WCAG AA asks for 4.5:1; anything below that is shown in red. Every built-in palette meets it.</p>
   <p><strong>Export</strong> saves a theme as a <code>.markhippo-theme.json</code> file to keep or share, and <strong>Import…</strong> adds one, including Rest Hippo's theme files. Your themes live in this browser, like your document.</p>
 
-  <h2 id="files">Opening and saving</h2>
+  <h2 id="images">Images</h2>
+  <p>Paste a screenshot or a copied picture into the editor, or drop image files on it, and they go into the document: at the cursor when pasted, where you let go when dropped. The picture's description (its alt text) is selected afterwards, so you can type one straight away; it is what screen readers say and what shows if the picture can't.</p>
+  <p>On the web there is no folder beside your document for pictures to go in, so they go in the document itself, written out as data. To keep your text readable, that data is not put where the picture is but at the end of the document, as a numbered reference:</p>
+  <pre><code>Here is the login screen: ![login screen][image-1]
+…
+
+[image-1]: data:image/png;base64,iVBORw0KGgo…</code></pre>
+  <p>So a saved document is one file that carries its pictures with it, and shows them in any markdown viewer. To take a picture out, delete both its reference in the text and its line at the end.</p>
+  <p>PNG, JPEG, GIF and WebP pictures up to 1600 pixels wide and 1.5&nbsp;MB go in exactly as they are. Bigger ones are scaled down to 1600 pixels wide, which is still sharp at the widest the preview shows a picture, so that documents stay small enough for the browser to keep. Other kinds the browser can read, such as SVG, are converted to PNG or JPEG. Animated GIFs always go in as they are.</p>
+  <p>If you paste something that comes with its own text as well as a picture, such as cells from a spreadsheet, the text is pasted, as usual.</p>
+
+  <h2 id="files">Opening, saving and exporting</h2>
   <ul>
     <li><strong>Open…</strong> reads a markdown file from your computer. You can also drop a file anywhere on the page.</li>
     <li><strong>Save</strong> downloads the markdown under the file name shown in the header.</li>
     <li><strong>New</strong> starts an empty document.</li>
   </ul>
-  <p>Your document is kept in this browser and is still there the next time you open MarkHippo. Clearing the site's data removes it.</p>
-  <p>To print the rendered document or save it as a PDF, use the browser's Print command. Only the preview is printed.</p>
+  <p>Your document is kept in this browser and is still there the next time you open MarkHippo. Clearing the site's data removes it. Browsers keep only a few megabytes for a site, so if a document with many pictures grows too big to keep, the status bar says so: save it to keep a copy.</p>
+  <p><strong>Export</strong> turns the rendered document into something else:</p>
+  <ul>
+    <li><strong>Print or save as PDF…</strong> (<kbd>Ctrl</kbd>/<kbd>⌘</kbd>+<kbd>P</kbd>) prints the document alone, without the editor. To make a PDF, choose Save as PDF in the print dialog.</li>
+    <li><strong>HTML page</strong> saves a single <code>.html</code> file that opens in any browser, with its styles, math, diagrams and pasted pictures inside it.</li>
+    <li><strong>Rich text</strong> saves an <code>.rtf</code> file for Pages, Word, TextEdit or LibreOffice, with headings, emphasis, links, lists, tables, code and pasted PNG or JPEG pictures.</li>
+    <li><strong>Plain text</strong> saves a <code>.txt</code> file laid out to read: headings underlined, lists bulleted, links followed by their address.</li>
+    <li><strong>Copy as rich text</strong> copies the document, formatted, to paste into an email or another document.</li>
+  </ul>
+  <p>Exports are always in your palette's light colours, as on paper, whatever the mode. Math and diagrams are drawn in the HTML page, the print and the copy; in RTF and plain text, math is its LaTeX and a diagram its Mermaid source.</p>
 
   <h2 id="keys">Keyboard</h2>
   <table>
@@ -100,6 +120,7 @@
       <tr><td><kbd>Esc</kbd>, then <kbd>Tab</kbd></td><td>Move focus out of the editor</td></tr>
       <tr><td><kbd>Ctrl</kbd>/<kbd>⌘</kbd>+<kbd>O</kbd></td><td>Open a file</td></tr>
       <tr><td><kbd>Ctrl</kbd>/<kbd>⌘</kbd>+<kbd>S</kbd></td><td>Save (download) the markdown</td></tr>
+      <tr><td><kbd>Ctrl</kbd>/<kbd>⌘</kbd>+<kbd>P</kbd></td><td>Print the document, or save it as a PDF</td></tr>
     </tbody>
   </table>
 
@@ -130,18 +151,17 @@
   <p>Math and diagrams are drawn by libraries MarkHippo carries with it, loaded only when a document needs them, so they work offline too.</p>
 
   <h2 id="privacy">Privacy and safety</h2>
-  <p>MarkHippo runs entirely in your browser. Documents are never uploaded and nothing is tracked. The only requests the preview makes are for images that your document links to.</p>
-  <p>Markdown can contain raw HTML, and a document can come from anywhere. So scripts and event handlers in a document never run, links that would run script (<code>javascript:</code> and the like) are disabled, HTML that could take over the page (a redirect, a form, a different base address for links) is left out of the preview, and every link in the preview opens in a new tab so the editor is never replaced.</p>
+  <p>MarkHippo runs entirely in your browser. Documents are never uploaded and nothing is tracked, and pictures you paste go into the document, not to a server. The only requests the preview makes are for images that your document links to.</p>
+  <p>Markdown can contain raw HTML, and a document can come from anywhere. So scripts and event handlers in a document never run, links that would run script (<code>javascript:</code> and the like) are disabled, HTML that could take over the page (a redirect, a form, a different base address for links) is left out of the preview, and every link in the preview opens in a new tab so the editor is never replaced. An exported HTML page carries the same protection with it: nothing in it can run, wherever it is opened.</p>
 
   <h2 id="plugins">Under the hood: one parser, plugins</h2>
-  <p>MarkHippo does not use an off-the-shelf markdown library. Its parser builds a tree of the document in which every block and inline element records exactly where it sits in the source, down to the line and column. The preview is one consumer of that tree. Syntax highlighting in the editor, autocomplete, the outline, the minimap and synced scrolling will all read the same tree, so every feature agrees on what the document says.</p>
+  <p>MarkHippo does not use an off-the-shelf markdown library. Its parser builds a tree of the document in which every block and inline element records exactly where it sits in the source, down to the line and column. The preview is one consumer of that tree. Syntax highlighting in the editor, autocomplete, the outline, the minimap and synced scrolling all read the same tree, so every feature agrees on what the document says. The exports start from the preview's HTML, so anything a plugin can show, it can also export.</p>
   <p>The core of MarkHippo knows no markdown at all. It only knows how to host plugins. CommonMark itself is a plugin, written against the same interface that any other plugin uses: a plugin can add block types, inline syntax, how they are coloured in the editor, renderers for fenced code, programming languages to colour, and the suggestions in the list at the cursor. The <a href="https://github.com/jfigge/markhippo/blob/main/docs/features/00-overview.md">developer overview</a> describes the interface.</p>
   <p>The <strong>Plugins</strong> button in the header lists the plugins MarkHippo is running. CommonMark is required; the others can be switched off, and MarkHippo remembers your choice. On the web, MarkHippo runs only the plugins bundled with it; the desktop app will also load your own.</p>
 
   <h2 id="coming">Coming next</h2>
   <ul>
-    <li>Pasting and dropping images, and export to HTML, RTF and plain text.</li>
-    <li>A desktop app that you can extend with your own plugins.</li>
+    <li>A desktop app that you can extend with your own plugins, and that keeps pasted pictures in a folder beside the document instead of inside it.</li>
   </ul>
 </main>
 

@@ -27,18 +27,23 @@
  * first time — but works synchronously from its cache otherwise, so a
  * re-render while typing does not flicker. A failing enhancer leaves its
  * elements as rendered.
+ *
+ * The answer settles once every enhancer has finished, which an export
+ * waits for; the preview does not.
  */
 
 export function enhance(root, registry, context) {
+  const runs = [];
   for (const enhancer of registry.enhancers) {
     const elements = [...root.querySelectorAll(enhancer.selector)];
     if (!elements.length) continue;
     try {
-      Promise.resolve(enhancer.run(elements, context)).catch((err) => report(enhancer, err));
+      runs.push(Promise.resolve(enhancer.run(elements, context)).catch((err) => report(enhancer, err)));
     } catch (err) {
       report(enhancer, err);
     }
   }
+  return Promise.all(runs);
 }
 
 function report(enhancer, err) {

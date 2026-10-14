@@ -177,4 +177,4 @@ new Rest Hippo version reaches this site without a commit here.
 
 ## Licence
 
-Apache 2.0. Copyright &copy; 2026 Jason Figge.
+GNU GPL v3.0 or later. Copyright &copy; 2026 Jason Figge.

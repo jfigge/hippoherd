@@ -1,3 +1,22 @@
+/*
+ * Copyright 2026 Jason Figge
+ *
+ * This file is part of Hippo Herd.
+ *
+ * Hippo Herd is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Hippo Herd is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with Hippo Herd. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 /* Hippo Herd — hippoherd.com
  *
  * One stylesheet for every page. The sibling sites each inline their CSS in a
@@ -422,6 +441,29 @@ nav.site {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: 22px;
+}
+
+/* "Experimental", between the hippos ready to use and the ones that are not.
+   It spans every column, so it always gets a row to itself, and a short row
+   above it is left short rather than filled from below. */
+.herd-divider {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 18px 0 4px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--subtext);
+}
+.herd-divider::before,
+.herd-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--surface-1);
 }
 
 /* Each card carries its hippo's colour on --brand (set inline in the markup),

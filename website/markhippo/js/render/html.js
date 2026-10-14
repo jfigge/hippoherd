@@ -38,9 +38,9 @@
  *   safe         neutralise javascript:, vbscript:, file: and non-image data:
  *                URLs. Default false.
  *   sourceLines  put data-line="N" (the 1-based source line) on block
- *                elements; a string names the attribute instead (the app
- *                uses a per-session name raw HTML cannot guess)
- *                elements — the hook synced scroll will use. Default false.
+ *                elements — the marks synced scroll steers by. A string
+ *                names the attribute instead (the app uses a per-session
+ *                name raw HTML cannot guess). Default false.
  *   softbreak    what a soft line break renders as. Default "\n".
  *   headingIds   give headings ids from their text (render/slug.js), so
  *                #links and the outline can reach them. Default false.

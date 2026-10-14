@@ -120,6 +120,12 @@ export class EditorView {
     this.reportCursor();
   }
 
+  // The text offset at a point on the page (a drop), or the caret's if the
+  // colours are behind the text.
+  offsetAt(x, y) {
+    return this.hl.text === this.value ? this.hl.offsetAt(x, y) : this.el.selectionStart;
+  }
+
   revealCaret() {
     const { selectionStart, selectionEnd, selectionDirection } = this.el;
     if (this.hl.text !== this.value) return;

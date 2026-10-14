@@ -59,10 +59,13 @@
  *   completions(provider)       autocomplete suggestions: { context, provide }
  *                               (see complete/complete.js)
  *   enhancer(spec)              finishes the rendered preview in the browser:
- *                               { selector, run(elements, context) } — how
- *                               math and diagrams become MathML and SVG.
- *                               Never run by the parser or renderer, so
- *                               plugins stay pure; see enhance.js
+ *                               { selector, run(elements, context),
+ *                               stylesheet? } — how math and diagrams become
+ *                               MathML and SVG. `stylesheet` is the URL of
+ *                               CSS the finished elements need, which
+ *                               exported HTML carries. Never run by the
+ *                               parser or renderer, so plugins stay pure;
+ *                               see enhance.js
  *   theme(palette)              a named colour palette with a light and a
  *                               dark mode: { id, name, light, dark }
  *                               (see themes/tokens.js)

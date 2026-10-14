@@ -18,14 +18,42 @@
  */
 
 /*
- * status-bar.js — parse timing, document size and the cursor position.
+ * status-bar.js — parse timing, document size and the cursor position; and
+ * a note when something needs saying (an image that could not be added,
+ * a copy that worked, a document too big to keep).
  */
 
+const NOTE_MS = 6000;
+
 export class StatusBar {
-  constructor({ parse, doc, cursor }) {
+  constructor({ parse, doc, cursor, note }) {
     this.parseEl = parse;
     this.docEl = doc;
     this.cursorEl = cursor;
+    this.noteEl = note;
+    this.timer = 0;
+    this.lasting = "";
+  }
+
+  // A note that clears itself after a few seconds. `warn` colours it as a
+  // problem.
+  note(text, { warn = false } = {}) {
+    clearTimeout(this.timer);
+    this.show(text, warn);
+    this.timer = setTimeout(() => this.show(this.lasting, Boolean(this.lasting)), NOTE_MS);
+  }
+
+  // A warning that stays until it is withdrawn with an empty `text`.
+  warning(text) {
+    if (text === this.lasting) return;
+    this.lasting = text;
+    clearTimeout(this.timer);
+    this.show(text, true);
+  }
+
+  show(text, warn) {
+    this.noteEl.textContent = text;
+    this.noteEl.classList.toggle("mh-status-note--warn", warn && Boolean(text));
   }
 
   // `stats` is what reparse() filled in; `ms` the parse + render time.
