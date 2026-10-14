@@ -68,6 +68,10 @@ async function enhance(elements, context = {}) {
     const key = theme + "\u0000" + source;
     let svg = cache.get(key);
     if (svg === undefined) {
+      // Drawing is slow: not for a preview that has been redrawn since, nor
+      // once a newer call has switched Mermaid to the other theme.
+      if (!el.isConnected) continue;
+      if (configured !== theme) return;
       const id = `mh-mermaid-${++counter}`;
       try {
         svg = (await mermaid.render(id, source)).svg;
@@ -77,13 +81,16 @@ async function enhance(elements, context = {}) {
       // Mermaid draws in a scratch element of its own, which it can leave
       // behind when a diagram fails.
       el.ownerDocument.getElementById(`d${id}`)?.remove();
+      if (configured !== theme) return;
       if (cache.size > 100) cache.delete(cache.keys().next().value);
       cache.set(key, svg);
     }
     const doc = el.ownerDocument;
     const figure = doc.createElement("figure");
     figure.className = "mh-diagram";
-    for (const attr of el.attributes) if (attr.name.startsWith("data-line")) figure.setAttribute(attr.name, attr.value);
+    // The block's own attributes (its source line, which synced scroll
+    // steers by, whatever the renderer named it).
+    for (const attr of el.attributes) if (attr.name !== "class") figure.setAttribute(attr.name, attr.value);
     if (typeof svg === "string") {
       figure.innerHTML = svg;
       figure.title = "Mermaid diagram";

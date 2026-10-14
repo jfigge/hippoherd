@@ -22,15 +22,7 @@
  * of the same length, flanking like emphasis. Three or more never strike.
  */
 
-const wrapped = (node, h) => {
-  h.mark(node.pos.start.offset, node.pos.end.offset, "md-strike");
-  const kids = node.children ?? [];
-  if (kids.length) {
-    h.mark(node.pos.start.offset, kids[0].pos.start.offset, "md-marker");
-    h.mark(kids[kids.length - 1].pos.end.offset, node.pos.end.offset, "md-marker");
-  }
-  h.children(node);
-};
+import { wrapped } from "../commonmark/highlight.js";
 
 export default {
   id: "strikethrough",
@@ -49,7 +41,7 @@ export default {
       r.children(node);
       r.tag("/del");
     });
-    api.highlighter("strikethrough", wrapped);
+    api.highlighter("strikethrough", wrapped("md-strike"));
     api.completions({
       context: "inline",
       provide: () => [{ label: "Strikethrough", keywords: ["del", "strike", "~~"], hint: "~~text~~", insert: "~~${text}~~" }],

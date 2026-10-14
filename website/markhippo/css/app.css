@@ -598,6 +598,15 @@ body {
   font-size: 12px;
 }
 
+.mh-about-support a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.mh-about-support a:hover {
+  text-decoration: underline;
+}
+
 /* ── Plugins ────────────────────────────────────────────────────────────── */
 
 .mh-plugins {

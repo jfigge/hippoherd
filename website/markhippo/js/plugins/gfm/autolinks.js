@@ -31,8 +31,9 @@
  */
 
 import { Node } from "../../parser/nodes.js";
-import { normalizeURI } from "../../parser/normalize.js";
+import { ENTITY, decodeEntity, isEscapable, normalizeURI } from "../../parser/normalize.js";
 
+const reEntity = new RegExp(ENTITY, "y");
 const reBoundary = /[\s*_~("'<>[\]]/;
 const isLocal = (c) => /[A-Za-z0-9.+_-]/.test(c);
 const isDomainChar = (c) => /[A-Za-z0-9_.-]/.test(c) || c.codePointAt(0) >= 0x80;
@@ -128,32 +129,91 @@ function linkAt(text, at, emailOnly) {
   return end === -1 ? null : { end, href: "mailto:" + text.slice(at, end) };
 }
 
+// The text's stretches, each { from, to, src, exact }: where it is exactly
+// its source, and where a backslash escape or an entity decoded into it (so
+// text and source offsets drift apart). Null if the two do not line up.
+function runs(text, subject, f, t) {
+  const out = [];
+  let i = 0;
+  let j = f;
+  let start = 0;
+  let startSrc = f;
+  while (j < t) {
+    let width = 0;
+    let decoded = "";
+    if (subject[j] === "\\" && j + 1 < t && isEscapable(subject[j + 1])) {
+      width = 2;
+      decoded = subject[j + 1];
+    } else if (subject[j] === "&") {
+      reEntity.lastIndex = j;
+      const m = reEntity.exec(subject);
+      const d = m && j + m[0].length <= t ? decodeEntity(m[0]) : null;
+      if (d !== null) {
+        width = m[0].length;
+        decoded = d;
+      }
+    }
+    if (width && text.startsWith(decoded, i)) {
+      if (i > start) out.push({ from: start, to: i, src: startSrc, exact: true });
+      out.push({ from: i, to: i + decoded.length, src: j, exact: false });
+      i += decoded.length;
+      j += width;
+      start = i;
+      startSrc = j;
+    } else if (text[i] === subject[j]) {
+      i++;
+      j++;
+    } else {
+      return null;
+    }
+  }
+  if (i !== text.length) return null;
+  if (i > start) out.push({ from: start, to: i, src: startSrc, exact: true });
+  return out;
+}
+
 function autolinkText(state, node) {
   const text = node.literal;
-  // Only text that is exactly its source: offsets map one to one.
-  if (state.subject.slice(node._f, node._t) !== text) return;
+  const spans = runs(text, state.subject, node._f, node._t);
+  if (!spans) return;
+  // Links are looked for only where the text is exactly its source, and
+  // never run past such a stretch: inside one, offsets map one to one.
+  const links = [];
+  for (const run of spans) {
+    if (!run.exact) continue;
+    const bounded = text.slice(0, run.to);
+    for (let i = run.from; i < run.to; i++) {
+      const before = i === 0 ? (node._f > 0 ? state.subject[node._f - 1] : " ") : text[i - 1];
+      // Links start at a word boundary; an email may also follow other
+      // punctuation ("at:me@example.com"), but never part of a local part.
+      const open = reBoundary.test(before);
+      const emailOnly = !open && !isLocal(before);
+      if (!open && !emailOnly) continue;
+      const found = linkAt(bounded, i, emailOnly);
+      if (!found || found.end <= i) continue;
+      links.push({ at: i, end: found.end, href: found.href });
+      i = found.end - 1;
+    }
+  }
+  if (!links.length) return;
+  // A text offset's source offset (cuts fall only at stretch edges or
+  // inside exact stretches).
+  const srcAt = (k) => {
+    for (const r of spans) if (k >= r.from && k < r.to) return r.src + (r.exact ? k - r.from : 0);
+    return node._t;
+  };
   const pieces = [];
   let from = 0;
-  for (let i = 0; i < text.length; i++) {
-    const before = i === 0 ? (node._f > 0 ? state.subject[node._f - 1] : " ") : text[i - 1];
-    // Links start at a word boundary; an email may also follow other
-    // punctuation ("at:me@example.com"), but never part of a local part.
-    const open = reBoundary.test(before);
-    const emailOnly = !open && !isLocal(before) && !/[A-Za-z0-9]/.test(before);
-    if (!open && !emailOnly) continue;
-    const found = linkAt(text, i, emailOnly);
-    if (!found || found.end <= i) continue;
-    if (i > from) pieces.push({ text: text.slice(from, i), at: from });
-    pieces.push({ text: text.slice(i, found.end), at: i, href: found.href });
-    i = found.end - 1;
-    from = found.end;
+  for (const link of links) {
+    if (link.at > from) pieces.push({ at: from, end: link.at });
+    pieces.push(link);
+    from = link.end;
   }
-  if (!pieces.length) return;
-  if (from < text.length) pieces.push({ text: text.slice(from), at: from });
+  if (from < text.length) pieces.push({ at: from, end: text.length });
   for (const piece of pieces) {
-    const f = node._f + piece.at;
-    const t = f + piece.text.length;
-    let out = new Node("text", { literal: piece.text });
+    const f = srcAt(piece.at);
+    const t = srcAt(piece.end);
+    let out = new Node("text", { literal: text.slice(piece.at, piece.end) });
     out._f = f;
     out._t = t;
     if (piece.href) {

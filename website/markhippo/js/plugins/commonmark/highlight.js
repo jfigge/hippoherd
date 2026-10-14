@@ -62,7 +62,7 @@ const end = (node) => node.pos.end.offset;
 
 // Colour a container node as `token`, with the syntax before its first child
 // and after its last as markers — **, [, ](url), and the like.
-function wrapped(token, tailToken = "md-marker") {
+export function wrapped(token, tailToken = "md-marker") {
   return (node, h) => {
     h.mark(start(node), end(node), token);
     const kids = node.children ?? [];

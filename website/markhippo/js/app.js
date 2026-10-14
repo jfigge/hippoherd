@@ -105,9 +105,10 @@ const LINE_ATTRIBUTE = `data-line-${Math.random().toString(36).slice(2, 10)}`;
 const TASK_ATTRIBUTE = `data-task-${Math.random().toString(36).slice(2, 10)}`;
 const RENDER_OPTIONS = { html: true, safe: true, sourceLines: LINE_ATTRIBUTE, headingIds: true, taskAttribute: TASK_ATTRIBUTE };
 
-// The last parse, and the text it was of.
+// The last parse, and the text it was of; and the text the preview shows.
 let ast = null;
 let parsedText = null;
+let renderedText = null;
 let filename = storage.get(STORE.filename) || "untitled.md";
 
 const status = new StatusBar({ parse: $("mh-status-parse"), doc: $("mh-status-doc"), cursor: $("mh-status-cursor") });
@@ -120,6 +121,12 @@ const preview = new PreviewView($("mh-preview"), document.querySelector(".mh-pan
 
 // A task ticked in the preview is ticked in the source: [ ] ↔ [x].
 function toggleTask(offset) {
+  // The preview is behind the editor (typing it has not caught up with):
+  // its offsets are stale. Catch up instead; the next click ticks.
+  if (editor.value !== renderedText) {
+    render();
+    return;
+  }
   const marker = editor.value.slice(offset, offset + 3);
   if (!/^\[[ xX]\]$/.test(marker)) return;
   editor.editAt(offset + 1, offset + 2, marker[1] === " " ? "x" : " ");
@@ -176,6 +183,7 @@ function render() {
   scheduleParse.cancel();
   parse();
   preview.update(mh.render(ast, RENDER_OPTIONS));
+  renderedText = parsedText;
   sync.invalidate();
 }
 

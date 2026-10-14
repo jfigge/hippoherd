@@ -119,17 +119,11 @@ const bang = {
 
 const id = (label) => normalizeURI(label);
 
-// Number the footnotes by first reference, and count every reference.
+// Number the footnotes by first reference, and count every reference — in
+// the order they render: the text's (footnote definitions left out, as
+// they render at the end; image alt text too, where a reference is only
+// text), then each numbered note's own, which may number further notes.
 function collect(ast) {
-  const order = new Map();
-  const visit = (node) => {
-    if (node.type === "footnote_reference") {
-      const k = norm(node.label);
-      if (!order.has(k)) order.set(k, { n: order.size + 1, label: node.label, refs: 0 });
-    }
-    for (const child of node.children ?? []) visit(child);
-  };
-  visit(ast);
   const definitions = new Map();
   const defs = (node) => {
     if (node.type === "footnote_definition") {
@@ -139,6 +133,21 @@ function collect(ast) {
     for (const child of node.children ?? []) defs(child);
   };
   defs(ast);
+  const order = new Map();
+  const visit = (node) => {
+    if (node.type === "footnote_definition" || node.type === "image") return;
+    if (node.type === "footnote_reference") {
+      const k = norm(node.label);
+      if (!order.has(k)) order.set(k, { n: order.size + 1, label: node.label, refs: 0, total: 0 });
+      order.get(k).total += 1;
+    }
+    for (const child of node.children ?? []) visit(child);
+  };
+  visit(ast);
+  // A Map's iteration takes in what is added during it.
+  for (const k of order.keys()) {
+    for (const child of definitions.get(k)?.children ?? []) visit(child);
+  }
   return { order, definitions };
 }
 
@@ -159,7 +168,7 @@ function renderDocument(node, r) {
     r.children(def);
     r.renderingFootnote = false;
     const backrefs = [];
-    for (let i = 1; i <= note.refs; i++) {
+    for (let i = 1; i <= note.total; i++) {
       const suffix = i === 1 ? "" : `-${i}`;
       const idx = i === 1 ? `${note.n}` : `${note.n}-${i}`;
       const sup = i === 1 ? "" : `<sup class="footnote-ref">${i}</sup>`;
@@ -181,7 +190,8 @@ function renderDocument(node, r) {
 }
 
 function renderReference(node, r) {
-  const note = r.footnotes?.order.get(norm(node.label));
+  // In an image's alt text (no tags there), or never numbered: as written.
+  const note = r.disableTags > 0 ? null : r.footnotes?.order.get(norm(node.label));
   if (!note) {
     r.out(`[^${node.label}]`);
     return;
