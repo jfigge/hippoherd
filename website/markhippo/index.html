@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <!-- A markdown document is untrusted input that ends up in the DOM — raw
+       HTML is part of markdown — so no inline script may run: every script
+       is a file from this origin, and the preview's
+       embedded HTML cannot execute anything. Images may come from anywhere,
+       as a document's images do. Inline styles are allowed because Mermaid's
+       diagrams are styled that way; the preview strips style attributes and
+       <style> elements from a document's raw HTML (js/preview-view.js), so
+       only MarkHippo's own code uses them. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; media-src 'self' data: blob: https:; connect-src 'self'; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'none'">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A markdown viewer and editor with live preview, built on its own CommonMark parser. Free, in the browser, nothing uploaded.">
+  <meta name="color-scheme" content="light dark">
+  <title>MarkHippo — markdown viewer and editor</title>
+  <link rel="canonical" href="https://hippoherd.com/markhippo/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Hippo Herd">
+  <meta property="og:title" content="MarkHippo — the discoverable, extensible markdown editor">
+  <meta property="og:description" content="Write markdown on the left, see it rendered on the right. Its own CommonMark parser; nothing is uploaded.">
+  <meta property="og:url" content="https://hippoherd.com/markhippo/">
+  <meta name="twitter:card" content="summary">
+  <link rel="icon" type="image/svg+xml" href="img/markhippo.svg">
+  <link rel="stylesheet" href="css/app.css">
+  <link rel="stylesheet" href="css/preview.css">
+  <link rel="stylesheet" href="css/syntax.css">
+  <!-- Applies the saved theme before first paint, so there is no flash. -->
+  <script src="js/theme.js"></script>
+  <script type="module" src="js/app.js"></script>
+</head>
+<body>
+
+<!-- Icon sprite. Every icon is drawn in currentColor. -->
+<svg class="mh-sprite" aria-hidden="true" focusable="false">
+  <symbol id="mh-i-open" viewBox="0 0 16 16"><path d="M1.5 4V12.5a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1V5.5a1 1 0 0 0-1-1H8L6.5 2.5h-4a1 1 0 0 0-1 1.5z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></symbol>
+  <symbol id="mh-i-save" viewBox="0 0 16 16"><path d="M8 2v8M4.5 6.5L8 10l3.5-3.5M2.5 10.5v2a1 1 0 0 0 1 1h9a1 1 0 0 0 1-1v-2" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="mh-i-new" viewBox="0 0 16 16"><path d="M9.5 1.5h-5a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h7a1 1 0 0 0 1-1v-9zM9.5 1.5v3h3M8 7.5v4M6 9.5h4" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="mh-i-system" viewBox="0 0 16 16"><circle cx="8" cy="8" r="5.5" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 2.5a5.5 5.5 0 0 1 0 11z" fill="currentColor"/></symbol>
+  <symbol id="mh-i-sun" viewBox="0 0 16 16"><circle cx="8" cy="8" r="3" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 1.5v1.5M8 13v1.5M1.5 8H3M13 8h1.5M3.4 3.4l1 1M11.6 11.6l1 1M3.4 12.6l1-1M11.6 4.4l1-1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></symbol>
+  <symbol id="mh-i-moon" viewBox="0 0 16 16"><path d="M13 9.5A5.5 5.5 0 0 1 6.5 3a5.5 5.5 0 1 0 6.5 6.5z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></symbol>
+  <symbol id="mh-i-home" viewBox="0 0 16 16"><path d="M2 7.5L8 2.5l6 5M3.5 6.5v7h3.5v-4h2v4h3.5v-7" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="mh-i-guide" viewBox="0 0 16 16"><path d="M2 3.5c2-1 4-1 6 .5 2-1.5 4-1.5 6-.5v9c-2-1-4-1-6 .5-2-1.5-4-1.5-6-.5zM8 4v9" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></symbol>
+  <symbol id="mh-i-plugin" viewBox="0 0 16 16"><path d="M2.5 5h3V4a1.5 1.5 0 0 1 3 0v1h3v3h-1a1.5 1.5 0 0 0 0 3h1v3h-9z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></symbol>
+  <symbol id="mh-i-palette" viewBox="0 0 16 16"><path d="M8 1.75a6.25 6.25 0 1 0 0 12.5c.9 0 1.25-.55 1.25-1.15 0-.75-.6-1.05-.6-1.75 0-.65.5-1.1 1.2-1.1h1.4a3.25 3.25 0 0 0 3.25-3.25C14.5 4.1 11.6 1.75 8 1.75z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><circle cx="4.75" cy="7.5" r="1" fill="currentColor"/><circle cx="6.5" cy="4.75" r="1" fill="currentColor"/><circle cx="9.75" cy="4.5" r="1" fill="currentColor"/></symbol>
+  <symbol id="mh-i-github" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/></symbol>
+</svg>
+
+<header class="mh-header">
+  <button type="button" class="mh-brand" id="mh-about-open" aria-haspopup="dialog" title="About MarkHippo">
+    <img class="mh-logo" src="img/markhippo.svg" width="28" height="28" alt="">
+    <span class="mh-name">MarkHippo</span>
+  </button>
+  <div class="mh-file" role="toolbar" aria-label="File">
+    <button type="button" class="mh-btn" data-action="new" title="Start a new, empty document">
+      <svg class="mh-icon" aria-hidden="true"><use href="#mh-i-new"/></svg><span>New</span>
+    </button>
+    <button type="button" class="mh-btn" data-action="open" title="Open a markdown file from this computer (Ctrl/⌘+O) — it is read locally, never uploaded">
+      <svg class="mh-icon" aria-hidden="true"><use href="#mh-i-open"/></svg><span>Open…</span>
+    </button>
+    <button type="button" class="mh-btn" data-action="save" title="Download the markdown (Ctrl/⌘+S)">
+      <svg class="mh-icon" aria-hidden="true"><use href="#mh-i-save"/></svg><span>Save</span>
+    </button>
+    <input type="file" id="mh-file-input" accept=".md,.markdown,.mdown,.mkd,.txt,text/markdown,text/plain" hidden>
+    <span class="mh-filename" id="mh-filename" title="The document's file name">untitled.md</span>
+  </div>
+  <div class="mh-header-actions">
+    <button type="button" class="mh-btn mh-btn--ghost" id="mh-plugins-open" aria-haspopup="dialog" title="The plugins MarkHippo is running">
+      <svg class="mh-icon" aria-hidden="true"><use href="#mh-i-plugin"/></svg><span>Plugins</span>
+    </button>
+    <a class="mh-btn mh-btn--ghost" href="docs/" title="User guide">
+      <svg class="mh-icon" aria-hidden="true"><use href="#mh-i-guide"/></svg><span>Guide</span>
+    </a>
+    <a class="mh-btn mh-btn--ghost" href="https://hippoherd.com/" title="Hippo Herd">
+      <svg class="mh-icon" aria-hidden="true"><use href="#mh-i-home"/></svg><span>Hippo Herd</span>
+    </a>
+    <button type="button" class="mh-btn mh-btn--ghost" id="mh-themes-open" aria-haspopup="dialog" title="Palettes, and your own themes">
+      <svg class="mh-icon" aria-hidden="true"><use href="#mh-i-palette"/></svg><span>Themes</span>
+    </button>
+    <button type="button" class="mh-btn mh-btn--ghost" id="mh-theme" aria-label="Mode: follow the system" title="Light, dark, or follow the system">
+      <svg class="mh-icon" aria-hidden="true"><use href="#mh-i-system"/></svg>
+      <span class="mh-theme-label">System</span>
+    </button>
+    <a class="mh-btn mh-btn--ghost" href="https://github.com/jfigge/markhippo" rel="noopener noreferrer">
+      <svg class="mh-icon" aria-hidden="true"><use href="#mh-i-github"/></svg><span>GitHub</span>
+    </a>
+  </div>
+</header>
+
+<!-- About, opened from the brand hippo. Its links open a new tab, so the
+     document in this one is never lost. -->
+<dialog class="mh-about" id="mh-about" aria-labelledby="mh-about-name">
+  <img class="mh-about-logo" src="img/markhippo.svg" width="96" height="96" alt="">
+  <h2 class="mh-about-name" id="mh-about-name">MarkHippo</h2>
+  <p class="mh-about-tagline">The discoverable, extensible markdown editor</p>
+  <p class="mh-about-desc">CommonMark and GitHub's extensions, with math and diagrams, rendered by MarkHippo's own parser. Nothing you write leaves this machine.</p>
+  <p class="mh-about-links">
+    <a href="https://hippoherd.com/" target="_blank" rel="noopener noreferrer">Hippo Herd</a>
+    <a href="docs/" target="_blank" rel="noopener noreferrer">User guide</a>
+    <a href="https://github.com/jfigge/markhippo" target="_blank" rel="noopener noreferrer">Source on GitHub</a>
+  </p>
+  <p class="mh-about-credit">Copyright © 2026 Jason Figge · GPL-3.0</p>
+  <form method="dialog">
+    <button type="submit" class="mh-btn" autofocus>Close</button>
+  </form>
+</dialog>
+
+<!-- The plugins, listed from the running host. On the web the set is the
+     bundled one; the desktop app will add the user's own. -->
+<dialog class="mh-plugins" id="mh-plugins" aria-labelledby="mh-plugins-title">
+  <h2 class="mh-plugins-title" id="mh-plugins-title">Plugins</h2>
+  <p class="mh-plugins-intro">Everything MarkHippo understands comes from a plugin, CommonMark included. The web app runs the plugins bundled with it; the desktop app will also load your own.</p>
+  <ul class="mh-plugin-list" id="mh-plugin-list"></ul>
+  <form method="dialog">
+    <button type="submit" class="mh-btn">Done</button>
+  </form>
+</dialog>
+
+<!-- Themes: the palettes, the mode, and the editor for your own
+     (js/theme-dialog.js). -->
+<dialog class="mh-themes" id="mh-themes" aria-labelledby="mh-themes-title">
+  <div class="mh-themes-head">
+    <h2 class="mh-themes-title" id="mh-themes-title">Themes</h2>
+    <fieldset class="mh-segmented" id="mh-mode">
+      <legend class="mh-visually-hidden">Mode</legend>
+      <label><input type="radio" name="mh-mode" value="system"><span>System</span></label>
+      <label><input type="radio" name="mh-mode" value="light"><span>Light</span></label>
+      <label><input type="radio" name="mh-mode" value="dark"><span>Dark</span></label>
+    </fieldset>
+    <form method="dialog" class="mh-themes-done">
+      <button type="submit" class="mh-btn">Done</button>
+    </form>
+  </div>
+  <div class="mh-themes-body">
+    <div class="mh-themes-side">
+      <h3 class="mh-visually-hidden">Palettes</h3>
+      <ul class="mh-palette-list" id="mh-palette-list"></ul>
+      <div class="mh-themes-side-actions">
+        <button type="button" class="mh-btn" data-theme-action="new" title="A new theme, starting from Hippo">New</button>
+        <button type="button" class="mh-btn" data-theme-action="import" title="Add a theme from a file (MarkHippo or Rest Hippo)">Import…</button>
+        <input type="file" id="mh-theme-file" accept=".json,application/json" hidden>
+      </div>
+      <p class="mh-theme-status" id="mh-theme-status" role="status"></p>
+    </div>
+    <section class="mh-theme-editor" aria-label="Colours">
+      <div class="mh-theme-editor-head">
+        <input type="text" class="mh-theme-name" id="mh-theme-name" aria-label="Theme name" maxlength="60" spellcheck="false">
+        <div class="mh-tabs" role="tablist" aria-label="Mode to edit">
+          <button type="button" role="tab" id="mh-theme-tab-light" aria-controls="mh-theme-grid" aria-selected="true" data-variant="light">Light</button>
+          <button type="button" role="tab" id="mh-theme-tab-dark" aria-controls="mh-theme-grid" aria-selected="false" data-variant="dark">Dark</button>
+        </div>
+        <div class="mh-theme-actions">
+          <button type="button" class="mh-btn" data-theme-action="duplicate" title="An editable copy of this theme">Duplicate</button>
+          <button type="button" class="mh-btn" data-theme-action="export" title="Save this theme as a file, to share or keep">Export</button>
+          <button type="button" class="mh-btn mh-btn--danger" data-theme-action="delete">Delete</button>
+        </div>
+      </div>
+      <p class="mh-theme-note" id="mh-theme-note"></p>
+      <div class="mh-theme-grid" id="mh-theme-grid" role="tabpanel" aria-labelledby="mh-theme-tab-light"></div>
+    </section>
+  </div>
+</dialog>
+
+<main class="mh-main" id="mh-main">
+  <!-- The headings, from the parser (js/outline-view.js). -->
+  <nav class="mh-outline" id="mh-outline" aria-labelledby="mh-outline-title" hidden>
+    <h2 class="mh-outline-title" id="mh-outline-title">Outline</h2>
+    <ol class="mh-outline-list" id="mh-outline-list"></ol>
+    <p class="mh-outline-empty" id="mh-outline-empty">No headings yet. Start a line with # to add one.</p>
+  </nav>
+  <div class="mh-panes" id="mh-panes">
+    <section class="mh-pane mh-pane--source" aria-label="Markdown">
+      <div class="mh-source-scroll" id="mh-source-scroll">
+        <!-- The textarea edits; the <pre> under it shows the same text,
+             coloured by the parser (js/source-highlight.js). -->
+        <div class="mh-editor">
+          <pre class="mh-highlight" id="mh-highlight" aria-hidden="true"></pre>
+          <textarea id="mh-source" class="mh-source" spellcheck="false" autocomplete="off" autocapitalize="off" aria-label="Markdown source" aria-describedby="mh-source-help" aria-autocomplete="list" aria-controls="mh-complete" placeholder="Write markdown here — type / for headings, lists, code and more — or open a file, or drop one on the page."></textarea>
+          <!-- A <select> cannot sit at the caret and filter as you type; this is
+               the ARIA listbox pattern instead (js/autocomplete.js). -->
+          <!-- [html-validate-disable-next prefer-native-element] -->
+          <div class="mh-complete" id="mh-complete" role="listbox" aria-label="Suggestions" hidden></div>
+        </div>
+      </div>
+      <!-- The whole document in miniature (js/minimap.js); a pointer's way
+           around it — the outline is the keyboard's. -->
+      <canvas class="mh-minimap" id="mh-minimap" aria-hidden="true" hidden></canvas>
+      <p class="mh-visually-hidden" id="mh-source-help">Type / at the start of a line for block types, or Control+Space or Alt+Slash anywhere, for suggestions: arrow keys choose, Enter or Tab inserts. Tab indents. Press Escape, then Tab, to move focus out of the editor.</p>
+    </section>
+    <div class="mh-divider" id="mh-divider" role="separator" aria-orientation="vertical" aria-label="Resize the panes" aria-valuemin="20" aria-valuemax="80" aria-valuenow="50" tabindex="0"></div>
+    <section class="mh-pane mh-pane--preview" aria-label="Preview">
+      <article class="mh-preview" id="mh-preview" aria-live="off"></article>
+    </section>
+  </div>
+</main>
+
+<div class="mh-drop" id="mh-drop" hidden>
+  <p>Drop a markdown file to open it</p>
+</div>
+
+<footer class="mh-status" id="mh-status">
+  <span class="mh-status-parse" id="mh-status-parse" role="status">Ready</span>
+  <span class="mh-status-doc" id="mh-status-doc"></span>
+  <span class="mh-status-cursor" id="mh-status-cursor">Ln 1, Col 1</span>
+  <div class="mh-view" role="toolbar" aria-label="View">
+    <button type="button" class="mh-toggle mh-toggle--outline" id="mh-view-outline" aria-pressed="false" title="The headings, to jump between">Outline</button>
+    <button type="button" class="mh-toggle" id="mh-view-minimap" aria-pressed="false" title="The whole document in miniature, beside the editor">Minimap</button>
+    <button type="button" class="mh-toggle" id="mh-view-sync" aria-pressed="true" title="Keep the editor and the preview scrolled to the same place">Sync scroll</button>
+  </div>
+</footer>
+
+</body>
+</html>

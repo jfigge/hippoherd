@@ -1,0 +1,215 @@
+/* MarkHippo — preview.css
+ *
+ * The rendered document. Everything is scoped under .mh-preview, because
+ * the markdown's own HTML lands inside it and must not restyle the app.
+ */
+
+.mh-preview {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 20px 32px 40vh;
+  color: var(--text);
+  font-size: 15.5px;
+  line-height: 1.65;
+  overflow-wrap: break-word;
+}
+
+.mh-preview > :first-child {
+  margin-top: 0;
+}
+
+.mh-preview :is(h1, h2, h3, h4, h5, h6) {
+  margin: 1.6em 0 0.6em;
+  line-height: 1.25;
+  font-weight: 650;
+}
+
+.mh-preview h1 {
+  padding-bottom: 0.3em;
+  border-bottom: 1px solid var(--surface-0);
+  font-size: 2em;
+}
+
+.mh-preview h2 {
+  padding-bottom: 0.25em;
+  border-bottom: 1px solid var(--surface-0);
+  font-size: 1.5em;
+}
+
+.mh-preview h3 {
+  font-size: 1.25em;
+}
+
+.mh-preview h4 {
+  font-size: 1.05em;
+}
+
+.mh-preview :is(h5, h6) {
+  font-size: 0.95em;
+}
+
+.mh-preview h6 {
+  color: var(--subtext);
+}
+
+.mh-preview :is(p, ul, ol, blockquote, pre, table, hr) {
+  margin: 0 0 1em;
+}
+
+.mh-preview a {
+  color: var(--accent);
+  text-underline-offset: 2px;
+}
+
+.mh-preview :is(ul, ol) {
+  padding-left: 1.8em;
+}
+
+.mh-preview li + li,
+.mh-preview li > :is(ul, ol) {
+  margin-top: 0.25em;
+}
+
+.mh-preview li > :is(ul, ol) {
+  margin-bottom: 0;
+}
+
+.mh-preview blockquote {
+  padding: 0.1em 1em;
+  border-left: 4px solid var(--quote-bar);
+  color: var(--subtext);
+}
+
+.mh-preview blockquote > :last-child {
+  margin-bottom: 0;
+}
+
+.mh-preview code {
+  padding: 0.15em 0.35em;
+  border-radius: 4px;
+  background: var(--code-bg);
+  font-family: var(--mono);
+  font-size: 0.88em;
+}
+
+.mh-preview pre {
+  overflow: auto;
+  padding: 12px 16px;
+  border: 1px solid var(--surface-0);
+  border-radius: 8px;
+  background: var(--code-bg);
+  line-height: 1.5;
+}
+
+.mh-preview pre code {
+  padding: 0;
+  background: none;
+  font-size: var(--code-size);
+}
+
+.mh-preview hr {
+  height: 2px;
+  border: 0;
+  background: var(--surface-1);
+}
+
+.mh-preview img {
+  max-width: 100%;
+}
+
+.mh-preview table {
+  border-collapse: collapse;
+}
+
+.mh-preview :is(th, td) {
+  padding: 6px 12px;
+  border: 1px solid var(--surface-1);
+}
+
+/* Printing prints the document, not the editor. */
+@media print {
+  .mh-header,
+  .mh-status,
+  .mh-pane--source,
+  .mh-divider {
+    display: none;
+  }
+
+  .mh-main {
+    display: block;
+  }
+
+  .mh-pane--preview {
+    overflow: visible;
+  }
+
+  .mh-preview {
+    max-width: none;
+    padding: 0;
+  }
+}
+
+/* ── Extensions: task lists, footnotes, math, diagrams ─────────────────── */
+
+.mh-preview li:has(> input[type="checkbox"]:first-child),
+.mh-preview li:has(> p:first-child > input[type="checkbox"]:first-child) {
+  list-style: none;
+}
+
+.mh-preview li > input[type="checkbox"]:first-child,
+.mh-preview li > p:first-child > input[type="checkbox"]:first-child {
+  margin: 0 0.4em 0 -1.4em;
+  vertical-align: -0.1em;
+  accent-color: var(--brand);
+}
+
+.mh-preview del {
+  color: var(--subtext);
+}
+
+.mh-preview .footnotes {
+  margin-top: 2em;
+  padding-top: 0.5em;
+  border-top: 1px solid var(--surface-1);
+  color: var(--subtext);
+  font-size: 0.9em;
+}
+
+.mh-preview .footnote-ref a,
+.mh-preview .footnote-backref {
+  text-decoration: none;
+}
+
+.mh-preview .math-display {
+  display: block;
+  overflow-x: auto;
+  overflow-y: hidden;
+  margin: 1em 0;
+  padding: 0.25em 0;
+  text-align: center;
+}
+
+.mh-preview .math math[display="block"] {
+  margin: 0;
+}
+
+.mh-preview .mh-diagram {
+  overflow-x: auto;
+  margin: 1em 0;
+  text-align: center;
+}
+
+.mh-preview .mh-diagram svg {
+  max-width: 100%;
+  height: auto;
+}
+
+.mh-preview .mh-diagram-error {
+  margin: 0 0 0.5em;
+  padding: 0;
+  background: none;
+  color: var(--error);
+  font-size: 0.85em;
+  text-align: left;
+  white-space: pre-wrap;
+}

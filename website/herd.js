@@ -34,6 +34,9 @@
     scanhippo: { name: "Scan Hippo", desktop: false }, // Arduino firmware
     // Runs in the browser here, and ships desktop installers as well.
     jsonhippo: { name: "JsonHippo", desktop: true },
+    // Runs in the browser here; the desktop app is a later milestone, and
+    // this flips to true when it ships installers.
+    markhippo: { name: "MarkHippo", desktop: false },
   };
 
   var DL_ICON =

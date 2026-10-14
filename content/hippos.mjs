@@ -720,6 +720,97 @@ export const HERD = [
       },
     ],
   },
+  {
+    slug: "markhippo",
+    name: "MarkHippo",
+    // Hue 65.5, found the way Maze's, Scan's and Json's were: the midpoint of
+    // the widest arc still free — the 57 degrees between Keep at 37 and Scan
+    // at 94. A hue that close to yellow only reaches both bars when it is
+    // deep, hence the olive: accent text on #1c1c1c at 4.71:1, the white
+    // hippo on top of it at 3.62:1. It must stay in step with the same value
+    // in scripts/make-marks.mjs, and with --brand in jfigge/markhippo's
+    // src/css/app.css.
+    color: "#818E00",
+    tagline: "Markdown editor on its own parser",
+
+    // Modelled on JsonHippo: the web app runs here, at /markhippo/, copied in
+    // by `make site` in jfigge/markhippo (an rsync --delete of its dist/ that
+    // leaves about/ alone), and this generator writes the page about it at
+    // /markhippo/about/. Its user guide ships inside the app, at
+    // /markhippo/docs/ — on this site, so the sitemap lists it.
+    //
+    // The desktop app (the same page in Electron) is a later milestone, so for
+    // now the platforms are the web alone and there are no downloads. When
+    // the Electron build ships: add the desktop platforms, flip `desktop` for
+    // it in website/herd.js, and move status on.
+    app: "/markhippo/",
+    page: "/markhippo/about/",
+    domain: null,
+    docs: "https://hippoherd.com/markhippo/docs/",
+    stack: "Vanilla JS",
+    license: "GPL-3.0",
+    platforms: ["Web"],
+    status: "development",
+    stores: [],
+
+    lead: "Write markdown on the left, read it rendered on the right. MarkHippo reads it with its own CommonMark parser — every one of the spec's 652 examples, byte for byte — built to drive highlighting, autocomplete and navigation from the same tree. In your browser; nothing is uploaded.",
+
+    blurb:
+      "Open a <code>.md</code> file on a Mac and you get plain text. MarkHippo renders it: a split pane with the markdown on the left and the document on the right, updated a moment after you stop typing. Underneath is a parser written for it rather than borrowed — the whole of CommonMark 0.31.2, with every block and inline element knowing exactly which characters of the source it came from, and only the blocks around an edit reparsed as you type. That one tree renders the preview, colours the editor and drives autocomplete that teaches the syntax as you type — <code>/</code> for headings, lists and code blocks, the languages on a code fence — and lays out the outline, the minimap and synced scrolling. The core knows no markdown at all — it hosts plugins, and CommonMark is the first of them.",
+
+    features: [
+      {
+        icon: "eye",
+        title: "Live preview, coloured source",
+        body: "Markdown on the left, coloured by the same parser as you type; the rendered document on the right, re-rendered when you pause. Leave a code fence open and everything below it turns to code on both sides, so the mistake shows itself. Fenced code is coloured in twenty languages.",
+      },
+      {
+        icon: "search",
+        title: "Suggests the syntax as you type",
+        body: "Type <code>/</code> at the start of a line for headings, lists, quotes and code blocks, or mid-line for links and emphasis; open a code fence for its languages; Ctrl+Space anywhere. Each suggestion shows the markdown it stands for, so the list teaches as it helps.",
+      },
+      {
+        icon: "code",
+        title: "Its own CommonMark parser",
+        body: "No markdown-it, no marked. A hand-written two-phase parser passes all 652 examples of the CommonMark 0.31.2 spec, matching the reference HTML byte for byte.",
+      },
+      {
+        icon: "layers",
+        title: "One tree, exact positions",
+        body: "Every heading, list item, link and emphasis knows its line, column and offset in the source — the structure that highlighting, autocomplete, the outline, the minimap and synced scroll are built on.",
+      },
+      {
+        icon: "zap",
+        title: "Incremental reparse",
+        body: "Typing in a long document reparses only the blocks around the edit and splices them in — with a fuzz test holding the result identical to a full parse.",
+      },
+      {
+        icon: "network",
+        title: "Everything is a plugin",
+        body: "The core only hosts plugins. CommonMark is one, written against the same API a third party would use: new blocks, inline syntax, renderers for fenced languages like <code>mermaid</code>, and autocomplete suggestions.",
+      },
+      {
+        icon: "grid",
+        title: "Themes, light and dark",
+        body: "Hippo, Catppuccin, Grey and High contrast, each with a light and a dark version that follows your system or your choice — or make your own in the theme editor, with contrast checked as you pick, and share it as a file (Rest Hippo's theme files import too).",
+      },
+      {
+        icon: "move",
+        title: "Outline, minimap, synced scroll",
+        body: "An outline of the headings to jump between, a minimap of the whole document in the editor's colours, and an editor and preview that scroll together, heading for heading — all read from the same parse tree.",
+      },
+      {
+        icon: "activity",
+        title: "Tables, math and diagrams",
+        body: "GitHub's tables, task lists, strikethrough, bare links and footnotes, LaTeX math drawn as MathML, and Mermaid diagrams — each a plugin you can switch off, all working offline.",
+      },
+      {
+        icon: "lock",
+        title: "Nothing leaves your machine",
+        body: "No server, no account, no tracking. Files are opened locally and never uploaded; scripts in a document's raw HTML never run.",
+      },
+    ],
+  },
 ];
 
 export const BY_SLUG = Object.fromEntries(HERD.map((h) => [h.slug, h]));

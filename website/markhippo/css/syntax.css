@@ -1,0 +1,211 @@
+/* MarkHippo — syntax.css
+ *
+ * Colours for what the parser and the code plugin recognise, shared by the
+ * edit pane and the preview so a keyword, say, looks the same in both:
+ *
+ *   .mh-md-*   markdown syntax in the edit pane (plugins/commonmark/highlight.js)
+ *   .mh-tk-*   code tokens in fenced blocks, both panes (plugins/code/)
+ *
+ * These are the Hippo palette's values, the defaults before a script runs;
+ * the palette in use (js/theme-manager.js) sets them all on <html>.
+ *
+ * The edit pane's text is laid out under a <textarea> and must keep its
+ * metrics exactly, so nothing here may change a glyph's width: colour,
+ * weight and slant only (monospace faces keep their advance across weights),
+ * never size, letter-spacing or padding.
+ */
+
+:root {
+  --tk-keyword: #8839ef;
+  --tk-string: #2f7d1f;
+  --tk-number: #c2410c;
+  --tk-comment: #62657a;
+  --tk-function: #1b5ee6;
+  --tk-type: #9a5800;
+  --tk-property: #0f7a80;
+  --tk-tag: #c4122f;
+  --tk-attr: #8f5600;
+  --tk-variable: #b4237a;
+  --tk-meta: #5b50c8;
+  --md-code: #0f7a80;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --tk-keyword: #cba6f7;
+    --tk-string: #a6e3a1;
+    --tk-number: #fab387;
+    --tk-comment: #8b8fa6;
+    --tk-function: #89b4fa;
+    --tk-type: #f9e2af;
+    --tk-property: #94e2d5;
+    --tk-tag: #f38ba8;
+    --tk-attr: #eba0ac;
+    --tk-variable: #f5c2e7;
+    --tk-meta: #b4befe;
+    --md-code: #94e2d5;
+  }
+}
+
+:root[data-theme="dark"] {
+  --tk-keyword: #cba6f7;
+  --tk-string: #a6e3a1;
+  --tk-number: #fab387;
+  --tk-comment: #8b8fa6;
+  --tk-function: #89b4fa;
+  --tk-type: #f9e2af;
+  --tk-property: #94e2d5;
+  --tk-tag: #f38ba8;
+  --tk-attr: #eba0ac;
+  --tk-variable: #f5c2e7;
+  --tk-meta: #b4befe;
+  --md-code: #94e2d5;
+}
+
+/* ── Markdown, in the edit pane ────────────────────────────────────────── */
+
+.mh-md-heading {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.mh-md-marker,
+.mh-md-fence,
+.mh-md-hr,
+.mh-md-escape,
+.mh-md-url {
+  color: var(--muted);
+}
+
+/* A heading's own # and underline take the heading's colour: that is the
+   instant "understood" signal. */
+.mh-md-heading.mh-md-marker {
+  color: var(--accent);
+}
+
+.mh-md-quote,
+.mh-md-list {
+  color: var(--accent);
+  font-weight: 700;
+  font-style: normal;
+}
+
+.mh-md-emph {
+  font-style: italic;
+}
+
+.mh-md-strong {
+  font-weight: 700;
+}
+
+.mh-md-code,
+.mh-md-codeblock {
+  color: var(--md-code);
+  font-style: normal;
+  font-weight: 400;
+}
+
+.mh-md-fence {
+  font-weight: 400;
+}
+
+.mh-md-info {
+  color: var(--tk-keyword);
+}
+
+.mh-md-link,
+.mh-md-image,
+.mh-md-label {
+  color: var(--tk-function);
+}
+
+.mh-md-string {
+  color: var(--tk-string);
+}
+
+.mh-md-html {
+  color: var(--tk-tag);
+}
+
+.mh-md-entity {
+  color: var(--tk-number);
+}
+
+/* Trailing spaces that make a hard break would otherwise be invisible. */
+.mh-md-break {
+  background: color-mix(in srgb, var(--accent) 22%, transparent);
+}
+
+/* ── Code tokens, in both panes ────────────────────────────────────────── */
+
+.mh-tk-keyword {
+  color: var(--tk-keyword);
+}
+
+.mh-tk-string,
+.mh-tk-regex,
+.mh-tk-inserted {
+  color: var(--tk-string);
+}
+
+.mh-tk-number,
+.mh-tk-literal {
+  color: var(--tk-number);
+}
+
+.mh-tk-comment {
+  color: var(--tk-comment);
+  font-style: italic;
+}
+
+.mh-tk-function {
+  color: var(--tk-function);
+}
+
+.mh-tk-type {
+  color: var(--tk-type);
+}
+
+.mh-tk-property {
+  color: var(--tk-property);
+}
+
+.mh-tk-tag,
+.mh-tk-deleted {
+  color: var(--tk-tag);
+}
+
+.mh-tk-attr {
+  color: var(--tk-attr);
+}
+
+.mh-tk-variable {
+  color: var(--tk-variable);
+}
+
+.mh-tk-meta {
+  color: var(--tk-meta);
+}
+
+/* ── Extensions, in the edit pane ──────────────────────────────────────── */
+
+.mh-md-strike {
+  text-decoration: line-through;
+}
+
+.mh-md-table-head {
+  font-weight: 700;
+}
+
+.mh-md-task {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.mh-md-footnote {
+  color: var(--tk-function);
+}
+
+.mh-md-math {
+  color: var(--md-code);
+}

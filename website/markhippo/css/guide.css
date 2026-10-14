@@ -1,0 +1,75 @@
+/* MarkHippo — guide.css: the user guide (docs/index.html), on top of
+ * app.css's theme and header. */
+
+.mh-guide-page {
+  display: block;
+  overflow: auto;
+}
+
+.mh-guide-page .mh-brand {
+  text-decoration: none;
+}
+
+.mh-guide-crumb {
+  color: var(--muted);
+}
+
+.mh-guide {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 24px 24px 80px;
+  font-size: 15.5px;
+  line-height: 1.65;
+}
+
+.mh-guide h1 {
+  margin: 12px 0 8px;
+  font-size: 30px;
+}
+
+.mh-guide h2 {
+  margin: 2em 0 0.5em;
+  padding-bottom: 0.25em;
+  border-bottom: 1px solid var(--surface-0);
+  font-size: 21px;
+}
+
+.mh-guide-lead {
+  color: var(--subtext);
+  font-size: 17px;
+}
+
+.mh-guide a {
+  color: var(--accent);
+}
+
+.mh-guide-toc {
+  padding: 8px 20px;
+  border: 1px solid var(--surface-0);
+  border-radius: 10px;
+  background: var(--mantle);
+}
+
+.mh-guide code,
+.mh-guide kbd {
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+  background: var(--code-bg);
+  font-family: var(--mono);
+  font-size: 0.88em;
+}
+
+.mh-guide kbd {
+  border: 1px solid var(--surface-1);
+}
+
+.mh-guide table {
+  border-collapse: collapse;
+}
+
+.mh-guide :is(th, td) {
+  padding: 6px 12px;
+  border: 1px solid var(--surface-1);
+  text-align: left;
+  vertical-align: top;
+}
