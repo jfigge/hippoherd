@@ -1,3 +1,22 @@
+/*
+ * Copyright 2026 Jason Figge
+ *
+ * This file is part of JsonHippo.
+ *
+ * JsonHippo is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * JsonHippo is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with JsonHippo. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 /* JsonHippo — app.css
  *
  * One stylesheet, two themes. The dark theme is the Hippo family palette
@@ -287,10 +306,30 @@ textarea {
   color: var(--accent);
 }
 
-.jh-about-credit {
+.jh-about-made {
   margin: 16px 0 0;
   color: var(--muted);
   font-size: 12px;
+}
+
+.jh-about-credit {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.jh-about-support {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 14px;
+  color: var(--accent);
+  font-size: 13px;
+  text-decoration: none;
+}
+
+.jh-about-support:hover {
+  text-decoration: underline;
 }
 
 .jh-about form {
