@@ -177,6 +177,16 @@ const Spell = (n) => {
 const shipped = (hippo) =>
   hippo.status === "released" || hippo.status === "prerelease";
 
+// A hippo whose desktop build is a shared app (`desktopApp` in
+// content/hippos.mjs: ViewHippo) offers that app's downloads, from that app's
+// repository, whatever its own status says.
+const hasDownloads = (hippo) => shipped(hippo) || !!hippo.desktopApp;
+
+// Where the downloads live on GitHub. A shared app's link is its releases list
+// rather than /latest, which is a 404 until the app's first release.
+const releasesUrl = (hippo) =>
+  hippo.desktopApp ? `${repoUrl(hippo.desktopApp.repo)}/releases` : `${repoUrl(hippo.slug)}/releases/latest`;
+
 // A phone app ships through its store, not through GitHub Releases, so its
 // listing is the thing to link to. Mac App Store entries are deliberately not
 // counted: a desktop hippo's card keeps its one-click GitHub installer, and
@@ -335,8 +345,8 @@ function hippoCard(x) {
         ${appleMark(16)}
         ${h(listing.name)}
       </a>`
-    : shipped(x)
-      ? `<a class="btn btn-ghost" data-card-dl href="${repoUrl(x.slug)}/releases/latest" rel="noopener noreferrer">
+    : hasDownloads(x)
+      ? `<a class="btn btn-ghost" data-card-dl href="${releasesUrl(x)}" rel="noopener noreferrer">
         ${icon("download", 14)}
         <span data-card-dl-label>Latest release</span>
       </a>`
@@ -467,7 +477,7 @@ ${herdGrid()}
       <div class="feature-card">
         <div class="feature-icon">${icon("code")}</div>
         <h3>Open source, free forever</h3>
-        <p>Apache 2.0 across most of the herd, GPL 3.0 for JsonHippo and MarkHippo, MPL 2.0 for Keep Hippo. Every line is on GitHub — read it, fork it, build it yourself if you'd rather not trust a binary.</p>
+        <p>Apache 2.0 across most of the herd, GPL 3.0 for JsonHippo, YamlHippo and MarkHippo, MPL 2.0 for Keep Hippo. Every line is on GitHub — read it, fork it, build it yourself if you'd rather not trust a binary.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon">${icon("monitor")}</div>
@@ -574,7 +584,7 @@ function downloads(x) {
           </div>
         </div>
         <div class="dl-list" data-dl-list="${os}">
-          <a class="dl-row" href="${repoUrl(x.slug)}/releases/latest" rel="noopener noreferrer">
+          <a class="dl-row" href="${releasesUrl(x)}" rel="noopener noreferrer">
             <span class="dl-icon">${icon("download", 16)}</span>
             <div class="dl-info">
               <div class="dl-label">Download for ${OS_META[os].name}</div>
@@ -586,16 +596,25 @@ function downloads(x) {
     )
     .join("\n\n");
 
+  // A shared desktop app is named up front: the installers a visitor gets are
+  // ViewHippo-…, not JsonHippo-…, and that should not be a surprise.
+  const app = x.desktopApp;
+  const intro = app
+    ? `    <h2 class="section-title">${h(x.name)} on your desktop</h2>
+    <p class="section-body">On the desktop, ${h(x.name)} comes inside <strong>${h(app.name)}</strong>, the herd's desktop app: one download that opens ${h(app.formats)} files, each in the viewer made for it. ${h(app.name)} <span data-version>—</span> · free to download and use. No account required.</p>`
+    : `    <h2 class="section-title">Get ${h(x.name)}</h2>
+    <p class="section-body">Version <span data-version>—</span> · free to download and use. No account required.</p>`;
+  const repo = app ? app.repo : x.slug;
+
   return `<section class="section section-deep" id="downloads">
   <div class="section-inner">
     <p class="section-tag">Downloads</p>
-    <h2 class="section-title">Get ${h(x.name)}</h2>
-    <p class="section-body">Version <span data-version>—</span> · free to download and use. No account required.</p>
+${intro}
 
     <div class="detected" data-detected>
       ${icon("monitor", 16)}
       <span>We think you're on <strong data-detected-label></strong>.</span>
-      <a class="btn btn-primary" data-detected-dl href="${repoUrl(x.slug)}/releases/latest" rel="noopener noreferrer">
+      <a class="btn btn-primary" data-detected-dl href="${releasesUrl(x)}" rel="noopener noreferrer">
         ${icon("download", 15)}
         <span data-detected-dl-label>Download</span>
       </a>
@@ -607,10 +626,10 @@ ${osCards}
     </div>
 
     <p class="dl-note">
-      Every build is published on
-      <a href="${repoUrl(x.slug)}/releases" rel="noopener noreferrer" data-release-link>GitHub Releases</a>,
+      Every ${app ? `${h(app.name)} ` : ""}build is published on
+      <a href="${repoUrl(repo)}/releases" rel="noopener noreferrer" data-release-link>GitHub Releases</a>,
       where you will also find the release notes and every previous version. Prefer to
-      build it yourself? The <a href="${repoUrl(x.slug)}" rel="noopener noreferrer">source</a>
+      build it yourself? The <a href="${repoUrl(repo)}" rel="noopener noreferrer">source</a>
       is right there.
     </p>
   </div>
@@ -728,7 +747,7 @@ function heroActions(x) {
     actions.push(`<a class="btn btn-primary" href="${h(x.app)}">${icon("play", 16)} Launch ${h(x.name)}</a>`);
   }
   actions.push(
-    shipped(x)
+    hasDownloads(x)
       ? `<a class="btn ${x.app ? "btn-ghost" : "btn-primary"}" href="#downloads">${icon("download", 16)} Download</a>`
       : x.repoPrivate
         ? `<a class="btn btn-primary" href="#downloads">${icon("clock", 16)} Release status</a>`
@@ -787,7 +806,7 @@ ${x.features
   </div>
 </section>
 
-${shipped(x) ? downloads(x) : notYet(x)}
+${hasDownloads(x) ? downloads(x) : notYet(x)}
 
 ${preview(x)}
 

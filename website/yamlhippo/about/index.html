@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <!-- GitHub Pages cannot set response headers, so the CSP rides in a meta tag.
+       No inline or executable scripts on any page — every script below is
+       same-origin — while inline STYLES need 'unsafe-inline' because each hippo
+       sets its own accent through a style="--brand:…" attribute.
+       frame-src names the hippo sites the preview embeds, and nothing else.
+       NO frame-ancestors: the spec IGNORES it (along with report-uri and
+       sandbox) when the policy arrives in a meta element, so it would protect
+       nothing and log a console error on every page load. Clickjacking cover
+       needs a real response header, which Pages cannot send — better to not
+       claim it than to ship a directive the browser throws away unread. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; frame-src https://resthippo.com https://chiphippo.com https://jumphippo.com https://keephippo.com; object-src 'none'; base-uri 'self'; form-action 'none'" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#F5CC00" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <meta name="description" content="Pinpoint errors for YAML that will not parse — down to the indentation: &quot;indented 3 spaces but siblings use 2&quot;. Plus smart paste that fixes tabs and curly quotes, a tree you can filter by key, path or tag, and warnings for the values other parsers read differently. In your browser or on your desktop; nothing is uploaded." />
+  <title>YamlHippo — YAML viewer with pinpoint errors · Hippo Herd</title>
+  <link rel="canonical" href="https://hippoherd.com/yamlhippo/about/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Hippo Herd" />
+  <meta property="og:title" content="YamlHippo — YAML viewer with pinpoint errors · Hippo Herd" />
+  <meta property="og:description" content="Pinpoint errors for YAML that will not parse — down to the indentation: &quot;indented 3 spaces but siblings use 2&quot;. Plus smart paste that fixes tabs and curly quotes, a tree you can filter by key, path or tag, and warnings for the values other parsers read differently. In your browser or on your desktop; nothing is uploaded." />
+  <meta property="og:url" content="https://hippoherd.com/yamlhippo/about/" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="YamlHippo — YAML viewer with pinpoint errors · Hippo Herd" />
+  <meta name="twitter:description" content="Pinpoint errors for YAML that will not parse — down to the indentation: &quot;indented 3 spaces but siblings use 2&quot;. Plus smart paste that fixes tabs and curly quotes, a tree you can filter by key, path or tag, and warnings for the values other parsers read differently. In your browser or on your desktop; nothing is uploaded." />
+  <link rel="stylesheet" href="/site.css" />
+</head>
+<body data-hippo-page="yamlhippo" style="--brand:#F5CC00">
+
+<nav class="site">
+  <a class="nav-logo" href="/">
+    <span class="logo-mark"><img src="/favicon.svg" width="32" height="32" alt=""></span>
+    <span class="nav-wordmark">Hippo Herd</span>
+  </a>
+  <div class="nav-right">
+    <details class="nav-dropdown">
+      <summary class="nav-link nav-dropdown-summary">
+        The Hippos
+        <svg class="nav-dropdown-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+      </summary>
+      <div class="nav-dropdown-menu">
+        <a class="nav-dropdown-item" href="/resthippo/"><img src="/marks/resthippo.svg" width="16" height="16" alt=""> Rest Hippo</a>
+        <a class="nav-dropdown-item" href="/chiphippo/"><img src="/marks/chiphippo.svg" width="16" height="16" alt=""> Chip Hippo</a>
+        <a class="nav-dropdown-item" href="/jumphippo/"><img src="/marks/jumphippo.svg" width="16" height="16" alt=""> Jump Hippo</a>
+        <a class="nav-dropdown-item" href="/jsonhippo/about/"><img src="/marks/jsonhippo.svg" width="16" height="16" alt=""> JsonHippo</a>
+        <a class="nav-dropdown-item" href="/yamlhippo/about/" aria-current="page"><img src="/marks/yamlhippo.svg" width="16" height="16" alt=""> YamlHippo</a>
+        <a class="nav-dropdown-item" href="/markhippo/about/"><img src="/marks/markhippo.svg" width="16" height="16" alt=""> MarkHippo</a>
+        <a class="nav-dropdown-item" href="/mindhippo/"><img src="/marks/mindhippo.svg" width="16" height="16" alt=""> Mind Hippo</a>
+        <a class="nav-dropdown-item" href="/rollhippo/"><img src="/marks/rollhippo.svg" width="16" height="16" alt=""> Roll Hippo</a>
+        <a class="nav-dropdown-item" href="/mazehippo/"><img src="/marks/mazehippo.svg" width="16" height="16" alt=""> Maze Hippo</a>
+        <a class="nav-dropdown-item" href="/scanhippo/"><img src="/marks/scanhippo.svg" width="16" height="16" alt=""> Scan Hippo</a>
+        <a class="nav-dropdown-item" href="/keephippo/"><img src="/marks/keephippo.svg" width="16" height="16" alt=""> Keep Hippo</a>
+      </div>
+    </details>
+    <a class="nav-link" href="https://github.com/jfigge" rel="noopener noreferrer">GitHub</a>
+    <a class="nav-link" href="https://github.com/sponsors/jfigge" rel="noopener noreferrer">Donate</a>
+    <a class="btn btn-primary" href="#downloads">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Download
+    </a>
+  </div>
+</nav>
+
+<div class="hero">
+  <img class="hero-mark" src="/marks/yamlhippo.svg" width="84" height="84" alt="" />
+  <div class="hero-badge">
+    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><circle cx="12" cy="12" r="9"/></svg> In development · <span data-version-tag>—</span>
+  </div>
+  <h1>YamlHippo</h1>
+  <p class="hero-desc">Most YAML errors are whitespace, and most YAML tools report them as something else. YamlHippo's parser is written by hand, character by character, and keeps the stack of indentation levels that are open — so when a line does not fit, it says so in those words: <code>Line 7, col 1: indented 3 spaces but siblings use 2 (in $.spec.ports)</code>, with a link to the siblings it disagrees with. It fixes what a clipboard does to YAML on paste, shows anchors and aliases as what they are, gives every custom tag — <code>!Ref</code>, <code>!Person</code> — its own colour and a reference built from all its uses, and flags the values a YAML 1.1 parser would read differently: <code>no</code> as false, <code>3.10</code> as 3.1, <code>0755</code> as octal. JsonHippo's sibling, with the same tree, schema and order-blind diff.</p>
+  <div class="hero-actions">
+    <a class="btn btn-primary" href="/yamlhippo/"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="6 4 20 12 6 20 6 4"/></svg> Launch YamlHippo</a>
+    <a class="btn btn-ghost" href="#downloads"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Download</a>
+  </div>
+  <p class="hero-platforms">macOS · Windows · Linux · Web &nbsp;·&nbsp; Vanilla JS · jQuery &nbsp;·&nbsp; GPL-3.0</p>
+</div>
+
+<section class="section section-alt">
+  <div class="section-inner">
+    <p class="section-tag">What it does</p>
+    <h2 class="section-title">YAML viewer with pinpoint errors</h2>
+    <p class="section-body">Pinpoint errors for YAML that will not parse — down to the indentation: “indented 3 spaces but siblings use 2”. Plus smart paste that fixes tabs and curly quotes, a tree you can filter by key, path or tag, and warnings for the values other parsers read differently. In your browser or on your desktop; nothing is uploaded.</p>
+
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="feature-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+        <h3>Says where it broke</h3>
+        <p>A hand-written parser with an indentation stack gives the line, column and path of every error — and for indentation, how deep the line is and how deep its siblings are. It passes the official YAML test suite.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></div>
+        <h3>Smart paste</h3>
+        <p>Tabs in the indentation, siblings at 3 spaces and 2, curly quotes from a word processor and no-break spaces from a web page are fixed on paste, with an Undo. Block scalars are left exactly as written.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+        <h3>The values parsers disagree on</h3>
+        <p><code>country: NO</code> is false to a YAML 1.1 parser, <code>python: 3.10</code> is 3.1, <code>0755</code> is 493 and <code>1:30</code> is 90. YamlHippo reads YAML 1.2 and flags each one rather than silently picking a side.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+        <h3>A tree you can filter</h3>
+        <p>By key or value, regex, a path like <code>$..image</code>, or a tag like <code>!Ref</code>. Aliases point at their anchors instead of copying them, and a stream of <code>---</code> documents gets a document switcher.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></div>
+        <h3>Custom tags, followed</h3>
+        <p>Every custom tag gets its own colour, a chip, a tinted subtree and a legend. The Types tab unions every use of each tag into a reference: which fields always appear, which are optional, and where their types disagree.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg></div>
+        <h3>Format, diff, schema</h3>
+        <p>Format keeps the comments; Copy as JSON says what did not survive the trip; Diff ignores key and list order; Schema infers a JSON Schema from a sample, as JSON or YAML.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+        <h3>Nothing leaves your machine</h3>
+        <p>No server, no account, no tracking. Files are read locally and never uploaded.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section section-deep" id="downloads">
+  <div class="section-inner">
+    <p class="section-tag">Downloads</p>
+    <h2 class="section-title">YamlHippo on your desktop</h2>
+    <p class="section-body">On the desktop, YamlHippo comes inside <strong>ViewHippo</strong>, the herd's desktop app: one download that opens JSON, YAML and Markdown files, each in the viewer made for it. ViewHippo <span data-version>—</span> · free to download and use. No account required.</p>
+
+    <div class="detected" data-detected>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+      <span>We think you're on <strong data-detected-label></strong>.</span>
+      <a class="btn btn-primary" data-detected-dl href="https://github.com/jfigge/hippoherd/releases" rel="noopener noreferrer">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <span data-detected-dl-label>Download</span>
+      </a>
+      <span data-detected-note></span>
+    </div>
+
+    <div class="os-grid">
+      <div class="os-card">
+        <div class="os-header">
+          <div class="os-icon"><svg viewBox="0 0 44 44" fill="none" aria-hidden="true"><path d="M29.5 6C27.2 6 24.9 7.4 23.4 9.2c-1.3 1.6-2.3 3.9-1.9 6.2 2.5.1 5-1.3 6.6-3.2 1.4-1.7 2.3-4 1.4-6.2z" fill="#cdd6f4"/><path d="M32.8 16c-3.3-.2-6.1 1.9-7.7 1.9-1.6 0-4-1.8-6.6-1.7C14.8 16.3 11 18.7 9 22.7c-4.1 7-1.1 17.4 2.9 23.1 1.9 2.8 4.2 5.9 7.2 5.8 2.9-.1 4-1.9 7.4-1.9 3.4 0 4.4 1.9 7.4 1.8 3.1-.1 5.1-2.8 7-5.6 2.2-3.2 3.1-6.3 3.2-6.4-.1 0-6.1-2.3-6.2-9.3-.1-5.8 4.7-8.6 4.9-8.7-2.7-4-6.8-4.4-8-4.5z" fill="#cdd6f4"/></svg></div>
+          <div>
+            <div class="os-name">macOS</div>
+            <div class="os-req">macOS 12 Monterey or later</div>
+          </div>
+        </div>
+        <div class="dl-list" data-dl-list="mac">
+          <a class="dl-row" href="https://github.com/jfigge/hippoherd/releases" rel="noopener noreferrer">
+            <span class="dl-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span>
+            <div class="dl-info">
+              <div class="dl-label">Download for macOS</div>
+              <div class="dl-meta">Latest release on GitHub</div>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <div class="os-card">
+        <div class="os-header">
+          <div class="os-icon"><svg viewBox="0 0 44 44" fill="none" aria-hidden="true"><rect x="6" y="6" width="15" height="15" rx="2" fill="#d0d0d0"/><rect x="23" y="6" width="15" height="15" rx="2" fill="#d0d0d0"/><rect x="6" y="23" width="15" height="15" rx="2" fill="#d0d0d0"/><rect x="23" y="23" width="15" height="15" rx="2" fill="#d0d0d0"/></svg></div>
+          <div>
+            <div class="os-name">Windows</div>
+            <div class="os-req">Windows 10 / 11</div>
+          </div>
+        </div>
+        <div class="dl-list" data-dl-list="win">
+          <a class="dl-row" href="https://github.com/jfigge/hippoherd/releases" rel="noopener noreferrer">
+            <span class="dl-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span>
+            <div class="dl-info">
+              <div class="dl-label">Download for Windows</div>
+              <div class="dl-meta">Latest release on GitHub</div>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <div class="os-card">
+        <div class="os-header">
+          <div class="os-icon"><svg viewBox="0 0 44 44" fill="none" aria-hidden="true"><ellipse cx="22" cy="14" rx="8" ry="9" fill="#cdd6f4"/><ellipse cx="22" cy="30" rx="10" ry="8" fill="#cdd6f4"/><ellipse cx="22" cy="29" rx="7" ry="6" fill="#1e1e2e"/><circle cx="19" cy="13" r="1.5" fill="#1e1e2e"/><circle cx="25" cy="13" r="1.5" fill="#1e1e2e"/><ellipse cx="22" cy="17" rx="3" ry="2" fill="#fab387"/><line x1="12" y1="35" x2="16" y2="38" stroke="#cdd6f4" stroke-width="2.5" stroke-linecap="round"/><line x1="32" y1="35" x2="28" y2="38" stroke="#cdd6f4" stroke-width="2.5" stroke-linecap="round"/></svg></div>
+          <div>
+            <div class="os-name">Linux</div>
+            <div class="os-req">64-bit · glibc 2.28+</div>
+          </div>
+        </div>
+        <div class="dl-list" data-dl-list="linux">
+          <a class="dl-row" href="https://github.com/jfigge/hippoherd/releases" rel="noopener noreferrer">
+            <span class="dl-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span>
+            <div class="dl-info">
+              <div class="dl-label">Download for Linux</div>
+              <div class="dl-meta">Latest release on GitHub</div>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <p class="dl-note">
+      Every ViewHippo build is published on
+      <a href="https://github.com/jfigge/hippoherd/releases" rel="noopener noreferrer" data-release-link>GitHub Releases</a>,
+      where you will also find the release notes and every previous version. Prefer to
+      build it yourself? The <a href="https://github.com/jfigge/hippoherd" rel="noopener noreferrer">source</a>
+      is right there.
+    </p>
+  </div>
+</section>
+
+
+
+<section class="section">
+  <div class="section-inner">
+    <p class="section-tag">Where to go next</p>
+    <h2 class="section-title">YamlHippo, everywhere else</h2>
+    <p class="section-body">The herd page is the introduction. These are the places the project actually lives.</p>
+    <div class="link-row">
+      <a class="link-card" href="/yamlhippo/">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="6 4 20 12 6 20 6 4"/></svg>
+        <span>hippoherd.com/yamlhippo/<small>The app, in your browser</small></span>
+      </a>
+      <a class="link-card" href="https://github.com/jfigge/yamlhippo" rel="noopener noreferrer">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/></svg>
+        <span>jfigge/yamlhippo<small>Source, issues and releases</small></span>
+      </a>
+      <a class="link-card" href="https://hippoherd.com/yamlhippo/docs/" rel="noopener noreferrer">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        <span>User guide<small>Every feature, documented</small></span>
+      </a>
+      <a class="link-card" href="https://github.com/jfigge/yamlhippo#readme" rel="noopener noreferrer">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+        <span>README<small>The short version, on GitHub</small></span>
+      </a>
+      <a class="link-card" href="/#herd">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        <span>The rest of the herd<small>Ten more hippos</small></span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<div class="herd-nav">
+  <a href="/jsonhippo/about/">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+    <img src="/marks/jsonhippo.svg" width="32" height="32" alt="" />
+    <span><small>Previous</small>JsonHippo</span>
+  </a>
+  <a href="/markhippo/about/">
+    <span style="text-align:right"><small>Next</small>MarkHippo</span>
+    <img src="/marks/markhippo.svg" width="32" height="32" alt="" />
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+  </a>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo">
+      <span class="logo-mark"><img src="/favicon.svg" width="28" height="28" alt=""></span>
+      <span class="footer-name">Hippo Herd</span>
+    </div>
+    <p style="margin-bottom:14px">
+      <a href="/resthippo/">Rest Hippo</a>
+      &nbsp;·&nbsp;
+      <a href="/chiphippo/">Chip Hippo</a>
+      &nbsp;·&nbsp;
+      <a href="/jumphippo/">Jump Hippo</a>
+      &nbsp;·&nbsp;
+      <a href="/jsonhippo/about/">JsonHippo</a>
+      &nbsp;·&nbsp;
+      <a href="/yamlhippo/about/">YamlHippo</a>
+      &nbsp;·&nbsp;
+      <a href="/markhippo/about/">MarkHippo</a>
+      &nbsp;·&nbsp;
+      <a href="/mindhippo/">Mind Hippo</a>
+      &nbsp;·&nbsp;
+      <a href="/rollhippo/">Roll Hippo</a>
+      &nbsp;·&nbsp;
+      <a href="/mazehippo/">Maze Hippo</a>
+      &nbsp;·&nbsp;
+      <a href="/scanhippo/">Scan Hippo</a>
+      &nbsp;·&nbsp;
+      <a href="/keephippo/">Keep Hippo</a>
+    </p>
+    <p style="margin-bottom:14px">
+      <a href="https://github.com/jfigge" rel="noopener noreferrer">GitHub</a>
+      &nbsp;·&nbsp;
+      <a href="https://github.com/sponsors/jfigge" rel="noopener noreferrer">Donate</a>
+      &nbsp;·&nbsp;
+      <a href="/privacy.html">Privacy</a>
+    </p>
+    <p>Copyright &copy; 2026 Jason Figge. Every hippo is free and open source.<br>
+    No telemetry, no accounts, no tracking — on the apps or on this site.</p>
+    <p style="margin-top:14px">Crafted with <a class="cc-referral" href="https://claude.ai/code" rel="noopener noreferrer">Claude&nbsp;Code</a>.</p>
+  </div>
+</footer>
+
+<script src="/herd.js" defer></script>
+<script src="/nav.js" defer></script>
+</body>
+</html>

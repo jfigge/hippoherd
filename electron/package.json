@@ -1,0 +1,119 @@
+{
+  "name": "viewhippo-desktop",
+  "productName": "ViewHippo",
+  "version": "0.1.0",
+  "private": true,
+  "description": "The herd's viewers — JsonHippo, YamlHippo and MarkHippo — in one desktop app.",
+  "license": "GPL-3.0-or-later",
+  "author": "Jason Figge",
+  "homepage": "https://hippoherd.com/",
+  "main": "main.js",
+  "desktopName": "viewhippo.desktop",
+  "scripts": {
+    "start": "electron ."
+  },
+  "devDependencies": {
+    "electron": "^42.7.0",
+    "electron-builder": "~26.17.0"
+  },
+  "build": {
+    "appId": "com.hippoherd.viewhippo",
+    "productName": "ViewHippo",
+    "copyright": "Copyright © 2026 Jason Figge",
+    "artifactName": "ViewHippo-${version}-${arch}.${ext}",
+    "publish": null,
+    "npmRebuild": false,
+    "directories": {
+      "output": "dist",
+      "buildResources": "icons"
+    },
+    "files": [
+      "main.js",
+      "policy.js",
+      "router.js",
+      "debug.js",
+      "package.json",
+      "icons/linux/512x512.png",
+      "web/**/*"
+    ],
+    "fileAssociations": [],
+    "mac": {
+      "icon": "icons/mac.png",
+      "category": "public.app-category.developer-tools",
+      "hardenedRuntime": true,
+      "extendInfo": {
+        "ITSAppUsesNonExemptEncryption": false
+      },
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "arm64",
+            "x64"
+          ]
+        }
+      ]
+    },
+    "mas": {
+      "type": "distribution",
+      "category": "public.app-category.developer-tools",
+      "icon": "icons/mac.png",
+      "notarize": false,
+      "hardenedRuntime": false,
+      "gatekeeperAssess": false,
+      "extendInfo": {
+        "ITSAppUsesNonExemptEncryption": false
+      },
+      "entitlements": "packaging/entitlements.mas.plist",
+      "entitlementsInherit": "packaging/entitlements.mas.inherit.plist",
+      "provisioningProfile": "packaging/embedded.provisionprofile",
+      "target": [
+        {
+          "target": "pkg",
+          "arch": [
+            "universal"
+          ]
+        }
+      ]
+    },
+    "masDev": {
+      "type": "development",
+      "notarize": false,
+      "entitlements": "packaging/entitlements.mas.plist",
+      "entitlementsInherit": "packaging/entitlements.mas.inherit.plist",
+      "provisioningProfile": "packaging/development.provisionprofile"
+    },
+    "win": {
+      "icon": "icons/icon.ico",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "artifactName": "ViewHippo-Setup-${version}-${arch}.${ext}",
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "buildUniversalInstaller": false
+    },
+    "linux": {
+      "icon": "icons/linux",
+      "category": "Development",
+      "syncDesktopName": true,
+      "target": [
+        {
+          "target": "AppImage",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ]
+    }
+  }
+}

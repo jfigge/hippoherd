@@ -56,6 +56,7 @@ import { TreeFilter } from "./tree-filter.js";
 import { SchemaView } from "./schema-view.js";
 import { DiffView } from "./diff-view.js";
 import { WarningsView } from "./warnings-view.js";
+import { installHippoViewer } from "./viewhippo.js";
 import { debounce, nextFrame, utf8Length } from "./util.js";
 
 const TYPING_DEBOUNCE_MS = 400;
@@ -219,10 +220,16 @@ class App {
     }
   }
 
+  /** Open a document: the file button, and ViewHippo's load (viewhippo.js). */
   load(text, name) {
     this.dropUndo();
     this.replaceText(text);
-    this.validate({ label: name });
+    return this.validate({ label: name });
+  }
+
+  /** The current text, exactly as it would be saved. */
+  get text() {
+    return this.textView.text;
   }
 
   /** Set the text from code (not typing). Keeps the Undo notice. */
@@ -397,6 +404,22 @@ class App {
 
   // ── Header, tabs and settings ────────────────────────────────────────────
 
+  /** Remember a theme and show it: the header button, and ViewHippo's Appearance menu. */
+  setTheme(theme) {
+    this.settings.theme = theme;
+    this.applyTheme(theme);
+  }
+
+  applyTheme(theme) {
+    if (theme === "system") delete document.documentElement.dataset.theme;
+    else document.documentElement.dataset.theme = theme;
+    const ui = THEME_UI[theme];
+    const button = document.getElementById("jh-theme");
+    button.querySelector("use").setAttribute("href", `#jh-i-${ui.icon}`);
+    button.querySelector(".jh-theme-label").textContent = ui.label;
+    button.setAttribute("aria-label", ui.aria);
+  }
+
   bindChrome() {
     TABS.forEach((id, i) => {
       const tab = document.getElementById(`jh-tab-${id}`);
@@ -433,33 +456,14 @@ class App {
       this.validate();
     });
 
-    const themeButton = document.getElementById("jh-theme");
-    const applyTheme = (theme) => {
-      if (theme === "system") delete document.documentElement.dataset.theme;
-      else document.documentElement.dataset.theme = theme;
-      const ui = THEME_UI[theme];
-      themeButton.querySelector("use").setAttribute("href", `#jh-i-${ui.icon}`);
-      themeButton.querySelector(".jh-theme-label").textContent = ui.label;
-      themeButton.setAttribute("aria-label", ui.aria);
-    };
-    applyTheme(this.settings.theme);
-    themeButton.addEventListener("click", () => {
-      const next = THEMES[(THEMES.indexOf(this.settings.theme) + 1) % THEMES.length];
-      this.settings.theme = next;
-      applyTheme(next);
+    this.applyTheme(this.settings.theme);
+    document.getElementById("jh-theme").addEventListener("click", () => {
+      this.setTheme(THEMES[(THEMES.indexOf(this.settings.theme) + 1) % THEMES.length]);
     });
 
     // The brand hippo opens About. Esc and Close dismiss it natively; a click
     // on the backdrop lands on the <dialog> itself, so that closes it too.
-    // The desktop shell loads the page as index.html?desktop=<version>
-    // (electron/main.js); the web page has no version to show.
     const about = document.getElementById("jh-about");
-    const desktop = new URLSearchParams(location.search).get("desktop");
-    if (desktop) {
-      const version = document.getElementById("jh-about-version");
-      version.textContent = `Version ${desktop} · Desktop`;
-      version.hidden = false;
-    }
     document.getElementById("jh-about-open").addEventListener("click", () => about.showModal());
     about.addEventListener("click", (e) => {
       if (e.target === about) about.close();
@@ -478,7 +482,7 @@ if (!window.jQuery) {
 }
 
 if (window.jQuery) {
-  new App();
+  installHippoViewer(new App());
 } else {
   const status = document.getElementById("jh-status");
   status.textContent = "JsonHippo could not load jQuery, so it cannot start. Check that vendor/jquery.min.js is being served.";

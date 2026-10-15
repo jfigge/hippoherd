@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <!-- Pasted YAML is untrusted text that ends up in the DOM, so no inline
+       script and no inline style attributes anywhere: every script is a file,
+       and the only third-party origin is the pinned jQuery on cdnjs. Styles
+       set from JS go through element.style (CSSOM), which style-src allows. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdnjs.cloudflare.com; style-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A YAML viewer that tells you exactly where it broke: pinpoint errors (indentation included), smart paste that fixes tabs and curly quotes, and a tree you can filter.">
+  <meta name="color-scheme" content="light dark">
+  <title>YamlHippo — YAML viewer, formatter and validator</title>
+  <!-- The app's public address. If it moves, change these. -->
+  <link rel="canonical" href="https://hippoherd.com/yamlhippo/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Hippo Herd">
+  <meta property="og:title" content="YamlHippo — a YAML viewer that tells you exactly where it broke">
+  <meta property="og:description" content="Pinpoint errors for YAML that will not parse — down to the indentation — a tree you can filter, and warnings for the values other parsers read differently. Free, in the browser, nothing uploaded.">
+  <meta property="og:url" content="https://hippoherd.com/yamlhippo/">
+  <meta name="twitter:card" content="summary">
+  <link rel="icon" type="image/svg+xml" href="img/yamlhippo.svg">
+  <link rel="stylesheet" href="css/app.css">
+  <!-- Applies the saved theme before first paint, so there is no flash. -->
+  <script src="js/theme.js"></script>
+  <!-- jQuery for the tree and filter. If cdnjs is blocked, app.js loads
+       vendor/jquery.min.js (the same file, byte for byte) instead. -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/4.0.0/jquery.min.js" integrity="sha512-8LENNbXmzI/Gbj+OwXmqR6V4QaUAw0/porPzy1+dQoJqC0JPHedWoe0DDOTL2uHA5XXJyIsPtiMHH86pVlay6A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script type="module" src="js/app.js"></script>
+</head>
+<body>
+
+<!-- Icon sprite. Every icon is drawn in currentColor and told apart by its
+     shape, never by colour alone. -->
+<svg class="yh-sprite" aria-hidden="true" focusable="false">
+  <symbol id="yh-i-object" viewBox="0 0 16 16"><path d="M5.5 2.5C4 2.5 4 3.5 4 4.5v1.8C4 7.3 3.4 8 2.5 8c.9 0 1.5.7 1.5 1.7v1.8c0 1 0 2 1.5 2M10.5 2.5c1.5 0 1.5 1 1.5 2v1.8c0 1 .6 1.7 1.5 1.7-.9 0-1.5.7-1.5 1.7v1.8c0 1 0 2-1.5 2" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="yh-i-array" viewBox="0 0 16 16"><path d="M5.5 2.5H3.5v11h2M10.5 2.5h2v11h-2" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="yh-i-string" viewBox="0 0 16 16"><path d="M3 3.5v3M5.5 3.5v3M10.5 3.5v3M13 3.5v3M3 11.5h10" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></symbol>
+  <symbol id="yh-i-number" viewBox="0 0 16 16"><path d="M6.5 2.5l-1 11M11 2.5l-1 11M3 6h10.5M2.5 10H13" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></symbol>
+  <symbol id="yh-i-boolean" viewBox="0 0 16 16"><rect x="1.5" y="4.5" width="13" height="7" rx="3.5" fill="none" stroke="currentColor" stroke-width="1.4"/><circle cx="11" cy="8" r="2" fill="currentColor"/></symbol>
+  <symbol id="yh-i-null" viewBox="0 0 16 16"><circle cx="8" cy="8" r="5.5" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M4.2 11.8l7.6-7.6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></symbol>
+  <symbol id="yh-i-chevron" viewBox="0 0 16 16"><path d="M6 3.5L10.5 8 6 12.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="yh-i-format" viewBox="0 0 16 16"><path d="M2.5 3.5h11M5 6.5h8.5M5 9.5h8.5M2.5 12.5h11" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></symbol>
+  <symbol id="yh-i-copy" viewBox="0 0 16 16"><rect x="5.5" y="5.5" width="8" height="8" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M10.5 3.5v-.5a1 1 0 0 0-1-1h-6a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h.5" fill="none" stroke="currentColor" stroke-width="1.4"/></symbol>
+  <symbol id="yh-i-clear" viewBox="0 0 16 16"><path d="M3 4.5h10M6.5 4.5V3h3v1.5M4.5 4.5l.7 9h5.6l.7-9" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="yh-i-open" viewBox="0 0 16 16"><path d="M1.5 4V12.5a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1V5.5a1 1 0 0 0-1-1H8L6.5 2.5h-4a1 1 0 0 0-1 1.5z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></symbol>
+  <symbol id="yh-i-expand" viewBox="0 0 16 16"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 13.5h10" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></symbol>
+  <symbol id="yh-i-collapse" viewBox="0 0 16 16"><path d="M4 10l4-4 4 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 2.5h10" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></symbol>
+  <symbol id="yh-i-up" viewBox="0 0 16 16"><path d="M3.5 10.5L8 6l4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="yh-i-down" viewBox="0 0 16 16"><path d="M3.5 5.5L8 10l4.5-4.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="yh-i-warn" viewBox="0 0 16 16"><path d="M8 2.2l6.3 11.3H1.7z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M8 6.6v3.2M8 11.6v.1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
+  <symbol id="yh-i-target" viewBox="0 0 16 16"><circle cx="8" cy="8" r="5" fill="none" stroke="currentColor" stroke-width="1.4"/><circle cx="8" cy="8" r="1.6" fill="currentColor"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></symbol>
+  <symbol id="yh-i-system" viewBox="0 0 16 16"><circle cx="8" cy="8" r="5.5" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 2.5a5.5 5.5 0 0 1 0 11z" fill="currentColor"/></symbol>
+  <symbol id="yh-i-sun" viewBox="0 0 16 16"><circle cx="8" cy="8" r="3" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 1.5v1.5M8 13v1.5M1.5 8H3M13 8h1.5M3.4 3.4l1 1M11.6 11.6l1 1M3.4 12.6l1-1M11.6 4.4l1-1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></symbol>
+  <symbol id="yh-i-moon" viewBox="0 0 16 16"><path d="M13 9.5A5.5 5.5 0 0 1 6.5 3a5.5 5.5 0 1 0 6.5 6.5z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></symbol>
+  <symbol id="yh-i-home" viewBox="0 0 16 16"><path d="M2 7.5L8 2.5l6 5M3.5 6.5v7h3.5v-4h2v4h3.5v-7" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="yh-i-github" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/></symbol>
+  <symbol id="yh-i-alias" viewBox="0 0 16 16"><path d="M2.5 11.5c0-4 2.5-6 7-6h3M10 2.5l3 3-3 3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="yh-i-fix" viewBox="0 0 16 16"><path d="M2.5 13.5l8-8M9 3l1-1.5M12.5 6.5L14 5.5M11.5 2.5l.3 1.7 1.7.3-1.7.3-.3 1.7-.3-1.7-1.7-.3 1.7-.3z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="yh-i-json" viewBox="0 0 16 16"><path d="M5 2.5C3.6 2.5 3.6 3.4 3.6 4.4v1.8C3.6 7.2 3 8 2 8c1 0 1.6.8 1.6 1.8v1.8c0 1 0 1.9 1.4 1.9M11 2.5c1.4 0 1.4.9 1.4 1.9v1.8c0 1 .6 1.8 1.6 1.8-1 0-1.6.8-1.6 1.8v1.8c0 1 0 1.9-1.4 1.9M7 8h2" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="yh-i-heart" viewBox="0 0 16 16"><path d="M8 13.5S2 10 2 6a3 3 0 0 1 6-1 3 3 0 0 1 6 1c0 4-6 7.5-6 7.5z" fill="currentColor"/></symbol>
+</svg>
+
+<header class="yh-header">
+  <button type="button" class="yh-brand" id="yh-about-open" aria-haspopup="dialog" title="About YamlHippo">
+    <img class="yh-logo" src="img/yamlhippo.svg" width="28" height="28" alt="">
+    <span class="yh-name">YamlHippo</span>
+  </button>
+  <span class="yh-tagline">A YAML viewer that tells you exactly where it broke</span>
+  <div class="yh-header-actions">
+    <a class="yh-btn yh-btn--ghost" href="https://hippoherd.com/" title="Hippo Herd">
+      <svg class="yh-icon" aria-hidden="true"><use href="#yh-i-home"/></svg>
+      <span>Hippo Herd</span>
+    </a>
+    <button type="button" class="yh-btn yh-btn--ghost" id="yh-theme" aria-label="Theme: follow the system">
+      <svg class="yh-icon" aria-hidden="true"><use href="#yh-i-system"/></svg>
+      <span class="yh-theme-label">System</span>
+    </button>
+    <a class="yh-btn yh-btn--ghost" href="https://github.com/jfigge/yamlhippo" rel="noopener noreferrer">
+      <svg class="yh-icon" aria-hidden="true"><use href="#yh-i-github"/></svg>
+      <span>GitHub</span>
+    </a>
+  </div>
+</header>
+
+<!-- About, opened from the brand hippo. The links open a new tab (the system
+     browser, on desktop) so the YAML in this one is never lost. -->
+<dialog class="yh-about" id="yh-about" aria-labelledby="yh-about-name">
+  <img class="yh-about-logo" src="img/yamlhippo.svg" width="96" height="96" alt="">
+  <h2 class="yh-about-name" id="yh-about-name">YamlHippo</h2>
+  <p class="yh-about-version" id="yh-about-version" hidden></p>
+  <p class="yh-about-tagline">A YAML viewer that tells you exactly where it broke</p>
+  <p class="yh-about-desc">Nothing you paste leaves this machine.</p>
+  <p class="yh-about-links">
+    <a href="https://hippoherd.com/" target="_blank" rel="noopener noreferrer">Hippo Herd</a>
+    <a href="https://hippoherd.com/yamlhippo/docs/" target="_blank" rel="noopener noreferrer">User guide</a>
+    <a href="https://github.com/jfigge/yamlhippo" target="_blank" rel="noopener noreferrer">Source on GitHub</a>
+  </p>
+  <p class="yh-about-made">Designed by Jason, Coded by Claude</p>
+  <p class="yh-about-credit">Copyright © 2026 Jason Figge · GPL-3.0-or-later</p>
+  <a class="yh-about-support" href="https://github.com/sponsors/jfigge" target="_blank" rel="noopener noreferrer">
+    <svg class="yh-icon" aria-hidden="true"><use href="#yh-i-heart"/></svg>
+    <span>Support YamlHippo…</span>
+  </a>
+  <form method="dialog">
+    <button type="submit" class="yh-btn" autofocus>Close</button>
+  </form>
+</dialog>
+
+<div class="yh-tabs" role="tablist" aria-label="View">
+  <!-- Tree comes first in the bar, but the page opens on Text: that is
+       where the YAML has to go in before there is a tree to show. -->
+  <button type="button" class="yh-tab" id="yh-tab-tree" role="tab" aria-selected="false" aria-controls="yh-panel-tree" tabindex="-1">Tree</button>
+  <button type="button" class="yh-tab yh-tab--active" id="yh-tab-text" role="tab" aria-selected="true" aria-controls="yh-panel-text">Text</button>
+  <button type="button" class="yh-tab" id="yh-tab-types" role="tab" aria-selected="false" aria-controls="yh-panel-types" tabindex="-1">Types</button>
+  <button type="button" class="yh-tab" id="yh-tab-schema" role="tab" aria-selected="false" aria-controls="yh-panel-schema" tabindex="-1">Schema</button>
+  <button type="button" class="yh-tab" id="yh-tab-diff" role="tab" aria-selected="false" aria-controls="yh-panel-diff" tabindex="-1">Diff</button>
+</div>
+
+<main class="yh-main">
+
+  <!-- ── Text ─────────────────────────────────────────────────────────── -->
+  <section class="yh-panel" id="yh-panel-text" role="tabpanel" aria-labelledby="yh-tab-text">
+    <div class="yh-toolbar" role="toolbar" aria-label="Text tools">
+      <button type="button" class="yh-btn" data-action="format" title="Tidy the indentation and layout, keeping comments (Ctrl/⌘+Enter)">
+        <svg class="yh-icon" aria-hidden="true"><use href="#yh-i-format"/></svg><span>Format</span>
+      </button>
+      <button type="button" class="yh-btn" id="yh-fix" data-action="fix" title="Fix tabs, stray indentation, curly quotes and invisible characters">
+        <svg class="yh-icon" aria-hidden="true"><use href="#yh-i-fix"/></svg><span>Fix paste</span>
+      </button>
+      <button type="button" class="yh-btn" data-action="to-json" title="Copy this document as JSON, and see what did not survive the trip">
+        <svg class="yh-icon" aria-hidden="true"><use href="#yh-i-json"/></svg><span>Copy as JSON</span>
+      </button>
+      <span class="yh-toolbar-sep" aria-hidden="true"></span>
+      <button type="button" class="yh-btn" data-action="copy" title="Copy to the clipboard">
+        <svg class="yh-icon" aria-hidden="true"><use href="#yh-i-copy"/></svg><span>Copy</span>
+      </button>
+      <button type="button" class="yh-btn" data-action="clear" title="Clear the text">
+        <svg class="yh-icon" aria-hidden="true"><use href="#yh-i-clear"/></svg><span>Clear</span>
+      </button>
+      <button type="button" class="yh-btn" data-action="open" title="Load a file from this computer (it is read locally, never uploaded)">
+        <svg class="yh-icon" aria-hidden="true"><use href="#yh-i-open"/></svg><span>Load from file</span>
+      </button>
+      <input type="file" class="yh-file" id="yh-file" accept=".yaml,.yml,.json,.txt,application/yaml,application/x-yaml,text/yaml,text/plain" hidden>
+
+      <div class="yh-toolbar-end">
+        <select id="yh-indent" class="yh-select yh-select--quiet" aria-label="Indent for Format" title="Indent for Format">
+          <option value="2">Indent: 2 spaces</option>
+          <option value="4">Indent: 4 spaces</option>
+        </select>
+        <label class="yh-check" title="When you paste YAML, fix tabs, stray indentation and curly quotes automatically">
+          <input type="checkbox" id="yh-auto-fix" checked>
+          <span>Auto-fix paste</span>
+        </label>
+        <label class="yh-check" title="Warn about valid YAML that is probably a mistake: duplicate keys, and values another YAML parser reads differently (no → false, 1.10 → 1.1, 0755 → octal, 1:30 → 90)">
+          <input type="checkbox" id="yh-lint" checked>
+          <span>Warnings</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="yh-notice" id="yh-notice" role="status" hidden>
+      <span class="yh-notice-text"></span>
+      <button type="button" class="yh-link" data-action="undo-fix">Undo</button>
+      <button type="button" class="yh-notice-close" data-action="dismiss-notice" aria-label="Dismiss">×</button>
+    </div>
+
+    <div class="yh-editor">
+      <div class="yh-gutter" aria-hidden="true"><div class="yh-gutter-lines"></div></div>
+      <div class="yh-input-wrap">
+        <div class="yh-error-band" hidden></div>
+        <div class="yh-error-mark" hidden></div>
+        <textarea id="yh-input" class="yh-input" spellcheck="false" autocomplete="off" autocapitalize="off" aria-label="YAML input" placeholder="Paste YAML here, type it, or load a file. Tabs, stray indentation and curly quotes are fixed automatically on paste."></textarea>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Tree ─────────────────────────────────────────────────────────── -->
+  <section class="yh-panel" id="yh-panel-tree" role="tabpanel" aria-labelledby="yh-tab-tree" hidden>
+    <!-- One quiet row: the filter and its options, then the expand controls.
+         Everything else on the tab is the tree itself. -->
+    <div class="yh-toolbar yh-tree-toolbar" role="toolbar" aria-label="Tree tools">
+      <select class="yh-select yh-select--quiet yh-doc-switch" id="yh-doc" aria-label="Document" title="Which document of the stream to show" hidden></select>
+      <input type="search" class="yh-filter" id="yh-filter" placeholder="Filter keys and values, a $.path or a !Tag   ( / )" aria-label="Filter the tree" aria-describedby="yh-filter-count yh-filter-error" autocomplete="off" spellcheck="false">
+      <select class="yh-select yh-select--quiet" id="yh-filter-scope" aria-label="Match against" title="Match against">
+        <option value="both" selected>Keys &amp; values</option>
+        <option value="keys">Keys</option>
+        <option value="values">Values</option>
+      </select>
+      <button type="button" class="yh-toggle-btn" id="yh-filter-case" aria-pressed="false" title="Match case">Aa</button>
+      <button type="button" class="yh-toggle-btn" id="yh-filter-regex" aria-pressed="false" title="Regular expression">.*</button>
+      <span class="yh-filter-count" id="yh-filter-count" aria-live="polite"></span>
+      <button type="button" class="yh-icon-btn" id="yh-filter-prev" aria-label="Previous match (Shift+Enter)" title="Previous match (Shift+Enter)" disabled>
+        <svg class="yh-icon" aria-hidden="true"><use href="#yh-i-up"/></svg>
+      </button>
+      <button type="button" class="yh-icon-btn" id="yh-filter-next" aria-label="Next match (Enter)" title="Next match (Enter)" disabled>
+        <svg class="yh-icon" aria-hidden="true"><use href="#yh-i-down"/></svg>
+      </button>
+      <span class="yh-toolbar-sep" aria-hidden="true"></span>
+      <button type="button" class="yh-icon-btn" data-tree="expand-all" aria-label="Expand all" title="Expand all">
+        <svg class="yh-icon" aria-hidden="true"><use href="#yh-i-expand"/></svg>
+      </button>
+      <button type="button" class="yh-icon-btn" data-tree="collapse-all" aria-label="Collapse all" title="Collapse all">
+        <svg class="yh-icon" aria-hidden="true"><use href="#yh-i-collapse"/></svg>
+      </button>
+      <select class="yh-select yh-select--quiet" id="yh-level" aria-label="Expand to level" title="Expand to level">
+        <option value="" selected>Level…</option>
+        <option value="1">Level 1</option>
+        <option value="2">Level 2</option>
+        <option value="3">Level 3</option>
+        <option value="4">Level 4</option>
+        <option value="5">Level 5</option>
+        <option value="6">Level 6</option>
+        <option value="8">Level 8</option>
+        <option value="10">Level 10</option>
+      </select>
+      <span class="yh-filter-error" id="yh-filter-error" role="alert"></span>
+      <div class="yh-confirm" id="yh-confirm" hidden>
+        <span class="yh-confirm-text"></span>
+        <button type="button" class="yh-btn yh-btn--primary" data-tree="confirm-yes">Expand</button>
+        <button type="button" class="yh-btn" data-tree="confirm-no">Cancel</button>
+      </div>
+    </div>
+
+    <div class="yh-legend" role="group" aria-label="Custom tags" hidden></div>
+
+    <div class="yh-tree-wrap">
+      <ul class="yh-tree" id="yh-tree" role="tree" aria-label="YAML tree"></ul>
+      <div class="yh-tree-message" id="yh-tree-message" hidden>
+        <p class="yh-tree-message-title"></p>
+        <p class="yh-tree-message-hint"></p>
+        <button type="button" class="yh-btn yh-btn--primary" data-tree="go-to-error" hidden>
+          <svg class="yh-icon" aria-hidden="true"><use href="#yh-i-target"/></svg><span>Go to error</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="yh-detail" id="yh-detail" hidden>
+      <code class="yh-detail-path"></code>
+      <span class="yh-detail-kind"></span>
+      <span class="yh-detail-warn" hidden></span>
+      <span class="yh-detail-lossy" hidden></span>
+      <span class="yh-detail-actions">
+        <button type="button" class="yh-btn" data-tree="go-to-anchor" hidden>
+          <svg class="yh-icon" aria-hidden="true"><use href="#yh-i-alias"/></svg><span>Go to anchor</span>
+        </button>
+        <button type="button" class="yh-btn" data-tree="copy-path">
+          <svg class="yh-icon" aria-hidden="true"><use href="#yh-i-copy"/></svg><span>Copy path</span>
+        </button>
+        <button type="button" class="yh-btn" data-tree="copy-value">
+          <svg class="yh-icon" aria-hidden="true"><use href="#yh-i-copy"/></svg><span>Copy value</span>
+        </button>
+        <button type="button" class="yh-btn" data-tree="show-in-text">
+          <svg class="yh-icon" aria-hidden="true"><use href="#yh-i-target"/></svg><span>Show in text</span>
+        </button>
+      </span>
+    </div>
+  </section>
+
+  <!-- ── Types ────────────────────────────────────────────────────────── -->
+  <!-- A reference for every custom tag (!Person, !Ref), worked out from all
+       its uses: fields, their types, and where the uses disagree. -->
+  <section class="yh-panel" id="yh-panel-types" role="tabpanel" aria-labelledby="yh-tab-types" hidden>
+    <div class="yh-types">
+      <nav class="yh-types-nav" aria-label="Custom types"><ul class="yh-types-list"></ul></nav>
+      <div class="yh-types-detail" aria-live="polite"></div>
+    </div>
+    <div class="yh-tree-message yh-types-message" hidden>
+      <p class="yh-tree-message-title yh-types-message-title"></p>
+      <p class="yh-tree-message-hint yh-types-message-hint"></p>
+      <button type="button" class="yh-btn yh-btn--primary" data-types="go-to-error" hidden>
+        <svg class="yh-icon" aria-hidden="true"><use href="#yh-i-target"/></svg><span>Go to error</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- ── Schema ───────────────────────────────────────────────────────── -->
+  <!-- A JSON Schema inferred from the Text tab's YAML each time the tab
+       opens. Read-only: the YAML it came from is never changed. -->
+  <section class="yh-panel" id="yh-panel-schema" role="tabpanel" aria-labelledby="yh-tab-schema" hidden>
+    <div class="yh-toolbar" role="toolbar" aria-label="Schema tools">
+      <button type="button" class="yh-btn" data-schema="copy" title="Copy the schema to the clipboard">
+        <svg class="yh-icon" aria-hidden="true"><use href="#yh-i-copy"/></svg><span>Copy</span>
+      </button>
+
+      <div class="yh-toolbar-end">
+        <select id="yh-schema-format" class="yh-select yh-select--quiet" aria-label="Write the schema as" title="Write the schema as">
+          <option value="json">As JSON</option>
+          <option value="yaml">As YAML</option>
+        </select>
+        <select id="yh-schema-draft" class="yh-select yh-select--quiet" aria-label="JSON Schema draft" title="JSON Schema draft">
+          <option value="2020-12">Draft 2020-12</option>
+          <option value="07">Draft-07</option>
+        </select>
+        <label class="yh-check" title="List the keys that every object at a position has as required">
+          <input type="checkbox" id="yh-schema-required" checked>
+          <span>Required keys</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="yh-notice" role="status" hidden></div>
+
+    <div class="yh-editor">
+      <div class="yh-gutter" aria-hidden="true"><div class="yh-gutter-lines"></div></div>
+      <div class="yh-input-wrap">
+        <textarea class="yh-input" readonly spellcheck="false" autocomplete="off" autocapitalize="off" aria-label="JSON Schema inferred from the YAML"></textarea>
+      </div>
+    </div>
+
+    <div class="yh-schema-message" hidden>
+      <p class="yh-schema-message-title"></p>
+      <p class="yh-schema-message-hint"></p>
+      <button type="button" class="yh-btn yh-btn--primary" data-schema="go-to-error" hidden>
+        <svg class="yh-icon" aria-hidden="true"><use href="#yh-i-target"/></svg><span>Go to error</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- ── Diff ─────────────────────────────────────────────────────────── -->
+  <section class="yh-panel" id="yh-panel-diff" role="tabpanel" aria-labelledby="yh-tab-diff" hidden>
+    <div class="yh-toolbar yh-diff-toolbar" role="toolbar" aria-label="Diff tools">
+      <div class="yh-reorder">
+        <span class="yh-reorder-label" id="yh-reorder-label">Reorder</span>
+        <div class="yh-segmented" role="radiogroup" aria-labelledby="yh-reorder-label" title="Lay one side out in the other's order">
+          <input type="radio" class="yh-segmented-input" name="yh-reorder" id="yh-reorder-left" value="left">
+          <label class="yh-segmented-option" for="yh-reorder-left">Left master</label>
+          <input type="radio" class="yh-segmented-input" name="yh-reorder" id="yh-reorder-off" value="off" checked>
+          <label class="yh-segmented-option" for="yh-reorder-off">Off</label>
+          <input type="radio" class="yh-segmented-input" name="yh-reorder" id="yh-reorder-right" value="right">
+          <label class="yh-segmented-option" for="yh-reorder-right">Right master</label>
+        </div>
+      </div>
+      <div class="yh-toolbar-end">
+        <span class="yh-diff-count" id="yh-diff-count" aria-live="polite"></span>
+        <button type="button" class="yh-icon-btn" id="yh-diff-prev" aria-label="Previous difference (Alt+↑)" title="Previous difference (Alt+↑)" disabled>
+          <svg class="yh-icon" aria-hidden="true"><use href="#yh-i-up"/></svg>
+        </button>
+        <button type="button" class="yh-icon-btn" id="yh-diff-next" aria-label="Next difference (Alt+↓)" title="Next difference (Alt+↓)" disabled>
+          <svg class="yh-icon" aria-hidden="true"><use href="#yh-i-down"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="yh-diff-panes">
+      <div class="yh-diff-pane" data-side="left">
+        <div class="yh-pane-head">
+          <span class="yh-pane-title">Left</span>
+          <span class="yh-pane-notice" role="status" hidden>
+            <span class="yh-pane-notice-text"></span>
+            <button type="button" class="yh-link" data-pane="undo">Undo</button>
+            <button type="button" class="yh-notice-close" data-pane="dismiss" aria-label="Dismiss">×</button>
+          </span>
+          <span class="yh-pane-actions">
+            <button type="button" class="yh-icon-btn" data-pane="format" aria-label="Format Left" title="Format (Ctrl/⌘+Enter)"><svg class="yh-icon" aria-hidden="true"><use href="#yh-i-format"/></svg></button>
+            <button type="button" class="yh-icon-btn" data-pane="fix" aria-label="Fix paste in Left" title="Fix paste: tabs, stray indentation, curly quotes"><svg class="yh-icon" aria-hidden="true"><use href="#yh-i-fix"/></svg></button>
+            <button type="button" class="yh-icon-btn" data-pane="copy" aria-label="Copy Left" title="Copy"><svg class="yh-icon" aria-hidden="true"><use href="#yh-i-copy"/></svg><span>Copy</span></button>
+            <button type="button" class="yh-icon-btn" data-pane="clear" aria-label="Clear Left" title="Clear"><svg class="yh-icon" aria-hidden="true"><use href="#yh-i-clear"/></svg></button>
+            <button type="button" class="yh-icon-btn" data-pane="open" aria-label="Load a file into Left" title="Load from file"><svg class="yh-icon" aria-hidden="true"><use href="#yh-i-open"/></svg></button>
+          </span>
+        </div>
+        <div class="yh-editor">
+          <div class="yh-gutter" aria-hidden="true"><div class="yh-gutter-lines"></div></div>
+          <div class="yh-input-wrap">
+            <div class="yh-diff-marks" aria-hidden="true"></div>
+            <div class="yh-error-band" hidden></div>
+            <textarea class="yh-input" spellcheck="false" autocomplete="off" autocapitalize="off" aria-label="Left YAML" placeholder="Paste, type or load YAML."></textarea>
+          </div>
+        </div>
+      </div>
+      <div class="yh-diff-pane" data-side="right">
+        <div class="yh-pane-head">
+          <span class="yh-pane-title">Right</span>
+          <span class="yh-pane-notice" role="status" hidden>
+            <span class="yh-pane-notice-text"></span>
+            <button type="button" class="yh-link" data-pane="undo">Undo</button>
+            <button type="button" class="yh-notice-close" data-pane="dismiss" aria-label="Dismiss">×</button>
+          </span>
+          <span class="yh-pane-actions">
+            <button type="button" class="yh-icon-btn" data-pane="format" aria-label="Format Right" title="Format (Ctrl/⌘+Enter)"><svg class="yh-icon" aria-hidden="true"><use href="#yh-i-format"/></svg></button>
+            <button type="button" class="yh-icon-btn" data-pane="fix" aria-label="Fix paste in Right" title="Fix paste: tabs, stray indentation, curly quotes"><svg class="yh-icon" aria-hidden="true"><use href="#yh-i-fix"/></svg></button>
+            <button type="button" class="yh-icon-btn" data-pane="copy" aria-label="Copy Right" title="Copy"><svg class="yh-icon" aria-hidden="true"><use href="#yh-i-copy"/></svg><span>Copy</span></button>
+            <button type="button" class="yh-icon-btn" data-pane="clear" aria-label="Clear Right" title="Clear"><svg class="yh-icon" aria-hidden="true"><use href="#yh-i-clear"/></svg></button>
+            <button type="button" class="yh-icon-btn" data-pane="open" aria-label="Load a file into Right" title="Load from file"><svg class="yh-icon" aria-hidden="true"><use href="#yh-i-open"/></svg></button>
+          </span>
+        </div>
+        <div class="yh-editor">
+          <div class="yh-gutter" aria-hidden="true"><div class="yh-gutter-lines"></div></div>
+          <div class="yh-input-wrap">
+            <div class="yh-diff-marks" aria-hidden="true"></div>
+            <div class="yh-error-band" hidden></div>
+            <textarea class="yh-input" spellcheck="false" autocomplete="off" autocapitalize="off" aria-label="Right YAML" placeholder="Paste the YAML to compare against here, type it, or load a file."></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+    <input type="file" class="yh-file" id="yh-diff-file" accept=".yaml,.yml,.json,.txt,application/yaml,application/x-yaml,text/yaml,text/plain" hidden>
+  </section>
+</main>
+
+<!-- Warnings (lint): the full list, opened from the status bar. -->
+<section class="yh-warnings" id="yh-warnings" aria-labelledby="yh-warnings-title" hidden>
+  <div class="yh-warnings-head">
+    <span class="yh-warnings-title" id="yh-warnings-title">Warnings</span>
+    <button type="button" class="yh-notice-close" data-warnings="close" aria-label="Close the list of warnings">×</button>
+  </div>
+  <ol class="yh-warnings-list"></ol>
+</section>
+
+<footer class="yh-status" id="yh-status" role="status" aria-live="polite">
+  <span class="yh-status-main">Paste YAML, type it, or load a file.</span>
+</footer>
+
+</body>
+</html>

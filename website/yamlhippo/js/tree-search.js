@@ -1,0 +1,225 @@
+/*
+ * Copyright 2026 Jason Figge
+ *
+ * This file is part of YamlHippo.
+ *
+ * YamlHippo is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * YamlHippo is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with YamlHippo. If not, see <https://www.gnu.org/licenses/>.
+ */
+
+/**
+ * tree-search.js — the tree filter's search, run against the AST.
+ *
+ * The tree renders lazily, so most nodes are not in the DOM when a filter is
+ * typed; searching the DOM would miss them. This walks the AST instead and
+ * reports every match, plus what the view needs to show them: each match's
+ * path, the ancestors that must be expanded, and a parent map to walk up.
+ *
+ * Pure JS: no DOM, no jQuery. Runs in Node under `node --test`.
+ */
+
+import { parsePathQuery, PathSyntaxError } from "./json-path.js";
+
+export class SearchError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = "SearchError";
+  }
+}
+
+/** The text a scalar (or an alias) is matched and displayed as. */
+export function valueText(node) {
+  switch (node.kind) {
+    case "string":
+      return node.value;
+    case "number":
+      return node.value;
+    case "boolean":
+      return node.value ? "true" : "false";
+    case "null":
+      return node.raw === "~" ? "~" : "null";
+    case "alias":
+      return `*${node.name}`;
+    default:
+      return null;
+  }
+}
+
+/** A query naming a tag: !Ref, !!str. Matches every node carrying exactly that tag. */
+export function isTagQuery(query, { regex = false } = {}) {
+  const q = query.trim();
+  return !regex && q.length > 1 && q[0] === "!" && !/\s/.test(q);
+}
+
+/** A query that starts like a path ($, $. or $[) and is not a regex search. */
+export function isPathQuery(query, { regex = false } = {}) {
+  const q = query.trim();
+  return !regex && q[0] === "$" && (q.length === 1 || q[1] === "." || q[1] === "[");
+}
+
+/**
+ * Search the AST.
+ *
+ * @param ast      root node from parse()
+ * @param query    text, a regex source (regex: true), a $-path, or a !tag
+ * @param options  { scope: 'keys' | 'values' | 'both', caseSensitive, regex }
+ * @returns {{
+ *   matches:   [{ node, segments, key: [start, end] | null, value: [start, end] | null }],
+ *   ancestors: Set<node>,       containers that hold at least one match
+ *   parents:   Map<node, node>, parent of every match and ancestor
+ *   mode:      'text' | 'regex' | 'path' | 'tag'
+ * }}
+ *   Matches are in document order. key/value are the matched range within
+ *   the key or value text, for highlighting; null when that part did not
+ *   match (and both null for a path match, which matches the whole node).
+ * @throws {SearchError} for an invalid regex or path — never anything else.
+ */
+export function searchAst(ast, query, { scope = "both", caseSensitive = false, regex = false } = {}) {
+  if (isPathQuery(query, { regex })) return searchPath(ast, query);
+  if (isTagQuery(query, { regex })) return searchTag(ast, query.trim());
+
+  let test;
+  if (regex) {
+    let re;
+    try {
+      re = new RegExp(query, caseSensitive ? "" : "i");
+    } catch (err) {
+      throw new SearchError(`Invalid regex: ${err.message.replace(/^Invalid regular expression: /, "")}`);
+    }
+    test = (text) => {
+      const m = re.exec(text);
+      return m === null ? null : [m.index, m.index + m[0].length];
+    };
+  } else {
+    const needle = caseSensitive ? query : query.toLowerCase();
+    test = (text) => {
+      const i = (caseSensitive ? text : text.toLowerCase()).indexOf(needle);
+      return i < 0 ? null : [i, i + needle.length];
+    };
+  }
+
+  const checkKeys = scope !== "values";
+  const checkValues = scope !== "keys";
+  const result = { matches: [], ancestors: new Set(), parents: new Map(), mode: regex ? "regex" : "text" };
+
+  walk(ast, (node, key, segments, frames) => {
+    const keyHit = checkKeys && key !== undefined ? test(key) : null;
+    const text = checkValues ? valueText(node) : null;
+    const valueHit = text !== null ? test(text) : null;
+    if (keyHit !== null || valueHit !== null) {
+      record(result, node, segments, frames, keyHit, valueHit);
+    }
+  });
+  return result;
+}
+
+/** Every node tagged `name` (as written: !Ref, !!str), in document order. */
+export function searchTag(ast, name) {
+  const result = { matches: [], ancestors: new Set(), parents: new Map(), mode: "tag" };
+  walk(ast, (node, _key, segments, frames) => {
+    if (node.tag && node.tag.name === name) record(result, node, segments, frames, null, null);
+  });
+  return result;
+}
+
+function searchPath(ast, query) {
+  let steps;
+  try {
+    steps = parsePathQuery(query);
+  } catch (err) {
+    if (err instanceof PathSyntaxError) throw new SearchError(`Invalid path: ${err.message} (at character ${err.index + 1})`);
+    throw err;
+  }
+  const result = { matches: [], ancestors: new Set(), parents: new Map(), mode: "path" };
+
+  // A node matches when its segments satisfy the steps. Walking the whole
+  // tree once and testing each node's path keeps matches in document order
+  // and handles '..' without a second traversal strategy.
+  walk(ast, (node, _key, segments, frames) => {
+    if (pathMatches(steps, 0, segments, 0)) record(result, node, segments, frames, null, null);
+  });
+  return result;
+}
+
+/** Do segments[j…] satisfy steps[i…]? */
+function pathMatches(steps, i, segments, j) {
+  if (i === steps.length) return j === segments.length;
+  const step = steps[i];
+  if (step.type === "descend") {
+    // '..' then the next step may consume any later segment.
+    for (let k = j; k < segments.length; k++) {
+      if (pathMatches(steps, i + 1, segments, k)) return true;
+    }
+    return false;
+  }
+  if (j === segments.length) return false;
+  const segment = segments[j];
+  const ok =
+    step.type === "wildcard" ||
+    (step.type === "key" && typeof segment === "string" && segment === step.key) ||
+    (step.type === "index" && typeof segment === "number" && segment === step.index);
+  return ok && pathMatches(steps, i + 1, segments, j + 1);
+}
+
+function record(result, node, segments, frames, keyHit, valueHit) {
+  result.matches.push({ node, segments: segments.slice(), key: keyHit, value: valueHit });
+  // Mark every container on the way up, stopping at the first one already
+  // marked: the rest of the chain above it was marked by an earlier match.
+  let child = node;
+  for (let d = frames.length - 1; d >= 0; d--) {
+    const parent = frames[d].node;
+    result.parents.set(child, parent);
+    if (result.ancestors.has(parent)) break;
+    result.ancestors.add(parent);
+    child = parent;
+  }
+}
+
+/**
+ * Visit every node in document order: visit(node, key, segments, frames, entry).
+ * `key` is the member key for object members, undefined otherwise (and
+ * `entry` the member itself);
+ * `segments` is the node's path; `frames` holds the open containers above it.
+ * Both arrays are live — copy them to keep them. Iterative, so depth is not
+ * limited by the call stack.
+ */
+export function walk(ast, visit) {
+  const frames = [];
+  const segments = [];
+
+  const enter = (node, key, entry) => {
+    visit(node, key, segments, frames, entry);
+    const children = node.kind === "object" ? node.entries : node.kind === "array" ? node.items : null;
+    if (children !== null && children.length > 0) frames.push({ node, children, i: 0 });
+  };
+
+  enter(ast, undefined);
+  while (frames.length > 0) {
+    const frame = frames[frames.length - 1];
+    if (frame.i === frame.children.length) {
+      frames.pop();
+      segments.length = frames.length;
+      continue;
+    }
+    const index = frame.i++;
+    segments.length = frames.length - 1;
+    if (frame.node.kind === "object") {
+      const entry = frame.children[index];
+      segments.push(entry.key);
+      enter(entry.value, entry.key, entry);
+    } else {
+      segments.push(index);
+      enter(frame.children[index], undefined);
+    }
+  }
+}

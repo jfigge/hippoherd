@@ -48,6 +48,7 @@ scripts/make-marks.mjs     → website/marks/*.svg + favicon.svg
 website/                   The site itself — committed, and served as-is
 website/rollhippo/         NOT generated — Roll Hippo's own site, copied in
 website/mazehippo/         NOT generated — Maze Hippo's own site, copied in
+electron/                  ViewHippo, the desktop app's shell (see below)
 ```
 
 `website/` is generated **and** committed, so a checkout can be served with any
@@ -148,6 +149,39 @@ supported for a hippo that is a web page and nothing else.)
 The nav dropdown, the footer, the sitemap, the 404 page, the previous/next
 links and the index grid all come from that list, so none of them needs
 touching.
+
+## The desktop app: ViewHippo
+
+This repo also builds **ViewHippo**, a desktop app: a thin Electron shell
+(`electron/`) hosting the herd's viewers, JsonHippo, YamlHippo and MarkHippo, in
+one window per document. It has no viewer logic of its own. The viewers it hosts
+are exactly the ones published here, `website/<viewer>/`, minus their `about/`
+pages. A viewer joins the app when its `make site` lands it here, and a viewer
+that isn't here yet is simply switched off.
+- The design is in `features/viewhippo-app-build-brief.md`.
+- A viewer repository gets its side done with the prompt in
+  `features/viewhippo-viewer-integration-prompt.md`.
+
+The site is untouched by this: Electron lives in `electron/` with its own
+`package.json`, and only the `make` targets below install it.
+
+```sh
+make test          # routing and navigation policy (node --test)
+make desktop       # run the shell on website/ in place; ARGS=file.json opens one
+make debug         # desktop + DevTools, inspector on :9229, hot reload of viewers and shell
+make desktop-pack  # unsigned .app for this machine
+make dist-mac      # signed, notarized .dmg (RELEASE_ENV=../resthippo/release.env)
+make dist-mas      # Mac App Store .pkg (needs electron/packaging/embedded.provisionprofile)
+make mas-dev       # sandboxed build to try locally (development.provisionprofile)
+```
+
+Releases are `.github/workflows/release.yml`. Bump `version` in
+`electron/package.json` and push to publish the DMG/Windows/Linux installers to
+this repo's GitHub Releases. The Mac App Store package is built alongside once
+`vars.MAS_ENABLED` is set. When the release is published, the workflow
+redeploys the site. JsonHippo's and YamlHippo's pages then offer the new
+installers, because `desktopApp` in `content/hippos.mjs` and `RELEASES_FROM`
+in `scripts/build-versions.mjs` point both pages at this repo's releases.
 
 ## Known TODOs
 

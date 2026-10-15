@@ -1,0 +1,1740 @@
+/*
+ * Copyright 2026 Jason Figge
+ *
+ * This file is part of YamlHippo.
+ *
+ * YamlHippo is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * YamlHippo is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with YamlHippo. If not, see <https://www.gnu.org/licenses/>.
+ */
+
+/* YamlHippo — app.css
+ *
+ * One stylesheet, two themes. The dark theme is the Hippo family palette
+ * (the one hippoherd.com uses); the light theme is its daylight counterpart.
+ * The theme follows the system unless the header toggle pins one, which
+ * js/theme.js records as <html data-theme="light|dark">.
+ *
+ * Every text colour below was checked for WCAG AA (4.5:1) against the
+ * surfaces it sits on in its theme. The brand is lemon yellow (#F5CC00,
+ * hue 50: the "Y", and clear of Keep Hippo's amber at 37 and MarkHippo's
+ * orange at 26). Yellow only works as a FILL: dark text on it is 12.3:1, but
+ * yellow on white is 1.5:1, so nothing thin — text, focus rings, the match
+ * bar — is drawn in it. Those use --accent and --ring: a deep gold in light
+ * (#7A6000, 6.0:1 on white) and a pale one in dark (#FFE066, 13.1:1 on #1C1C1C).
+ *
+ * Search highlights are blue, not JsonHippo's yellow, so a match never
+ * vanishes into the brand; warnings and "changed" stay amber, as everywhere
+ * in the herd.
+ *
+ * Naming: yh- prefix; state classes are block--modifier.
+ */
+
+/* ── Theme ──────────────────────────────────────────────────────────────── */
+
+:root {
+  --brand: #f5cc00;
+  --on-brand: #101010;
+  --ring: #7a6000;
+
+  --bg: #ffffff;
+  --mantle: #f6f6f8;
+  --crust: #ececf0;
+  --surface-0: #ececf0;
+  --surface-1: #dcdce2;
+  --surface-2: #c8c8d0;
+  --text: #1f1f24;
+  --subtext: #57575f;
+  --muted: #6e6e76;
+  --accent: #7a6000;
+  --selection: #fdf3c4;
+  --match: #cfe8ff;
+  --match-current: #7cc0ff;
+  --match-row: #eaf4ff;
+  --diff-added: #e3f7e8;
+  --diff-missing: #fde9e7;
+  --diff-changed: #fdf3c8;
+  --diff-type: #eee4fb;
+  --diff-added-ink: #1a7f37;
+  --diff-missing-ink: #c4271d;
+  --diff-changed-ink: #8a5a00;
+  --diff-type-ink: #7e2fb8;
+  --error: #c4271d;
+  --error-bg: #fdecea;
+  --warn: #8a5a00;
+  --ok: #1a7f37;
+
+  --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  --sans: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --code-size: 13px;
+  --code-line: 20px;
+
+  color-scheme: light;
+}
+
+/* The family's dark palette. Written out twice — once for "follow the system"
+   and once for "pinned dark" — because a media query cannot be combined with
+   an attribute selector into one rule. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --on-brand: #101010;
+    --bg: #1c1c1c;
+    --mantle: #161616;
+    --crust: #101010;
+    --surface-0: #2a2a2a;
+    --surface-1: #383838;
+    --surface-2: #484848;
+    --text: #e8e8e8;
+    --subtext: #b0b0b0;
+    --muted: #8a8a8a;
+    --accent: #ffe066;
+    --ring: #ffe066;
+    --selection: #3d3612;
+    --match: #163a5c;
+    --match-current: #1f5f99;
+    --match-row: #13263a;
+    --diff-added: #15301d;
+    --diff-missing: #3a1d1b;
+    --diff-changed: #3a3214;
+    --diff-type: #2e2140;
+    --diff-added-ink: #56d364;
+    --diff-missing-ink: #ff7b72;
+    --diff-changed-ink: #e3b341;
+    --diff-type-ink: #c98bf5;
+    --error: #ff7b72;
+    --error-bg: #3a1d1b;
+    --warn: #e3b341;
+    --ok: #56d364;
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme="dark"] {
+  --on-brand: #101010;
+  --bg: #1c1c1c;
+  --mantle: #161616;
+  --crust: #101010;
+  --surface-0: #2a2a2a;
+  --surface-1: #383838;
+  --surface-2: #484848;
+  --text: #e8e8e8;
+  --subtext: #b0b0b0;
+  --muted: #8a8a8a;
+  --accent: #ffe066;
+  --ring: #ffe066;
+  --selection: #3d3612;
+  --match: #163a5c;
+  --match-current: #1f5f99;
+  --match-row: #13263a;
+  --diff-added: #15301d;
+  --diff-missing: #3a1d1b;
+  --diff-changed: #3a3214;
+  --diff-type: #2e2140;
+  --diff-added-ink: #56d364;
+  --diff-missing-ink: #ff7b72;
+  --diff-changed-ink: #e3b341;
+  --diff-type-ink: #c98bf5;
+  --error: #ff7b72;
+  --error-bg: #3a1d1b;
+  --warn: #e3b341;
+  --ok: #56d364;
+  color-scheme: dark;
+}
+
+/* ── Base ───────────────────────────────────────────────────────────────── */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  font: 14px/1.45 var(--sans);
+  background: var(--bg);
+  color: var(--text);
+  overflow: hidden;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 1px;
+}
+
+.yh-sprite {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+.yh-icon {
+  width: 16px;
+  height: 16px;
+  flex: none;
+  vertical-align: -3px;
+}
+
+/* ── Header and tabs ────────────────────────────────────────────────────── */
+
+.yh-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 8px 14px;
+  background: var(--mantle);
+  border-bottom: 1px solid var(--surface-0);
+}
+
+/* A button (it opens About), dressed as the plain brand mark it was. */
+.yh-brand {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 0;
+  border: 0;
+  border-radius: 7px;
+  background: none;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.yh-logo {
+  display: block;
+  border-radius: 7px;
+}
+
+.yh-name {
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: 0.01em;
+}
+
+.yh-tagline {
+  color: var(--subtext);
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.yh-header-actions {
+  display: flex;
+  gap: 6px;
+  margin-left: auto;
+}
+
+/* ── About ──────────────────────────────────────────────────────────────── */
+
+.yh-about {
+  width: 400px;
+  max-width: calc(100vw - 32px);
+  padding: 28px 28px 22px;
+  border: 1px solid var(--surface-1);
+  border-radius: 12px;
+  background: var(--bg);
+  color: var(--text);
+  text-align: center;
+  box-shadow: 0 12px 40px rgb(0 0 0 / 0.3);
+}
+
+.yh-about::backdrop {
+  background: rgb(0 0 0 / 0.45);
+}
+
+.yh-about-logo {
+  display: block;
+  margin: 0 auto 12px;
+  border-radius: 20px;
+}
+
+.yh-about-name {
+  margin: 0;
+  color: var(--accent);
+  font-size: 22px;
+  letter-spacing: 0.01em;
+}
+
+.yh-about-version {
+  margin: 2px 0 0;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 12px;
+}
+
+.yh-about-tagline {
+  margin: 10px 0 0;
+  color: var(--subtext);
+  font-size: 14px;
+}
+
+.yh-about-desc {
+  margin: 6px 0 0;
+  font-size: 13px;
+}
+
+.yh-about-links {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  margin: 16px 0 0;
+  font-size: 13px;
+}
+
+.yh-about-links a {
+  color: var(--accent);
+}
+
+.yh-about-made {
+  margin: 16px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.yh-about-credit {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.yh-about-support {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 14px;
+  color: var(--accent);
+  font-size: 13px;
+  text-decoration: none;
+}
+
+.yh-about-support:hover {
+  text-decoration: underline;
+}
+
+.yh-about form {
+  margin-top: 18px;
+}
+
+.yh-tabs {
+  display: flex;
+  gap: 2px;
+  padding: 0 10px;
+  background: var(--mantle);
+  border-bottom: 1px solid var(--surface-1);
+}
+
+.yh-tab {
+  padding: 8px 16px 7px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: none;
+  color: var(--subtext);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.yh-tab:hover {
+  color: var(--text);
+}
+
+.yh-tab--active {
+  color: var(--text);
+  border-bottom-color: var(--brand);
+}
+
+/* ── Panels and toolbars ────────────────────────────────────────────────── */
+
+.yh-main {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.yh-panel {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.yh-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--surface-0);
+}
+
+.yh-toolbar-sep {
+  width: 1px;
+  height: 20px;
+  margin: 0 4px;
+  background: var(--surface-1);
+}
+
+.yh-toolbar-end {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.yh-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border: 1px solid var(--surface-1);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 13px;
+  line-height: 20px;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.yh-btn:hover {
+  background: var(--surface-0);
+}
+
+.yh-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.yh-btn--ghost {
+  border-color: transparent;
+  background: none;
+}
+
+.yh-btn--primary {
+  border-color: var(--brand);
+  background: var(--brand);
+  color: var(--on-brand);
+  font-weight: 600;
+}
+
+.yh-btn--primary:hover {
+  background: var(--brand);
+  filter: brightness(1.08);
+}
+
+.yh-btn--done {
+  border-color: var(--ok);
+  color: var(--ok);
+}
+
+/* In the toolbars and the detail bar, buttons drop their boxes: a row of
+   outlined buttons is most of what made the tabs look busy. */
+.yh-toolbar .yh-btn:not(.yh-btn--primary),
+.yh-detail .yh-btn {
+  padding: 4px 8px;
+  border-color: transparent;
+  background: none;
+  color: var(--subtext);
+}
+
+.yh-toolbar .yh-btn:not(.yh-btn--primary):hover,
+.yh-detail .yh-btn:hover {
+  background: var(--surface-0);
+  color: var(--text);
+}
+
+.yh-toolbar .yh-btn--done:not(.yh-btn--primary),
+.yh-detail .yh-btn--done {
+  color: var(--ok);
+}
+
+.yh-field,
+.yh-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--subtext);
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.yh-select {
+  padding: 3px 6px;
+  border: 1px solid var(--surface-1);
+  border-radius: 6px;
+  background: var(--bg);
+  font-size: 13px;
+}
+
+.yh-select--quiet {
+  border-color: transparent;
+  background-color: transparent;
+  color: var(--subtext);
+  cursor: pointer;
+}
+
+.yh-select--quiet:hover {
+  background-color: var(--surface-0);
+  color: var(--text);
+}
+
+.yh-check input {
+  accent-color: var(--brand);
+}
+
+.yh-link {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+
+/* ── Smart-paste notice ─────────────────────────────────────────────────── */
+
+.yh-notice {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 12px;
+  background: var(--selection);
+  border-bottom: 1px solid var(--surface-1);
+  font-size: 13px;
+}
+
+.yh-notice-close {
+  margin-left: auto;
+  padding: 0 6px;
+  border: 0;
+  background: none;
+  color: var(--subtext);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+/* ── Text editor: gutter + textarea ─────────────────────────────────────── */
+
+.yh-editor {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  background: var(--bg);
+}
+
+.yh-gutter {
+  flex: none;
+  position: relative;
+  overflow: hidden;
+  min-width: 3.5em;
+  padding: 0 8px 0 10px;
+  background: var(--mantle);
+  border-right: 1px solid var(--surface-0);
+  color: var(--muted);
+  font: var(--code-size) / var(--code-line) var(--mono);
+  text-align: right;
+  user-select: none;
+}
+
+/* Only the visible line numbers exist; this block is moved to line up. */
+.yh-gutter-lines {
+  position: absolute;
+  top: 0;
+  right: 8px;
+  left: 10px;
+  will-change: transform;
+}
+
+.yh-gutter-line {
+  height: var(--code-line);
+  white-space: nowrap;
+}
+
+.yh-gutter-line--error {
+  color: var(--error);
+  font-weight: 700;
+}
+
+.yh-gutter-line--error::before {
+  content: "▶ ";
+  font-size: 9px;
+  vertical-align: 1px;
+}
+
+/* A line with lint warnings: amber, where an error is red. */
+.yh-gutter-line--warn {
+  color: var(--warn);
+  font-weight: 700;
+}
+
+.yh-gutter-line--warn::before {
+  content: "▲ ";
+  font-size: 8px;
+  vertical-align: 1px;
+}
+
+.yh-input-wrap {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.yh-input {
+  display: block;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 6px 12px;
+  border: 0;
+  outline: none;
+  resize: none;
+  background: transparent;
+  color: var(--text);
+  font: var(--code-size) / var(--code-line) var(--mono);
+  tab-size: 4;
+  /* No soft wrapping, so each text line is one gutter line. (CSS rather than
+     the non-standard wrap="off" attribute.) */
+  white-space: pre;
+  overflow-wrap: normal;
+  overflow: auto;
+  position: relative;
+  z-index: 1;
+}
+
+.yh-input::placeholder {
+  color: var(--muted);
+}
+
+/* Lays out one line of the text, invisibly, in the textarea's font, so the
+   error marker can be placed where the textarea really draws the token. */
+.yh-mirror {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 0;
+  overflow: hidden;
+  visibility: hidden;
+  white-space: pre;
+  font: var(--code-size) / var(--code-line) var(--mono);
+  tab-size: 4;
+  pointer-events: none;
+}
+
+/* The error's line, as a band behind the (transparent) textarea, and the bad
+   token underlined within it. Positioned from js; hidden when scrolled away. */
+.yh-error-band {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: var(--code-line);
+  background: var(--error-bg);
+  pointer-events: none;
+}
+
+.yh-error-mark {
+  position: absolute;
+  height: var(--code-line);
+  border-bottom: 2px solid var(--error);
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* ── Tree toolbar: filter + expand controls, one quiet row ──────────────── */
+
+.yh-filter {
+  flex: 1 1 220px;
+  min-width: 160px;
+  padding: 4px 10px;
+  border: 1px solid var(--surface-1);
+  border-radius: 6px;
+  background: var(--bg);
+  font-size: 13px;
+  line-height: 20px;
+}
+
+.yh-filter--invalid {
+  border-color: var(--error);
+  outline-color: var(--error);
+}
+
+/* Borderless controls: they show themselves on hover and when they are on,
+   and otherwise stay out of the way of the data. */
+.yh-toggle-btn,
+.yh-icon-btn {
+  min-width: 28px;
+  padding: 4px 6px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: none;
+  color: var(--subtext);
+  font: 600 13px/20px var(--mono);
+  cursor: pointer;
+}
+
+.yh-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.yh-toggle-btn:hover,
+.yh-icon-btn:hover:not(:disabled) {
+  background: var(--surface-0);
+  color: var(--text);
+}
+
+.yh-icon-btn:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.yh-toggle-btn[aria-pressed="true"] {
+  border-color: var(--ring);
+  background: var(--selection);
+  color: var(--text);
+}
+
+.yh-filter-count {
+  color: var(--subtext);
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.yh-filter-count:empty {
+  display: none;
+}
+
+.yh-filter-error {
+  flex-basis: 100%;
+  color: var(--error);
+  font-size: 13px;
+}
+
+.yh-filter-error:empty {
+  display: none;
+}
+
+.yh-confirm {
+  display: inline-flex;
+  flex-basis: 100%;
+  align-items: center;
+  gap: 8px;
+  padding: 3px 4px 3px 10px;
+  border-radius: 6px;
+  background: var(--selection);
+  font-size: 13px;
+}
+
+/* ── Tree ───────────────────────────────────────────────────────────────── */
+
+/* Modelled on jsonviewer.stack.hu's tree, which reads as data first: plain
+   text in the UI font, keys and values in the same colour, a mark only where
+   it carries information (object or array), and nothing on a row that the
+   rows below it already show. */
+
+.yh-tree-wrap {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 6px 0 24px;
+}
+
+.yh-tree,
+.yh-children {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.yh-children {
+  margin-left: 7px;
+  padding-left: 11px;
+  border-left: 1px dotted var(--surface-2);
+}
+
+.yh-tree {
+  padding: 0 8px;
+  font: 13px / 20px var(--sans);
+}
+
+.yh-node {
+  outline: none;
+}
+
+.yh-row {
+  display: flex;
+  align-items: center;
+  min-height: 20px;
+  padding: 0 6px 0 0;
+  border-radius: 3px;
+  white-space: nowrap;
+  cursor: default;
+}
+
+.yh-row:hover {
+  background: var(--mantle);
+}
+
+.yh-node--selected > .yh-row {
+  background: var(--selection);
+}
+
+.yh-node:focus-visible > .yh-row {
+  outline: 2px solid var(--ring);
+  outline-offset: -2px;
+}
+
+.yh-toggle {
+  display: inline-flex;
+  flex: none;
+  width: 14px;
+  height: 14px;
+  color: var(--muted);
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+
+.yh-toggle .yh-icon {
+  width: 14px;
+  height: 14px;
+}
+
+.yh-toggle:hover {
+  color: var(--text);
+}
+
+.yh-toggle--none {
+  visibility: hidden;
+}
+
+.yh-node--expanded > .yh-row > .yh-toggle {
+  transform: rotate(90deg);
+}
+
+.yh-node--collapsed > .yh-children {
+  display: none;
+}
+
+/* { } and [ ]: the only per-row mark with something to say. */
+.yh-type {
+  width: 15px;
+  height: 15px;
+  margin: 0 5px 0 2px;
+  color: var(--accent);
+}
+
+/* Scalars: one small, neutral dot in the same column, so every key starts at
+   the same x and the eye has an anchor — the type is in the value itself. */
+.yh-dot {
+  flex: none;
+  width: 15px;
+  height: 15px;
+  margin: 0 5px 0 2px;
+  background: radial-gradient(circle, var(--surface-2) 0 2.5px, transparent 3px);
+}
+
+.yh-key {
+  color: var(--text);
+}
+
+.yh-key--index,
+.yh-key--root {
+  color: var(--subtext);
+}
+
+.yh-colon {
+  margin-right: 5px;
+  color: var(--muted);
+}
+
+.yh-value {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--text);
+}
+
+.yh-value--null {
+  color: var(--subtext);
+}
+
+.yh-count {
+  margin-left: 8px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.yh-truncated {
+  margin-left: 4px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.yh-node--match > .yh-row {
+  border-radius: 0 3px 3px 0;
+  box-shadow: inset 2px 0 0 var(--ring);
+}
+
+.yh-hl {
+  border-radius: 2px;
+  background: var(--match);
+  color: inherit;
+}
+
+.yh-node--match-current > .yh-row {
+  background: var(--match-row);
+  box-shadow: inset 3px 0 0 var(--ring);
+}
+
+.yh-node--match-current > .yh-row .yh-hl {
+  background: var(--match-current);
+}
+
+.yh-more {
+  padding: 2px 0 2px 36px;
+}
+
+.yh-more .yh-btn {
+  padding: 1px 8px;
+  margin-right: 6px;
+  font-size: 12px;
+  line-height: 18px;
+}
+
+/* In place of the tree, or of the schema, when there is no valid YAML. */
+.yh-tree-message,
+.yh-schema-message {
+  max-width: 760px;
+  margin: 40px auto;
+  padding: 0 20px;
+  text-align: center;
+}
+
+.yh-tree-message-title,
+.yh-schema-message-title {
+  margin: 0 0 6px;
+  font: 600 14px/1.5 var(--mono);
+  word-break: break-word;
+}
+
+.yh-tree-message--error .yh-tree-message-title,
+.yh-schema-message--error .yh-schema-message-title {
+  color: var(--error);
+}
+
+.yh-tree-message-hint,
+.yh-schema-message-hint {
+  margin: 0 0 16px;
+  color: var(--subtext);
+}
+
+/* ── Diff ───────────────────────────────────────────────────────────────── */
+
+.yh-reorder {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.yh-reorder-label {
+  color: var(--subtext);
+  font-size: 13px;
+}
+
+/* A segmented switch: native radio buttons, hidden, behind their labels —
+   so arrow keys move between the options and screen readers hear a group. */
+.yh-segmented {
+  position: relative;
+  display: inline-flex;
+  gap: 2px;
+  padding: 2px;
+  border: 1px solid var(--surface-1);
+  border-radius: 8px;
+  background: var(--mantle);
+}
+
+.yh-segmented-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.yh-segmented-option {
+  padding: 2px 12px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  color: var(--subtext);
+  font-size: 13px;
+  line-height: 20px;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+}
+
+.yh-segmented-option:hover {
+  color: var(--text);
+}
+
+.yh-segmented-input:checked + .yh-segmented-option {
+  border-color: var(--surface-2);
+  background: var(--surface-0);
+  color: var(--text);
+}
+
+.yh-segmented-input:focus-visible + .yh-segmented-option {
+  outline: 2px solid var(--ring);
+  outline-offset: 1px;
+}
+
+.yh-diff-count {
+  color: var(--subtext);
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.yh-diff-panes {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+.yh-diff-pane {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+}
+
+.yh-diff-pane + .yh-diff-pane {
+  border-left: 1px solid var(--surface-1);
+}
+
+.yh-pane-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 32px;
+  padding: 2px 6px 2px 12px;
+  border-bottom: 1px solid var(--surface-0);
+  background: var(--mantle);
+  font-size: 13px;
+}
+
+.yh-pane-title {
+  font-weight: 600;
+}
+
+.yh-pane-notice {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  padding: 0 4px 0 8px;
+  border-radius: 6px;
+  background: var(--selection);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.yh-pane-notice .yh-link {
+  font-size: 12px;
+}
+
+.yh-pane-notice .yh-notice-close {
+  margin-left: 0;
+  font-size: 15px;
+}
+
+.yh-pane-actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-left: auto;
+}
+
+.yh-pane-actions .yh-icon-btn {
+  gap: 4px;
+  font: 12px/20px var(--sans);
+}
+
+.yh-diff-pane .yh-editor {
+  flex: 1;
+  min-height: 0;
+}
+
+/* Row highlights behind the (transparent) textarea: one row per visible
+   line, moved as a block like the gutter. */
+.yh-diff-marks {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  pointer-events: none;
+}
+
+.yh-dmark {
+  height: var(--code-line);
+}
+
+.yh-dmark--added { background: var(--diff-added); }
+.yh-dmark--missing { background: var(--diff-missing); }
+.yh-dmark--changed { background: var(--diff-changed); }
+.yh-dmark--type { background: var(--diff-type); }
+
+/* A placeholder: hatched, so it reads as "something belongs here". */
+.yh-dmark--placeholder {
+  background: repeating-linear-gradient(135deg, var(--surface-1) 0 2px, transparent 2px 7px);
+}
+
+.yh-gutter-mark {
+  display: inline-block;
+  width: 1.2em;
+  margin-right: 2px;
+  text-align: center;
+  font-weight: 700;
+}
+
+.yh-gutter-line--added .yh-gutter-mark { color: var(--diff-added-ink); }
+.yh-gutter-line--missing .yh-gutter-mark { color: var(--diff-missing-ink); }
+.yh-gutter-line--changed .yh-gutter-mark { color: var(--diff-changed-ink); }
+.yh-gutter-line--type .yh-gutter-mark { color: var(--diff-type-ink); }
+
+.yh-status--diff .yh-status-main {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.yh-status-stale {
+  color: var(--muted);
+  font-style: italic;
+}
+
+/* ── Detail bar ─────────────────────────────────────────────────────────── */
+
+.yh-detail {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 10px;
+  border-top: 1px solid var(--surface-0);
+  background: var(--mantle);
+}
+
+.yh-detail-path {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font: var(--code-size) var(--mono);
+}
+
+.yh-detail-kind {
+  flex: none;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.yh-detail-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.yh-detail-warn {
+  flex: 0 1 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  max-width: 45%;
+  color: var(--warn);
+  font-size: 12px;
+}
+
+.yh-detail-warn > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── Warnings list (lint) ───────────────────────────────────────────────── */
+
+.yh-warnings {
+  display: flex;
+  flex-direction: column;
+  max-height: 30vh;
+  border-top: 1px solid var(--surface-1);
+  background: var(--bg);
+}
+
+.yh-warnings-head {
+  display: flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-bottom: 1px solid var(--surface-0);
+  background: var(--mantle);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.yh-warnings-list {
+  margin: 0;
+  padding: 2px 0;
+  overflow: auto;
+  list-style: none;
+}
+
+/* Until the next parse, after an edit: the positions may have moved. */
+.yh-warnings--stale .yh-warnings-list {
+  opacity: 0.55;
+}
+
+.yh-warning {
+  display: grid;
+  grid-template-columns: 10em 7.5em minmax(0, 1fr) auto;
+  gap: 12px;
+  width: 100%;
+  padding: 2px 12px;
+  border: 0;
+  background: none;
+  color: var(--text);
+  font-size: 13px;
+  line-height: 20px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.yh-warning:hover {
+  background: var(--surface-0);
+}
+
+.yh-warning-where {
+  color: var(--subtext);
+  font: 12px / 20px var(--mono);
+  white-space: nowrap;
+}
+
+.yh-warning-label {
+  color: var(--warn);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.yh-warning-message,
+.yh-warning-path {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.yh-warning-path {
+  max-width: 32ch;
+  color: var(--muted);
+  font: 12px / 20px var(--mono);
+}
+
+/* ── Status bar ─────────────────────────────────────────────────────────── */
+
+.yh-status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 14px;
+  min-height: 32px;
+  padding: 6px 12px;
+  border-top: 1px solid var(--surface-1);
+  background: var(--mantle);
+  color: var(--subtext);
+  font-size: 13px;
+}
+
+.yh-status--valid .yh-status-main {
+  color: var(--ok);
+  font-weight: 600;
+}
+
+.yh-status--error {
+  background: var(--error-bg);
+}
+
+.yh-status-error {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--error);
+  font: 600 13px/1.45 var(--mono);
+  text-align: left;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  text-underline-offset: 3px;
+  word-break: break-word;
+  cursor: pointer;
+}
+
+.yh-status-hint {
+  color: var(--text);
+}
+
+.yh-status-warn {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 10px;
+  min-width: 0;
+  color: var(--warn);
+}
+
+.yh-status-warn-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--warn);
+  font: 600 13px / 1.45 var(--sans);
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.yh-status-warn-count:hover,
+.yh-status-warn-count[aria-expanded="true"] {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.yh-status-warn-count .yh-icon {
+  width: 14px;
+  height: 14px;
+}
+
+.yh-status-warn .yh-link {
+  color: var(--warn);
+  font-weight: 400;
+  text-align: left;
+}
+
+/* A warning on a tree row, after its value. */
+.yh-warn-mark {
+  display: inline-flex;
+  margin-left: 6px;
+  color: var(--warn);
+}
+
+.yh-warn-mark .yh-icon {
+  width: 14px;
+  height: 14px;
+}
+
+.yh-status .yh-link {
+  font-size: 13px;
+}
+
+/* ── YAML: tags, anchors, aliases, JSON-lossy nodes ─────────────────────── */
+
+/* Twelve tag colours (tag-colors.js picks one per tag name). Each class only
+   sets a hue; the chip, the row tint and the subtree border are all derived
+   from it, light and dark. Neighbouring classes are far apart on the wheel,
+   because two tags that collide in tag-colors.js land on neighbours. The page's CSP allows no inline styles, which is
+   why this is a fixed palette rather than a colour per name. */
+.yh-tag-c0 {
+  --tag-h: 212;
+}
+
+.yh-tag-c1 {
+  --tag-h: 28;
+}
+
+.yh-tag-c2 {
+  --tag-h: 140;
+}
+
+.yh-tag-c3 {
+  --tag-h: 328;
+}
+
+.yh-tag-c4 {
+  --tag-h: 268;
+}
+
+.yh-tag-c5 {
+  --tag-h: 52;
+}
+
+.yh-tag-c6 {
+  --tag-h: 0;
+}
+
+.yh-tag-c7 {
+  --tag-h: 175;
+}
+
+.yh-tag-c8 {
+  --tag-h: 298;
+}
+
+.yh-tag-c9 {
+  --tag-h: 88;
+}
+
+.yh-tag-c10 {
+  --tag-h: 238;
+}
+
+.yh-tag-c11 {
+  --tag-h: 190;
+}
+
+.yh-chip {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 3px;
+  margin-left: 6px;
+  padding: 0 6px;
+  border: 1px solid var(--surface-1);
+  border-radius: 9px;
+  background: var(--mantle);
+  color: var(--subtext);
+  font: 11px / 16px var(--mono);
+  white-space: nowrap;
+}
+
+.yh-chip .yh-icon {
+  width: 11px;
+  height: 11px;
+}
+
+button.yh-chip {
+  cursor: pointer;
+}
+
+button.yh-chip:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 1px;
+}
+
+.yh-tag {
+  border-color: hsl(var(--tag-h) 50% 62%);
+  background: hsl(var(--tag-h) 85% 93%);
+  color: hsl(var(--tag-h) 75% 24%);
+}
+
+.yh-chip--anchor {
+  color: var(--accent);
+}
+
+.yh-chip--lossy {
+  border-style: dashed;
+  border-color: var(--warn);
+  background: transparent;
+  color: var(--warn);
+}
+
+/* A tagged node: its row tinted, its subtree bracketed by a border in the
+   tag's colour, so a !Ref can be followed down a long file by eye. */
+.yh-tagged > .yh-row {
+  background: hsl(var(--tag-h) 85% 95%);
+}
+
+.yh-tagged > .yh-children {
+  border-left: 2px solid hsl(var(--tag-h) 50% 62%);
+  border-radius: 0 0 0 4px;
+  background: hsl(var(--tag-h) 85% 98%);
+}
+
+.yh-tagged.yh-node--selected > .yh-row {
+  background: var(--selection);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    .yh-tag {
+      border-color: hsl(var(--tag-h) 45% 45%);
+      background: hsl(var(--tag-h) 35% 20%);
+      color: hsl(var(--tag-h) 80% 82%);
+    }
+
+    .yh-tagged > .yh-row {
+      background: hsl(var(--tag-h) 30% 16%);
+    }
+
+    .yh-tagged > .yh-children {
+      border-left-color: hsl(var(--tag-h) 45% 45%);
+      background: hsl(var(--tag-h) 25% 12%);
+    }
+  }
+}
+
+:root[data-theme="dark"] {
+  .yh-tag {
+    border-color: hsl(var(--tag-h) 45% 45%);
+    background: hsl(var(--tag-h) 35% 20%);
+    color: hsl(var(--tag-h) 80% 82%);
+  }
+
+  .yh-tagged > .yh-row {
+    background: hsl(var(--tag-h) 30% 16%);
+  }
+
+  .yh-tagged > .yh-children {
+    border-left-color: hsl(var(--tag-h) 45% 45%);
+    background: hsl(var(--tag-h) 25% 12%);
+  }
+}
+
+.yh-value--alias {
+  color: var(--accent);
+  font-family: var(--mono);
+  font-size: 12px;
+}
+
+.yh-alias-note {
+  margin-left: 6px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+/* The legend of custom tags, above the tree. */
+.yh-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 6px;
+  padding: 5px 10px;
+  border-bottom: 1px solid var(--surface-0);
+}
+
+.yh-legend .yh-chip {
+  margin-left: 0;
+}
+
+.yh-legend-title {
+  margin-right: 2px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.yh-legend-count {
+  margin-left: 4px;
+  opacity: 0.75;
+}
+
+.yh-detail-lossy {
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: 40%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--warn);
+  font-size: 12px;
+}
+
+/* The document switcher, for a stream of several documents. */
+.yh-doc-switch {
+  max-width: 14em;
+}
+
+/* ── Types tab: the custom-type reference catalogue ─────────────────────── */
+
+.yh-types {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+.yh-types-nav {
+  flex: none;
+  width: 240px;
+  overflow: auto;
+  border-right: 1px solid var(--surface-0);
+}
+
+.yh-types-list {
+  margin: 0;
+  padding: 6px;
+  list-style: none;
+}
+
+.yh-types-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  padding: 4px 6px;
+  border: 0;
+  border-radius: 4px;
+  background: none;
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+}
+
+.yh-types-item:hover {
+  background: var(--mantle);
+}
+
+.yh-types-item[aria-current="true"] {
+  background: var(--selection);
+}
+
+.yh-types-item .yh-chip {
+  margin-left: 0;
+}
+
+.yh-types-meta {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.yh-types-flag-dot {
+  color: var(--warn);
+}
+
+.yh-types-detail {
+  flex: 1;
+  min-width: 0;
+  padding: 12px 18px 24px;
+  overflow: auto;
+}
+
+.yh-types-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.yh-types-title {
+  margin: 0;
+  font-size: 16px;
+}
+
+.yh-types-title .yh-chip {
+  margin-left: 0;
+  font-size: 13px;
+  line-height: 20px;
+}
+
+.yh-types-summary {
+  color: var(--subtext);
+  font-size: 13px;
+}
+
+.yh-types-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.yh-types-table th,
+.yh-types-table td {
+  padding: 5px 10px 5px 0;
+  border-bottom: 1px solid var(--surface-0);
+  text-align: left;
+  vertical-align: top;
+}
+
+.yh-types-table th {
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.yh-types-table code {
+  font: var(--code-size) var(--mono);
+}
+
+.yh-types-presence--always {
+  color: var(--ok);
+}
+
+.yh-types-presence--optional {
+  color: var(--subtext);
+}
+
+.yh-types-flag {
+  color: var(--warn);
+}
+
+.yh-types-empty {
+  margin: 40px auto;
+  max-width: 34em;
+  color: var(--subtext);
+  text-align: center;
+}
+
+.yh-types-message {
+  margin: 40px auto;
+  max-width: 40em;
+  text-align: center;
+}
+
+/* ── Narrow screens ─────────────────────────────────────────────────────── */
+
+@media (max-width: 760px) {
+  .yh-tagline {
+    display: none;
+  }
+
+  .yh-toolbar-end {
+    margin-left: 0;
+  }
+
+  .yh-btn .yh-icon + span {
+    display: none;
+  }
+
+  .yh-warning {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .yh-warning-label,
+  .yh-warning-path {
+    display: none;
+  }
+}

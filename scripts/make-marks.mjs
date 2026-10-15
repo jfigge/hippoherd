@@ -178,6 +178,21 @@ const HIPPOS = {
     motif: (c) =>
       `<path d="M222 302 C204 302 204 312 204 322 L204 328 C204 335 200 338 192 338 C200 338 204 341 204 348 L204 354 C204 364 204 374 222 374 M290 302 C308 302 308 312 308 322 L308 328 C308 335 312 338 320 338 C312 338 308 341 308 348 L308 354 C308 364 308 374 290 374" fill="none" stroke="${c}" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/>`,
   },
+  yamlhippo: {
+    name: "YamlHippo",
+    // Lemon yellow, hue 50 — see the same value, and the same note, in
+    // content/hippos.mjs. White on yellow is pale, so the eyes and motif are
+    // dark, as Chip's and Jump's eyes are.
+    color: "#F5CC00",
+    eye: "#1C1C1C",
+    // Indented lines across the snout: a key, then two "- " entries under it
+    // — YAML is its indentation. Copied character for character from
+    // jfigge/yamlhippo's src/img/yamlhippo.svg, which is that project's
+    // drawing of record (its favicon and in-app logo). If that file changes,
+    // this copies it.
+    motif: () =>
+      '<path d="M190 304 L282 304 M218 338 L228 338 M246 338 L322 338 M218 372 L228 372 M246 372 L300 372" fill="none" stroke="#1C1C1C" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/>',
+  },
   markhippo: {
     name: "MarkHippo",
     // Orange, hue 25.7 — the colour of MarkHippo's own logo and app. See

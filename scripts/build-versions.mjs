@@ -55,10 +55,21 @@ const HERD = [
   "rollhippo",
   "scanhippo",
   "jsonhippo",
+  "yamlhippo",
   "markhippo",
 ];
 
 const OWNER = "jfigge";
+
+// Hippos whose desktop build is a shared app released from another repository:
+// JsonHippo and YamlHippo ship inside ViewHippo, which this repository builds
+// and releases. Their entries are that repository's latest release, so their
+// pages offer ViewHippo's installers. Mirrors `desktopApp` in
+// content/hippos.mjs; test/site.test.mjs keeps the two in step.
+export const RELEASES_FROM = {
+  jsonhippo: "hippoherd",
+  yamlhippo: "hippoherd",
+};
 
 // ── Asset classification ─────────────────────────────────────────────────────
 //
@@ -233,7 +244,7 @@ async function gh(path) {
 // the manifest. It gets an entry with latest:null, which the site renders as
 // "no release yet" beside a link to the repo.
 async function fetchHippo(slug) {
-  const repo = `${OWNER}/${slug}`;
+  const repo = `${OWNER}/${RELEASES_FROM[slug] || slug}`;
   const empty = {
     repo,
     latest: null,

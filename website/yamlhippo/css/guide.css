@@ -1,0 +1,266 @@
+/*
+ * Copyright 2026 Jason Figge
+ *
+ * This file is part of YamlHippo.
+ *
+ * YamlHippo is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * YamlHippo is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with YamlHippo. If not, see <https://www.gnu.org/licenses/>.
+ */
+
+/* YamlHippo — guide.css
+ *
+ * The user guide (docs/index.html). Loaded after app.css, so the guide gets
+ * the app's two themes, its header and its buttons without copying a single
+ * colour. Everything here is scoped to body.yh-guide.
+ *
+ * app.css makes <body> a full-height flex box that never scrolls (the app
+ * scrolls inside its panes); the guide is a document, so that is undone first.
+ */
+
+/* ── Page ───────────────────────────────────────────────────────────────── */
+
+html:has(body.yh-guide) {
+  height: auto;
+  scroll-padding-top: 16px;
+}
+
+body.yh-guide {
+  display: block;
+  height: auto;
+  overflow: visible;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.yh-guide a {
+  color: var(--accent);
+}
+
+.yh-guide .yh-header a.yh-brand {
+  text-decoration: none;
+}
+
+/* ── Layout: contents beside the prose, above it on a narrow screen ────── */
+
+.yh-guide-layout {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  gap: 48px;
+  align-items: start;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 32px 24px 80px;
+}
+
+.yh-guide-toc {
+  position: sticky;
+  top: 24px;
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.yh-guide-toc h2 {
+  margin: 0 0 10px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.yh-guide-toc ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.yh-guide-toc a {
+  display: block;
+  padding: 4px 0 4px 10px;
+  border-left: 2px solid var(--surface-0);
+  color: var(--subtext);
+  text-decoration: none;
+}
+
+.yh-guide-toc a:hover {
+  border-left-color: var(--brand);
+  color: var(--text);
+}
+
+.yh-guide-body {
+  max-width: 76ch;
+}
+
+/* ── Prose ──────────────────────────────────────────────────────────────── */
+
+.yh-guide-body h1 {
+  margin: 0 0 12px;
+  color: var(--accent);
+  font-size: 30px;
+  line-height: 1.2;
+}
+
+.yh-guide-lede {
+  margin: 0 0 8px;
+  color: var(--subtext);
+  font-size: 17px;
+}
+
+.yh-guide-body section {
+  padding-top: 8px;
+}
+
+.yh-guide-body h2 {
+  margin: 40px 0 12px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--surface-0);
+  font-size: 22px;
+  line-height: 1.3;
+}
+
+.yh-guide-body h3 {
+  margin: 28px 0 8px;
+  font-size: 17px;
+}
+
+.yh-guide-body p,
+.yh-guide-body ul,
+.yh-guide-body ol {
+  margin: 0 0 14px;
+}
+
+.yh-guide-body li {
+  margin-bottom: 4px;
+}
+
+.yh-guide-body code {
+  padding: 1px 4px;
+  border-radius: 4px;
+  background: var(--mantle);
+  font-family: var(--mono);
+  font-size: 0.88em;
+}
+
+.yh-guide-body pre {
+  margin: 0 0 16px;
+  padding: 12px 14px;
+  overflow-x: auto;
+  border: 1px solid var(--surface-0);
+  border-radius: 8px;
+  background: var(--mantle);
+  font-family: var(--mono);
+  font-size: var(--code-size);
+  line-height: var(--code-line);
+}
+
+.yh-guide-body pre code {
+  padding: 0;
+  background: none;
+  font-size: inherit;
+}
+
+.yh-guide-body kbd {
+  display: inline-block;
+  min-width: 1.6em;
+  padding: 0 5px;
+  border: 1px solid var(--surface-2);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  background: var(--mantle);
+  font-family: var(--sans);
+  font-size: 0.85em;
+  line-height: 1.5;
+  text-align: center;
+}
+
+/* ── Tables ─────────────────────────────────────────────────────────────── */
+
+/* The wrapper scrolls sideways, so a wide table never widens the page. */
+.yh-guide-table {
+  margin: 0 0 18px;
+  overflow-x: auto;
+}
+
+.yh-guide-body table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.yh-guide-body th,
+.yh-guide-body td {
+  padding: 7px 10px;
+  border: 1px solid var(--surface-1);
+  text-align: left;
+  vertical-align: top;
+}
+
+.yh-guide-body th {
+  background: var(--mantle);
+  font-weight: 600;
+}
+
+.yh-guide-body td code {
+  white-space: nowrap;
+}
+
+/* The Diff marks, in the colours the Diff tab draws them in. */
+.yh-guide-mark {
+  font-family: var(--mono);
+  font-weight: 700;
+}
+
+.yh-guide-mark--missing { color: var(--diff-missing-ink); }
+.yh-guide-mark--added { color: var(--diff-added-ink); }
+.yh-guide-mark--changed { color: var(--diff-changed-ink); }
+.yh-guide-mark--type { color: var(--diff-type-ink); }
+
+/* ── Footer ─────────────────────────────────────────────────────────────── */
+
+.yh-guide-footer {
+  margin-top: 56px;
+  padding-top: 16px;
+  border-top: 1px solid var(--surface-0);
+  color: var(--muted);
+  font-size: 13px;
+}
+
+/* ── Narrow screens ─────────────────────────────────────────────────────── */
+
+@media (max-width: 800px) {
+  .yh-guide-layout {
+    display: block;
+    padding: 20px 16px 60px;
+  }
+
+  .yh-guide-toc {
+    position: static;
+    max-height: none;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--surface-0);
+  }
+
+  .yh-guide .yh-tagline {
+    display: none;
+  }
+}
+
+@media (max-width: 560px) {
+  .yh-guide .yh-header-actions .yh-btn span {
+    display: none;
+  }
+}

@@ -1,2 +1,8 @@
 .DS_Store
 node_modules/
+
+# The desktop app (Makefile): its stage and installers, its dependencies, the
+# local signing credentials, and the per-developer MAS provisioning profiles.
+build/
+release.env
+electron/packaging/*.provisionprofile

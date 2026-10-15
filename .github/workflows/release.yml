@@ -1,0 +1,464 @@
+name: Release ViewHippo
+
+# Builds ViewHippo, the desktop app — the shell in electron/ hosting the
+# viewers published under website/ — and publishes it the first time main is
+# pushed with a new version:
+#
+#   GitHub Release (direct downloads, read by the site's versions.json)
+#     macOS    ViewHippo-<v>-arm64.dmg          ViewHippo-<v>-x64.dmg
+#     Windows  ViewHippo-Setup-<v>-x64.exe      ViewHippo-Setup-<v>-arm64.exe
+#     Linux    ViewHippo-<v>-x86_64.AppImage    ViewHippo-<v>-arm64.AppImage
+#   Mac App Store (store-mas, once vars.MAS_ENABLED is on)
+#     ViewHippo-<v>-universal.pkg   — a run artifact, and uploaded to App Store
+#                                     Connect when vars.STORE_SUBMIT_ENABLED is on
+#
+# THE VERSION IS THE SWITCH, as in JsonHippo's workflow. <v> is
+# electron/package.json's "version". A push whose version already has a tag
+# (v<v>) builds and signs everything — proving the pipeline still works — and
+# keeps the installers as run artifacts, but publishes nothing; bump the version
+# and push to release. `workflow_dispatch` builds by hand and never publishes.
+#
+# WHAT SHIPS IS WHAT IS COMMITTED. The viewers are this checkout's
+# website/<viewer>/ (jsonhippo, yamlhippo, markhippo) — put there by `make site` in each
+# viewer's repository, the same step that publishes it to hippoherd.com — and
+# scripts/stage-desktop.mjs packs whichever are present. So "the latest
+# viewers" are the ones last committed here; nothing is fetched at build time.
+#
+# The paths filter keeps the site's everyday pushes (prose, versions.json, other
+# hippos' pages) from running three runners' worth of packaging.
+#
+# ── Secrets and variables (Settings → Secrets and variables → Actions) ───────
+# The herd's credentials, already held by Rest Hippo and JsonHippo; add them
+# here by hand (`make sync-mac RELEASE_ENV=../resthippo/release.env` does the
+# first five).
+#
+#   macOS signing (Developer ID Application)
+#     secrets.CSC_LINK                     base64 of the Developer ID .p12
+#     secrets.CSC_KEY_PASSWORD             its export password
+#   macOS notarization — EITHER the Apple ID route …
+#     secrets.APPLE_ID                     the developer account's Apple ID
+#     secrets.APPLE_APP_SPECIFIC_PASSWORD  an app-specific password for it
+#     secrets.APPLE_TEAM_ID                the 10-character team id
+#   … OR the App Store Connect API key route (also what store-mas uploads with)
+#     secrets.APPLE_API_KEY_ID             the .p8 key's id
+#     secrets.APPLE_API_ISSUER             its issuer id (a UUID)
+#     secrets.APPLE_API_KEY_BASE64         base64 of AuthKey_<id>.p8
+#   Mac App Store (Rest Hippo's store-mas job)
+#     vars.MAS_ENABLED                     'true' to build the .pkg at all
+#     secrets.MAS_CSC_LINK                 base64 Apple Distribution .p12
+#     secrets.MAS_CSC_KEY_PASSWORD         its export password
+#     secrets.MAS_INSTALLER_CSC_LINK       base64 Mac Installer Distribution .p12
+#     secrets.MAS_INSTALLER_CSC_KEY_PASSWORD its export password
+#     secrets.MAS_PROVISIONING_PROFILE_BASE64 base64 of the distribution profile
+#                                          for com.hippoherd.viewhippo
+#     vars.STORE_SUBMIT_ENABLED            'true' to upload on a publishing run;
+#                                          leave off while the first build is in
+#                                          review. Submit for Review stays manual.
+#   Windows signing — SignPath Foundation, skipped (installers UNSIGNED) until
+#   vars.SIGNPATH_ORGANIZATION_ID is set; see JsonHippo's release.yml.
+#     vars.SIGNPATH_ORGANIZATION_ID / SIGNPATH_PROJECT_SLUG /
+#     SIGNPATH_SIGNING_POLICY_SLUG / SIGNPATH_ARTIFACT_CONFIG_SLUG,
+#     secrets.SIGNPATH_API_TOKEN
+#
+# A release is NOT published while the macOS secrets are missing: any push to
+# main can release here, so an unconfigured repository would otherwise publish
+# Mac builds Gatekeeper refuses to open. The build still runs, unsigned.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "electron/**"
+      - "website/jsonhippo/**"
+      - "website/yamlhippo/**"
+      - "website/markhippo/**"
+      - "website/favicon.svg"
+      - "scripts/stage-desktop.mjs"
+      - "test/**"
+      - "Makefile"
+      - ".github/workflows/release.yml"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read # only the release job writes, and it elevates below
+
+# One release run at a time; a second push waits rather than racing the first
+# to the same tag.
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  NODE_VERSION: "22"
+
+jobs:
+  # ── The shell's own checks: nothing is packaged that fails them ─────────────
+  check:
+    name: Test the shell
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
+
+      - name: Set up Node.js
+        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: make test
+        run: make test
+
+  # ── Decide whether this run publishes ───────────────────────────────────────
+  plan:
+    name: Decide what to publish
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.plan.outputs.version }}
+      tag: ${{ steps.plan.outputs.tag }}
+      publish: ${{ steps.plan.outputs.publish }}
+    steps:
+      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
+
+      # Secrets cannot appear in an `if:`, so whether they are set is worked out
+      # here and passed on as an output. Only "is it empty" leaves this step.
+      - name: Version, tag and signing readiness
+        id: plan
+        env:
+          HAVE_CSC: ${{ secrets.CSC_LINK != '' }}
+          HAVE_APPLE_ID: ${{ secrets.APPLE_ID != '' }}
+          HAVE_API_KEY: ${{ secrets.APPLE_API_KEY_BASE64 != '' }}
+        run: |
+          VERSION=$(node -p "require('./electron/package.json').version")
+          TAG="v${VERSION}"
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
+          # ls-remote exits 2 for "no such tag"; anything else non-zero is a
+          # failure to ask, which must not be mistaken for "not released yet".
+          TAGGED=0
+          git ls-remote --exit-code --tags origin "refs/tags/${TAG}" >/dev/null || TAGGED=$?
+          if [ "$TAGGED" -ne 0 ] && [ "$TAGGED" -ne 2 ]; then
+            echo "::error::Could not list the tags on origin (git ls-remote exited ${TAGGED})."
+            exit 1
+          fi
+          PUBLISH=false
+          if [ "$GITHUB_EVENT_NAME" != "push" ]; then
+            echo "::notice::Manual run: builds ${TAG}, publishes nothing."
+          elif [ "$TAGGED" -eq 0 ]; then
+            echo "::notice::${TAG} is already released. Bump \"version\" in electron/package.json and push to publish a new one."
+          elif [ "$HAVE_CSC" != "true" ]; then
+            echo "::warning::Not publishing ${TAG}: CSC_LINK / CSC_KEY_PASSWORD are not set, so the macOS build is unsigned. See the header of release.yml."
+          elif [ "$HAVE_APPLE_ID" != "true" ] && [ "$HAVE_API_KEY" != "true" ]; then
+            echo "::warning::Not publishing ${TAG}: no notarization credentials (APPLE_ID… or APPLE_API_KEY…), so Gatekeeper would block the macOS build. See the header of release.yml."
+          else
+            PUBLISH=true
+            echo "::notice::Publishing ${TAG}."
+          fi
+          echo "publish=${PUBLISH}" >> "$GITHUB_OUTPUT"
+
+  # ── Build the direct-download installers on each native runner ──────────────
+  # JsonHippo's build job, step for step.
+  build:
+    name: Build installers (${{ matrix.os }})
+    needs: [check, plan]
+    runs-on: ${{ matrix.os }}
+    permissions:
+      contents: read
+      actions: read # the SignPath action downloads the uploaded artifact by id
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-latest
+            target: dist-mac
+          - os: ubuntu-latest
+            target: dist-linux
+          - os: windows-latest
+            target: dist-win
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
+        with:
+          fetch-depth: 0 # stage-desktop.mjs records each viewer's commit
+
+      - name: Set up Node.js
+        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: electron/package-lock.json
+
+      # electron-builder fetches the Electron binary (~100 MB) on every runner,
+      # with no retry of its own. Cached on the lockfile, so an Electron bump
+      # fetches once.
+      - name: Cache Electron download
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+        with:
+          path: |
+            ~/.cache/electron
+            ~/.cache/electron-builder
+            ~/Library/Caches/electron
+            ~/Library/Caches/electron-builder
+            ~/AppData/Local/electron/Cache
+            ~/AppData/Local/electron-builder/Cache
+          key: electron-${{ runner.os }}-${{ hashFiles('electron/package-lock.json') }}
+          restore-keys: |
+            electron-${{ runner.os }}-
+
+      # Windows runners lack make and rsync; MSYS2 provides them, so the same
+      # `make dist-win` recipe runs unchanged.
+      - name: Set up MSYS2 (Windows)
+        if: runner.os == 'Windows'
+        uses: msys2/setup-msys2@66cd2cce69caa17b53920067426061ca1de3a884 # v2
+        with:
+          msystem: UCRT64
+          install: make rsync git
+          path-type: inherit
+
+      # Built UNSIGNED; SignPath signs the installers out of band, below.
+      - name: Build installers (Windows)
+        if: runner.os == 'Windows'
+        shell: "msys2 {0}"
+        run: |
+          for attempt in 1 2 3; do
+            if make ${{ matrix.target }}; then
+              exit 0
+            fi
+            if [ "$attempt" -lt 3 ]; then
+              echo "::warning::Build attempt ${attempt} failed; retrying in $(( attempt * 20 ))s"
+              sleep $(( attempt * 20 ))
+            fi
+          done
+          echo "::error::Build failed after 3 attempts"
+          exit 1
+
+      - name: Upload unsigned Windows installers for signing
+        id: unsigned-win
+        if: runner.os == 'Windows' && vars.SIGNPATH_ORGANIZATION_ID != ''
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: unsigned-win
+          path: build/electron/dist/*.exe
+          if-no-files-found: error
+          retention-days: 1 # a hand-off to SignPath only; never published
+
+      - name: Sign Windows installers with SignPath
+        if: runner.os == 'Windows' && vars.SIGNPATH_ORGANIZATION_ID != ''
+        uses: signpath/github-action-submit-signing-request@b9d91eadd323de506c0c81cf0c7fe7438f3360fd # v2
+        with:
+          api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
+          organization-id: ${{ vars.SIGNPATH_ORGANIZATION_ID }}
+          project-slug: ${{ vars.SIGNPATH_PROJECT_SLUG }}
+          signing-policy-slug: ${{ vars.SIGNPATH_SIGNING_POLICY_SLUG }}
+          artifact-configuration-slug: ${{ vars.SIGNPATH_ARTIFACT_CONFIG_SLUG }}
+          github-artifact-id: ${{ steps.unsigned-win.outputs.artifact-id }}
+          wait-for-completion: true
+          output-artifact-directory: build/electron/dist
+
+      - name: Build installers (macOS / Linux)
+        if: runner.os != 'Windows'
+        # Secrets arrive under other names and are exported only when
+        # non-empty: an `env:` entry for an unset secret still DEFINES it, as
+        # an empty string, and electron-builder reads an empty CSC_LINK as a
+        # certificate path and fails "not a file".
+        env:
+          INPUT_CSC_LINK: ${{ secrets.CSC_LINK }}
+          INPUT_CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
+          INPUT_APPLE_ID: ${{ secrets.APPLE_ID }}
+          INPUT_APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+          INPUT_APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          INPUT_APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+          INPUT_APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
+          INPUT_APPLE_API_KEY_BASE64: ${{ secrets.APPLE_API_KEY_BASE64 }}
+        run: |
+          if [ -n "$INPUT_CSC_LINK" ]; then
+            export CSC_LINK="$INPUT_CSC_LINK"
+            export CSC_KEY_PASSWORD="$INPUT_CSC_KEY_PASSWORD"
+            export CSC_IDENTITY_AUTO_DISCOVERY=true
+            # Notarization only alongside a certificate: notarytool rejects an
+            # unsigned app.
+            if [ -n "$INPUT_APPLE_ID" ]; then
+              export APPLE_ID="$INPUT_APPLE_ID"
+              export APPLE_APP_SPECIFIC_PASSWORD="$INPUT_APPLE_APP_SPECIFIC_PASSWORD"
+              export APPLE_TEAM_ID="$INPUT_APPLE_TEAM_ID"
+            elif [ -n "$INPUT_APPLE_API_KEY_BASE64" ]; then
+              printf '%s' "$INPUT_APPLE_API_KEY_BASE64" | base64 --decode > "$RUNNER_TEMP/notary-api-key.p8"
+              export APPLE_API_KEY="$RUNNER_TEMP/notary-api-key.p8"
+              export APPLE_API_KEY_ID="$INPUT_APPLE_API_KEY_ID"
+              export APPLE_API_ISSUER="$INPUT_APPLE_API_ISSUER"
+            fi
+          else
+            export CSC_IDENTITY_AUTO_DISCOVERY=false
+          fi
+          for attempt in 1 2 3; do
+            if make ${{ matrix.target }}; then
+              exit 0
+            fi
+            if [ "$attempt" -lt 3 ]; then
+              echo "::warning::Build attempt ${attempt} failed; retrying in $(( attempt * 20 ))s"
+              sleep $(( attempt * 20 ))
+            fi
+          done
+          echo "::error::Build failed after 3 attempts"
+          exit 1
+
+      # A certificate that was set but not used, or a notarization that quietly
+      # did not happen, still produces a .dmg — so prove both on both apps.
+      - name: Verify macOS signature and notarization
+        if: runner.os == 'macOS'
+        env:
+          INPUT_CSC_LINK: ${{ secrets.CSC_LINK }}
+        run: |
+          if [ -z "$INPUT_CSC_LINK" ]; then
+            echo "::notice::macOS signing is not configured; these builds are unsigned."
+            exit 0
+          fi
+          for app in build/electron/dist/mac*/ViewHippo.app; do
+            echo "── $app"
+            codesign --verify --deep --strict --verbose=2 "$app"
+            codesign -dvv "$app" 2>&1 | grep -q "Authority=Developer ID Application" \
+              || { echo "::error::$app is not signed with a Developer ID Application certificate"; exit 1; }
+            xcrun stapler validate "$app" \
+              || { echo "::error::$app carries no notarization ticket"; exit 1; }
+          done
+
+      - name: Upload installers
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: installers-${{ matrix.os }}
+          path: |
+            build/electron/dist/*.dmg
+            build/electron/dist/*.exe
+            build/electron/dist/*.AppImage
+          if-no-files-found: error
+          retention-days: 7
+
+  # ── Mac App Store package ───────────────────────────────────────────────────
+  # Rest Hippo's store-mas job. Off until vars.MAS_ENABLED is 'true' — i.e.
+  # until the app record, certificates and profile exist.
+  store-mas:
+    name: Build Mac App Store package
+    needs: [check, plan]
+    if: vars.MAS_ENABLED == 'true'
+    runs-on: macos-latest
+    permissions:
+      contents: read
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: electron/package-lock.json
+
+      - name: Build Mac App Store package
+        env:
+          # CSC_* is the application (Apple Distribution) cert; CSC_INSTALLER_*
+          # the Mac Installer Distribution cert that signs the uploaded .pkg.
+          CSC_LINK: ${{ secrets.MAS_CSC_LINK }}
+          CSC_KEY_PASSWORD: ${{ secrets.MAS_CSC_KEY_PASSWORD }}
+          CSC_INSTALLER_LINK: ${{ secrets.MAS_INSTALLER_CSC_LINK }}
+          CSC_INSTALLER_KEY_PASSWORD: ${{ secrets.MAS_INSTALLER_CSC_KEY_PASSWORD }}
+          MAS_PROVISIONING_PROFILE_BASE64: ${{ secrets.MAS_PROVISIONING_PROFILE_BASE64 }}
+        run: |
+          set -euo pipefail
+          printf '%s' "$MAS_PROVISIONING_PROFILE_BASE64" | base64 --decode \
+            > electron/packaging/embedded.provisionprofile
+          make dist-mas
+
+      - name: Upload Mac App Store package
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: store-mas
+          path: build/electron/dist/**/*.pkg
+          if-no-files-found: error
+          retention-days: 5
+
+      # The PUSH to App Store Connect: only on a run that publishes, and only
+      # with the kill-switch on. "Submit for Review" stays a manual step.
+      - name: Submit to App Store Connect
+        if: needs.plan.outputs.publish == 'true' && vars.STORE_SUBMIT_ENABLED == 'true'
+        env:
+          APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+          APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
+          APPLE_API_KEY_BASE64: ${{ secrets.APPLE_API_KEY_BASE64 }}
+        run: |
+          set -euo pipefail
+          if [ -z "${APPLE_API_KEY_ID}" ] || [ -z "${APPLE_API_ISSUER}" ] || [ -z "${APPLE_API_KEY_BASE64}" ]; then
+            echo "::error::STORE_SUBMIT_ENABLED is on but the APPLE_API_* secrets are not all set."
+            exit 1
+          fi
+          mkdir -p "$HOME/private_keys"
+          printf '%s' "$APPLE_API_KEY_BASE64" | base64 --decode \
+            > "$HOME/private_keys/AuthKey_${APPLE_API_KEY_ID}.p8"
+          PKG=$(find build/electron/dist -name '*.pkg' | head -1)
+          echo "Uploading $PKG to App Store Connect…"
+          xcrun altool --upload-app -t macos -f "$PKG" \
+            --apiKey "$APPLE_API_KEY_ID" --apiIssuer "$APPLE_API_ISSUER"
+          rm -f "$HOME/private_keys/AuthKey_${APPLE_API_KEY_ID}.p8"
+
+  # ── Publish the GitHub Release ──────────────────────────────────────────────
+  release:
+    name: Publish GitHub Release
+    needs: [plan, build]
+    if: needs.plan.outputs.publish == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: write # to start deploy-site.yml once the release exists
+    steps:
+      - name: Download all installers
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          path: artifacts
+          pattern: installers-*
+          merge-multiple: true
+
+      # Exactly these six, by name. A seventh or a missing one fails the
+      # release instead of shipping it.
+      - name: Check the six installers
+        env:
+          V: ${{ needs.plan.outputs.version }}
+        run: |
+          expected=$(printf '%s\n' \
+            "ViewHippo-${V}-arm64.dmg" \
+            "ViewHippo-${V}-x64.dmg" \
+            "ViewHippo-Setup-${V}-x64.exe" \
+            "ViewHippo-Setup-${V}-arm64.exe" \
+            "ViewHippo-${V}-x86_64.AppImage" \
+            "ViewHippo-${V}-arm64.AppImage" | sort)
+          actual=$(ls artifacts | sort)
+          if [ "$expected" != "$actual" ]; then
+            echo "::error::The installers are not the six expected."
+            diff <(echo "$expected") <(echo "$actual") || true
+            exit 1
+          fi
+          ls -l artifacts
+
+      - name: Publish release
+        uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3
+        with:
+          tag_name: ${{ needs.plan.outputs.tag }}
+          target_commitish: ${{ github.sha }}
+          name: ViewHippo ${{ needs.plan.outputs.tag }}
+          files: artifacts/*
+          draft: false
+          generate_release_notes: true
+          fail_on_unmatched_files: true
+
+      # JsonHippo's and YamlHippo's pages offer these installers through
+      # versions.json. The push that started this run also deployed the site,
+      # but minutes before this release existed, and a release published with
+      # GITHUB_TOKEN starts no other workflow; workflow_dispatch is the
+      # exception GitHub allows. Without this, the site would notice at its
+      # daily run.
+      - name: Redeploy the site with the new downloads
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run deploy-site.yml --repo "${{ github.repository }}" --ref "${{ github.ref_name }}"

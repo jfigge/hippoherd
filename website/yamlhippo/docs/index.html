@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <!-- The user guide, served at hippoherd.com/yamlhippo/docs/ beside the app
+       and linked from its About dialog.
+
+       The app's stylesheet supplies the themes, header and buttons, and
+       guide.css lays out the page. Same rules as the app: no inline script
+       or style, so the same strict policy applies. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="The YamlHippo user guide: smart paste, reading an error, warnings for values other parsers read differently, the tree, custom tags and the Types tab, JSON Schema inference, comparing two documents, keyboard shortcuts and the error reference.">
+  <meta name="color-scheme" content="light dark">
+  <title>User guide — YamlHippo</title>
+  <link rel="canonical" href="https://hippoherd.com/yamlhippo/docs/">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Hippo Herd">
+  <meta property="og:title" content="YamlHippo — user guide">
+  <meta property="og:description" content="Smart paste, reading an error, warnings, the tree, custom tags, JSON Schema inference, Diff, keyboard shortcuts and every error code.">
+  <meta property="og:url" content="https://hippoherd.com/yamlhippo/docs/">
+  <meta name="twitter:card" content="summary">
+  <link rel="icon" type="image/svg+xml" href="../img/yamlhippo.svg">
+  <link rel="stylesheet" href="../css/app.css">
+  <link rel="stylesheet" href="../css/guide.css">
+  <!-- The theme pinned in the app (System, Light or Dark) applies here too. -->
+  <script src="../js/theme.js"></script>
+</head>
+<body class="yh-guide">
+
+<svg class="yh-sprite" aria-hidden="true" focusable="false">
+  <symbol id="yh-i-open-app" viewBox="0 0 16 16"><path d="M9.5 2.5h4v4M13.5 2.5L7.5 8.5M11.5 9.5v3a1 1 0 0 1-1 1h-7a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1h3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="yh-i-home" viewBox="0 0 16 16"><path d="M2 7.5L8 2.5l6 5M3.5 6.5v7h3.5v-4h2v4h3.5v-7" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="yh-i-github" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/></symbol>
+</svg>
+
+<header class="yh-header">
+  <a class="yh-brand" href="../" title="Open YamlHippo">
+    <img class="yh-logo" src="../img/yamlhippo.svg" width="28" height="28" alt="">
+    <span class="yh-name">YamlHippo</span>
+  </a>
+  <span class="yh-tagline">User guide</span>
+  <nav class="yh-header-actions" aria-label="Elsewhere">
+    <a class="yh-btn yh-btn--ghost" href="../">
+      <svg class="yh-icon" aria-hidden="true"><use href="#yh-i-open-app"/></svg>
+      <span>Open YamlHippo</span>
+    </a>
+    <a class="yh-btn yh-btn--ghost" href="https://hippoherd.com/" title="Hippo Herd">
+      <svg class="yh-icon" aria-hidden="true"><use href="#yh-i-home"/></svg>
+      <span>Hippo Herd</span>
+    </a>
+    <a class="yh-btn yh-btn--ghost" href="https://github.com/jfigge/yamlhippo" rel="noopener noreferrer" title="Source on GitHub">
+      <svg class="yh-icon" aria-hidden="true"><use href="#yh-i-github"/></svg>
+      <span>GitHub</span>
+    </a>
+  </nav>
+</header>
+
+<div class="yh-guide-layout">
+
+<nav class="yh-guide-toc" aria-labelledby="yh-guide-toc-title">
+  <h2 id="yh-guide-toc-title">Contents</h2>
+  <ol>
+    <li><a href="#getting-yaml-in">Getting YAML in</a></li>
+    <li><a href="#smart-paste">Smart paste: tabs, indentation, curly quotes</a></li>
+    <li><a href="#reading-an-error">Reading an error</a></li>
+    <li><a href="#warnings">Warnings: values other parsers read differently</a></li>
+    <li><a href="#format">Format, Copy as JSON</a></li>
+    <li><a href="#tree">The tree</a></li>
+    <li><a href="#filter">Filtering the tree</a></li>
+    <li><a href="#tags">Custom tags and the Types tab</a></li>
+    <li><a href="#documents">Several documents in one file</a></li>
+    <li><a href="#schema">Inferring a JSON Schema</a></li>
+    <li><a href="#diff">Comparing two documents</a></li>
+    <li><a href="#yaml">Which YAML</a></li>
+    <li><a href="#keyboard">Keyboard</a></li>
+    <li><a href="#themes">Themes</a></li>
+    <li><a href="#error-reference">Error reference</a></li>
+  </ol>
+</nav>
+
+<main class="yh-guide-body">
+
+<h1>YamlHippo user guide</h1>
+
+<p>YamlHippo is a YAML viewer that tells you exactly where it broke. Paste YAML
+into the <strong>Text</strong> tab and it is checked as you go; <strong>Tree</strong> shows it as
+a tree you can filter; <strong>Types</strong> gives a reference for every custom tag in it;
+<strong>Schema</strong> shows a <strong>JSON Schema</strong> that describes it; <strong>Diff</strong>
+compares two documents side by side.</p>
+
+<p>Valid YAML is also checked for likely mistakes (<strong>warnings</strong>) — above all
+for the values another YAML parser would read differently. Everything happens in your
+browser: nothing you paste or load is uploaded anywhere.</p>
+
+<!-- ─────────────────────────────────────────────────────────────────────── -->
+<section aria-labelledby="getting-yaml-in">
+<h2 id="getting-yaml-in">Getting YAML in</h2>
+
+<ul>
+  <li><strong>Paste</strong> into the Text tab, or type.</li>
+  <li><strong>Load from file</strong> reads a <code>.yaml</code>, <code>.yml</code> or
+    <code>.json</code> file from your computer (a leading byte order mark is dropped).</li>
+  <li>JSON is YAML: paste JSON and it is read as YAML, unchanged.</li>
+  <li>The text area always accepts what you give it, valid or not. You have to
+    see broken YAML to fix it.</li>
+</ul>
+
+<p>YamlHippo checks the text when you paste, when you press Format, and 400&nbsp;ms
+after you stop typing. Above 5&nbsp;MB it stops checking while you type, because the
+text area itself slows down at that size; the status bar offers <strong>Validate
+now</strong> instead.</p>
+</section>
+
+<!-- ─────────────────────────────────────────────────────────────────────── -->
+<section aria-labelledby="smart-paste">
+<h2 id="smart-paste">Smart paste: tabs, indentation, curly quotes</h2>
+
+<p>YAML's structure is its whitespace, and whitespace is what a clipboard damages.
+When you paste over the whole text, YamlHippo repairs:</p>
+
+<ul>
+  <li><strong>Tabs</strong> in the indentation, which YAML forbids. Each one becomes one level
+    of spaces, at the step the document already uses (2 or 4).</li>
+  <li><strong>Curly quotes</strong> from a word processor or a chat: <code>“value”</code> becomes
+    <code>"value"</code>. Single curly quotes are only straightened where they quote a
+    value, so the apostrophe in <code>it’s</code> stays as you wrote it.</li>
+  <li><strong>No-break spaces</strong> and <strong>invisible characters</strong> (zero-width spaces,
+    a stray byte order mark) that a web page leaves behind.</li>
+  <li><strong>Inconsistent indentation</strong> — siblings at 3 spaces and 2, a block pasted
+    one level off. This one is only rewritten when the text does not parse as it is
+    <em>and</em> the rewritten text does: re-indenting valid YAML could change what it
+    means.</li>
+</ul>
+
+<p>The content of block scalars (<code>|</code> and <code>&gt;</code>) is never touched: a tab or
+a curly quote inside a literal block is yours.</p>
+
+<p>A notice says what was fixed (“replaced 4 tabs in the indentation with spaces;
+straightened 2 curly quotes”) with an <strong>Undo</strong> that puts back exactly what you
+pasted. Typing in the text drops Undo, since restoring the original would throw your
+edits away.</p>
+
+<ul>
+  <li><strong>Fix paste</strong> on the toolbar does the same thing on demand.</li>
+  <li><strong>Auto-fix paste</strong> (the checkbox on the toolbar) turns the automatic
+    behaviour off; the Fix paste button then appears.</li>
+</ul>
+</section>
+
+<!-- ─────────────────────────────────────────────────────────────────────── -->
+<section aria-labelledby="reading-an-error">
+<h2 id="reading-an-error">Reading an error</h2>
+
+<p>When the YAML is invalid the status bar says exactly where and why. Most YAML
+errors are indentation errors, and YamlHippo says so in those words:</p>
+
+<pre><code>Line 7, col 1: indented 7 spaces but siblings use 6 (in $.spec.containers[0])
+This line is indented deeper than its siblings (line 5), so YAML reads it as
+the continuation of the value on the line above. Indent it to match its
+siblings — or, if it belongs under the line above, give that line a ':' with
+nothing after it.</code></pre>
+
+<ul>
+  <li><strong>Line, col</strong> — where the problem is. Columns count characters (an emoji
+    counts as two, as it does everywhere in JavaScript). For an indentation error the
+    whole indentation is underlined.</li>
+  <li><strong>The message</strong> — for indentation, how deep this line is and how deep its
+    siblings are; otherwise what the parser needed at that point and what was there.</li>
+  <li><strong>(in $.spec.containers[0])</strong> — the path of the place it happened.</li>
+  <li>The second line is a <strong>hint</strong>: a plain-English guess at the cause.</li>
+</ul>
+
+<p>YamlHippo keeps a stack of the indentation levels that are open. A line that
+dedents to a level that is not open — between two of them — matches nothing; the
+error names the nearest level and the others, so you can see which block the line
+was meant for. A line indented <em>deeper</em> than its siblings, after a line that does
+not open a block, is read by YAML as more of the value above, and is reported the
+same way.</p>
+
+<p>In the text, the line is marked in the gutter and highlighted, and the bad text is
+underlined. <strong>Click the error</strong> to put the caret on it — this works the same
+in a file of several megabytes. Most errors also have a second link: <strong>Go to the
+siblings</strong> (the block the indentation disagrees with), <strong>Go to the opener</strong>
+(the <code>[</code> or <code>{</code> never closed), <strong>Go to the opening quote</strong> (a string
+that never ends).</p>
+
+<p>Only the first error is reported. Fix it and the next one, if any, appears.</p>
+
+<p>Valid YAML gets a summary instead — “Valid YAML — 1,284 keys, depth 7, 2.1 MB”,
+with the number of documents when there are several — and the count of any
+warnings.</p>
+</section>
+
+<!-- ─────────────────────────────────────────────────────────────────────── -->
+<section aria-labelledby="warnings">
+<h2 id="warnings">Warnings: values other parsers read differently</h2>
+
+<p>An <strong>error</strong> means “this is not YAML”. A <strong>warning</strong> means “this is
+YAML, but look here”. With <strong>Warnings</strong> ticked in the Text toolbar — it is,
+until you untick it — YamlHippo looks for the following.</p>
+
+<p>Most of them are <strong>type-coercion traps</strong>. YamlHippo reads YAML by the
+YAML&nbsp;1.2 rules, where <code>no</code> is a string. But much of the world's YAML is read
+by YAML&nbsp;1.1 parsers (PyYAML, Go's yaml.v2, many config loaders), where
+<code>no</code> is <code>false</code>. A value whose meaning depends on the parser is a bug
+waiting to happen, so each one is pointed out rather than silently read one way:</p>
+
+<div class="yh-guide-table">
+<table>
+  <thead>
+    <tr><th>Warning</th><th>Example</th><th>Why it matters</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><strong>1.1 boolean</strong></td><td><code>country: NO</code>, <code>on: push</code></td><td>The “Norway problem”: <code>yes</code>, <code>no</code>, <code>on</code>, <code>off</code>, <code>y</code>, <code>n</code> are strings in 1.2 and booleans in 1.1 — keys included. Quote it, or write <code>true</code>/<code>false</code>.</td></tr>
+    <tr><td><strong>Base-60 number</strong></td><td><code>port: 22:22</code>, <code>time: 1:30</code></td><td>1.1 reads digits separated by colons as base 60: <code>1:30</code> is 90. Quote it.</td></tr>
+    <tr><td><strong>1.1 number</strong></td><td><code>mode: 0755</code>, <code>n: 1_000</code></td><td>A leading zero is octal in 1.1 (<code>0755</code> is 493) and decimal in 1.2; digit separators make a number in 1.1 and a string in 1.2. Write <code>0o755</code> for octal, or quote it.</td></tr>
+    <tr><td><strong>Version as a number</strong></td><td><code>python: 3.10</code>, <code>version: 1.2</code></td><td><code>3.10</code> is the number 3.1 — the trailing zero is gone. Flagged for any number whose fraction ends in 0, and any number under a key that names a version. Quote it.</td></tr>
+    <tr><td><strong>Precision loss</strong></td><td><code>12345678901234567890</code>, <code>1e400</code></td><td>A number that changes when read as a 64-bit float, which is what most YAML libraries turn every number into.</td></tr>
+    <tr><td><strong>Duplicate key</strong></td><td><code>id: 1</code> … <code>id: 2</code></td><td>The spec forbids it, but most parsers accept it and keep only one value — the last, usually — losing the other without a word. Every repeat is flagged, with where the key was first defined.</td></tr>
+    <tr><td><strong>Duplicate anchor</strong></td><td><code>&amp;x</code> twice</td><td>Aliases after the second refer to it, not the first.</td></tr>
+    <tr><td><strong>Run-on value</strong></td><td><code>- a</code> then <code>&nbsp;&nbsp;&nbsp;- b</code></td><td>A line indented deeper than its siblings continues the value above — here the text “a - b”, not a second entry. Valid, and almost never meant.</td></tr>
+    <tr><td><strong>Empty key</strong></td><td><code>"": 1</code></td><td>Legal, but usually a name that went missing.</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p>Rows with warnings are marked in the text's gutter (hover the line number to read
+them) and in the tree. The status bar gives the count and the first one; click the
+count for the list, and any entry in it to jump there.</p>
+</section>
+
+<!-- ─────────────────────────────────────────────────────────────────────── -->
+<section aria-labelledby="format">
+<h2 id="format">Format, Copy as JSON</h2>
+
+<p><strong>Format</strong> (<kbd>Ctrl</kbd>/<kbd>⌘</kbd>+<kbd>Enter</kbd>) writes the document out
+tidily, from the tree — so nothing the YAML says is lost:</p>
+
+<ul>
+  <li>indentation becomes 2 or 4 spaces a level (the <strong>Indent</strong> menu), lists
+    indented under their key;</li>
+  <li><strong>comments are kept</strong>, each before the entry it preceded or at the end of
+    its line;</li>
+  <li>every scalar keeps its source text — <code>'single'</code> stays single-quoted,
+    <code>0x1F</code> stays hex, <code>12345678901234567890</code> keeps every digit; a quoted
+    key that needs no quotes loses them (<code>"name":</code> becomes <code>name:</code>);</li>
+  <li>tags, anchors and aliases stay; block scalars are re-indented line for line and
+    keep their <code>|</code>/<code>&gt;</code> and chomping;</li>
+  <li>a short flow collection of plain values (<code>[80, 443]</code>) stays on its line;
+    longer or nested ones are written in block style;</li>
+  <li>a value that ran over several lines is put on one.</li>
+</ul>
+
+<p>Format never touches invalid YAML: it reports the error instead.</p>
+
+<p><strong>Copy as JSON</strong> puts the current document on the clipboard as JSON (with the
+same indent), and says what did not survive the trip. YAML can say things JSON
+cannot, and each is reported rather than dropped quietly:</p>
+
+<ul>
+  <li><strong>aliases</strong> are copied out in full — JSON has no references — and an alias
+    inside its own anchor becomes <code>null</code>;</li>
+  <li><strong>tags</strong> are dropped (<code>!Ref name</code> becomes <code>"name"</code>);</li>
+  <li><strong>keys that are not strings</strong> become strings (<code>1:</code> becomes <code>"1"</code>);</li>
+  <li><code>.inf</code>, <code>-.inf</code> and <code>.nan</code> have no JSON form and become <code>null</code>;</li>
+  <li><strong>comments</strong> are dropped; and of a stream of several documents only the
+    current one is copied.</li>
+</ul>
+
+<p>Numbers are written exactly: <code>0x1F</code> becomes <code>31</code>, and a big integer keeps
+every digit. The tree marks the nodes that will not survive (see below).</p>
+</section>
+
+<!-- ─────────────────────────────────────────────────────────────────────── -->
+<section aria-labelledby="tree">
+<h2 id="tree">The tree</h2>
+
+<p>The <strong>Tree</strong> tab shows the current document as a collapsible tree:</p>
+
+<ul>
+  <li>Click <strong>▸</strong> (or double-click a row) to open or close a mapping or list.
+    Mappings show <code>{ }</code>, lists <code>[ ]</code>.</li>
+  <li><strong>Expand all</strong>, <strong>Collapse all</strong> and <strong>Level…</strong> (expand
+    to level 1–10) are on the toolbar. Above 5,000 nodes you are asked first.</li>
+  <li>Large mappings and lists show their first 10,000 children, then
+    <strong>Show more</strong> / <strong>Show all</strong>.</li>
+  <li>Select a row to see its <strong>path</strong> and its type in the bar at the bottom,
+    with <strong>Copy path</strong>, <strong>Copy value</strong> (a collection is copied as YAML) and
+    <strong>Show in text</strong>.</li>
+</ul>
+
+<p>YAML's own features show on the rows:</p>
+
+<ul>
+  <li>An <strong>alias</strong> (<code>*base</code>) is a row with an arrow that says what it
+    stands for — “→ &amp;base (object · 2 keys)” — and is never expanded into a copy.
+    Select it and <strong>Go to anchor</strong> jumps to the node it points at.</li>
+  <li>An <strong>anchor</strong> shows as a chip (<code>&amp;base</code>) on the node it names.</li>
+  <li>A <strong>custom tag</strong> shows as a coloured chip (<code>!Person</code>), and its whole
+    subtree is tinted and bracketed in the same colour — see <a href="#tags">Custom
+    tags</a>. Standard tags (<code>!!str</code>) get a plain chip.</li>
+  <li>A node that will not survive <strong>conversion to JSON</strong> cleanly — an alias, a custom
+    tag, a key that is not a string, <code>.inf</code> or <code>.nan</code> — carries a dashed
+    <strong>JSON&nbsp;⚠</strong> chip. Hover it, or select the row, to read why.</li>
+</ul>
+
+<p>Keyboard: <kbd>↑</kbd>/<kbd>↓</kbd> move, <kbd>→</kbd> opens or steps in,
+<kbd>←</kbd> closes or steps out, <kbd>Home</kbd>/<kbd>End</kbd>, and
+<kbd>Enter</kbd>/<kbd>Space</kbd> select.</p>
+</section>
+
+<!-- ─────────────────────────────────────────────────────────────────────── -->
+<section aria-labelledby="filter">
+<h2 id="filter">Filtering the tree</h2>
+
+<p>Type in the filter box (or press <kbd>/</kbd> on the Tree tab) to narrow the tree to
+what matches. Every match is shown with the path down to it; everything else is
+hidden, and a mapping that lost children says so (“3 of 40”). Clear the filter and
+the tree is back exactly as it was.</p>
+
+<ul>
+  <li><strong>Text</strong> matches keys and values (choose <strong>Keys</strong>, <strong>Values</strong>
+    or both). <strong>Aa</strong> makes it case-sensitive; <strong>.*</strong> makes it a regular
+    expression.</li>
+  <li><strong>A path</strong> starting with <code>$</code> matches by position:
+    <code>$.spec.containers[*].image</code>, <code>$..name</code>.</li>
+  <li><strong>A tag</strong> starting with <code>!</code> matches every node with that tag:
+    <code>!Ref</code>, <code>!!str</code>. Clicking a tag chip does the same.</li>
+</ul>
+
+<p><kbd>Enter</kbd> and <kbd>Shift</kbd>+<kbd>Enter</kbd> step through the matches;
+<kbd>Esc</kbd> clears the filter.</p>
+</section>
+
+<!-- ─────────────────────────────────────────────────────────────────────── -->
+<section aria-labelledby="tags">
+<h2 id="tags">Custom tags and the Types tab</h2>
+
+<p>A custom tag — <code>!Person</code>, <code>!Ref</code>, CloudFormation's <code>!Sub</code> —
+names a type the document's reader knows and YAML does not. YamlHippo keeps every
+tag on its node and does not act on it, but makes them easy to follow:</p>
+
+<ul>
+  <li>Each tag name has <strong>its own colour</strong>, the same every time you see it, so
+    every <code>!Ref</code> in a long file can be followed by eye.</li>
+  <li>A <strong>legend</strong> above the tree lists the document's tags with how many of each;
+    click one to filter the tree to it.</li>
+</ul>
+
+<p>The <strong>Types</strong> tab is a reference for every custom tag, worked out from all its
+uses in every document of the file. Nothing declares what a <code>!Person</code> has in
+it, so YamlHippo reads every <code>!Person</code> and unions them:</p>
+
+<ul>
+  <li>what the tag goes on — a mapping, a list or a single value;</li>
+  <li>for mappings, every <strong>field</strong>: <strong>always</strong> present, or
+    <strong>optional</strong> (in how many of the uses), and the <strong>type</strong> of its value
+    — string, integer, number, boolean, mapping, list, or another tag, so
+    <code>address: !Address</code> links two types together;</li>
+  <li><strong>inconsistencies</strong>, flagged with ⚠: a field that is a number in some uses
+    and a string in others (<code>age: 36</code> / <code>age: forty</code>), or a tag used on
+    both mappings and single values. Each one links to the odd uses out.</li>
+</ul>
+
+<p><strong>Show in tree</strong> filters the tree to the type's nodes, which lights them up.
+Only explicitly tagged nodes are profiled.</p>
+</section>
+
+<!-- ─────────────────────────────────────────────────────────────────────── -->
+<section aria-labelledby="documents">
+<h2 id="documents">Several documents in one file</h2>
+
+<p>A YAML file can hold several documents, separated by <code>---</code> (and optionally
+ended by <code>...</code>), as Kubernetes manifests often do. Each document is its own
+tree: the Tree tab shows a <strong>document switcher</strong> — “Document 2 of 5 — mapping ·
+4 keys” — and the Tree, Schema and Copy as JSON work on the document chosen there.
+The status bar, the warnings and the Types tab cover them all.</p>
+
+<p>Anchors do not carry from one document to the next: an alias always refers to an
+anchor earlier in its own document.</p>
+</section>
+
+<!-- ─────────────────────────────────────────────────────────────────────── -->
+<section aria-labelledby="schema">
+<h2 id="schema">Inferring a JSON Schema</h2>
+
+<p>The <strong>Schema</strong> tab shows a JSON Schema inferred from the current document —
+the shape of its JSON form, with aliases read as what they stand for and tags left
+out. Each position gets a <code>type</code> (a list where several were seen), mappings
+get their <code>properties</code> and the keys every one of them has as
+<code>required</code>, and lists get one <code>items</code> schema that covers every element.
+Integers are <code>integer</code> until one number at that position has a fraction.</p>
+
+<p>Choose the draft (2020-12 or 07), whether to list required keys, and whether to
+write the schema <strong>as JSON</strong> or <strong>as YAML</strong>. <strong>Copy</strong> takes it.
+The schema is a starting point: it says what this sample has, not what every valid
+document may have.</p>
+</section>
+
+<!-- ─────────────────────────────────────────────────────────────────────── -->
+<section aria-labelledby="diff">
+<h2 id="diff">Comparing two documents (Diff)</h2>
+
+<p>The <strong>Diff</strong> tab splits the editor into two panes, <strong>Left</strong> and
+<strong>Right</strong>. Whatever was in the Text editor goes into Left; Right starts empty
+(and keeps what you put in it while you visit the other tabs). Switching back to Text
+or Tree carries on with the Left pane's YAML.</p>
+
+<p>The comparison is about content, never order:</p>
+
+<ul>
+  <li><strong>Mapping entries match by key.</strong></li>
+  <li><strong>List items match by content.</strong> <code>[1, 2]</code> and <code>[2, 1]</code> are the
+    same list. Equal items pair first; of what is left, a mapping pairs with the most
+    similar mapping on the other side — shared keys and equal values count, and an
+    equal <code>id</code> (or <code>uuid</code>, <code>key</code>, <code>code</code>…) pairs two records
+    outright.</li>
+  <li><strong>Several documents</strong> compare as a set: their order does not matter either.</li>
+  <li><strong>Values compare as values.</strong> <code>"3"</code> and <code>3</code> are a
+    <strong>type change</strong>; <code>1.0</code>, <code>1</code> and <code>0x1</code> are the same number;
+    <code>'a'</code>, <code>"a"</code> and <code>a</code> are the same string. An alias compares as
+    what it stands for; a tag is part of the value, so <code>!Ref a</code> and <code>a</code>
+    differ.</li>
+</ul>
+
+<p>Each difference is highlighted on its row and marked in the gutter:</p>
+
+<div class="yh-guide-table">
+<table>
+  <thead>
+    <tr><th>Mark</th><th>Colour</th><th>Means</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><span class="yh-guide-mark yh-guide-mark--missing">−</span></td><td>red</td><td><strong>missing</strong> — only on the Left</td></tr>
+    <tr><td><span class="yh-guide-mark yh-guide-mark--added">+</span></td><td>green</td><td><strong>added</strong> — only on the Right</td></tr>
+    <tr><td><span class="yh-guide-mark yh-guide-mark--changed">~</span></td><td>amber</td><td><strong>changed</strong> — same key (or paired item), different value</td></tr>
+    <tr><td><span class="yh-guide-mark yh-guide-mark--type">≠</span></td><td>purple</td><td><strong>type change</strong> — e.g. a string on one side, a number on the other</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p>The status bar sums them up — “3 differences: 1 added, 1 missing, 1 changed” — or
+says <strong>Documents match</strong>. ▲/▼ (or <kbd>Alt</kbd>+<kbd>↑</kbd> /
+<kbd>Alt</kbd>+<kbd>↓</kbd>) step from one difference to the next, and the two panes
+scroll together.</p>
+
+<h3 id="diff-editors">Both panes are editors</h3>
+
+<p>Type, paste and delete in either pane. The panes are compared again about 1.5
+seconds after you stop typing. If a pane's YAML is invalid at that point, the status
+bar shows the parser's exact error for that pane (click it to jump there), and the
+last good comparison stays on screen until it is fixed.</p>
+
+<p>Block YAML is compared as you wrote it — one entry per line is what the rows line
+up on. JSON, or YAML written in flow style (<code>{…}</code> on one line), is laid out in
+block style when it is pasted or loaded, so its entries can line up too. Each pane has
+its own <strong>Format</strong>, <strong>Fix paste</strong>, <strong>Copy</strong>, <strong>Clear</strong> and
+<strong>Load from file</strong> buttons, and smart paste works in each one.</p>
+
+<h3 id="diff-placeholders">Placeholders</h3>
+
+<p>Where one side has an entry the other lacks, the other side shows a <strong>hatched
+placeholder</strong> row, so both panes stay aligned and the gap is easy to see.
+Placeholders are only drawn: they are never part of the pane's YAML, and they are left
+out of Copy, of a copy or cut you make yourself, and of the text carried back to the
+Text tab.</p>
+
+<p><strong>Typing into a placeholder turns it into a real line</strong> on the first keystroke,
+indented like the line opposite. Paste the missing entry in, pause, and the difference
+disappears.</p>
+
+<h3 id="diff-reorder">Reorder</h3>
+
+<pre><code>Reorder   ( Left master | [Off] | Right master )</code></pre>
+
+<ul>
+  <li><strong>Off</strong> (the default): each pane keeps its own order.</li>
+  <li><strong>Left master</strong>: the <strong>Right pane is rewritten</strong> in Left's order —
+    keys and list items, at every level — so only the real differences stand out.</li>
+  <li><strong>Right master</strong>: the same the other way round.</li>
+</ul>
+
+<p>Reordering changes order only: every value keeps its source text. (The rewritten
+pane is written out fresh, so its comments are not carried over.) It keeps following
+the master as you edit the master; once you edit it yourself, it is left alone.
+Moving back to Off restores its original order, unless you have edited it.</p>
+</section>
+
+<!-- ─────────────────────────────────────────────────────────────────────── -->
+<section aria-labelledby="yaml">
+<h2 id="yaml">Which YAML</h2>
+
+<p>YamlHippo reads <strong>YAML 1.2</strong> with its core schema, and is checked against the
+official YAML test suite. Unquoted values are typed by these rules only:</p>
+
+<div class="yh-guide-table">
+<table>
+  <thead>
+    <tr><th>Type</th><th>Written as</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>null</td><td><code>~</code>, <code>null</code>, <code>Null</code>, <code>NULL</code>, or nothing</td></tr>
+    <tr><td>boolean</td><td><code>true</code>, <code>True</code>, <code>TRUE</code>, <code>false</code>, <code>False</code>, <code>FALSE</code></td></tr>
+    <tr><td>integer</td><td><code>42</code>, <code>-7</code>, <code>0o17</code>, <code>0x1F</code></td></tr>
+    <tr><td>number</td><td><code>3.14</code>, <code>6.02e23</code>, <code>.5</code>, <code>.inf</code>, <code>-.inf</code>, <code>.nan</code></td></tr>
+    <tr><td>string</td><td>everything else — including <code>yes</code>, <code>no</code>, <code>0755</code> read as octal, and <code>1:30</code> (see <a href="#warnings">Warnings</a>)</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p>Standard tags set the type (<code>!!str 123</code> is a string, <code>!!int "7"</code> a number);
+custom tags are kept and not acted on. <code>&lt;&lt;</code> merge keys belong to YAML 1.1 and
+are shown as an ordinary key, holding the alias.</p>
+
+<p>A few things the spec forbids are accepted because real files do them and the common
+parsers accept them too — notably a flow collection whose continuation lines are not
+indented deeper than its key.</p>
+</section>
+
+<!-- ─────────────────────────────────────────────────────────────────────── -->
+<section aria-labelledby="keyboard">
+<h2 id="keyboard">Keyboard</h2>
+
+<div class="yh-guide-table">
+<table>
+  <thead>
+    <tr><th>Where</th><th>Key</th><th>Does</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Text, or a Diff pane</td><td><kbd>Ctrl</kbd>/<kbd>⌘</kbd>+<kbd>Enter</kbd></td><td>Format</td></tr>
+    <tr><td>Tabs</td><td><kbd>←</kbd> <kbd>→</kbd></td><td>Switch between Tree, Text, Types, Schema and Diff</td></tr>
+    <tr><td>Diff</td><td><kbd>Alt</kbd>+<kbd>↑</kbd> / <kbd>Alt</kbd>+<kbd>↓</kbd></td><td>Previous / next difference</td></tr>
+    <tr><td>Tree tab</td><td><kbd>/</kbd></td><td>Focus the filter</td></tr>
+    <tr><td>Filter</td><td><kbd>Enter</kbd> / <kbd>Shift</kbd>+<kbd>Enter</kbd></td><td>Next / previous match</td></tr>
+    <tr><td>Filter or tree</td><td><kbd>Esc</kbd></td><td>Clear the filter</td></tr>
+    <tr><td>Warnings list</td><td><kbd>Esc</kbd></td><td>Close it</td></tr>
+    <tr><td>Types list</td><td><kbd>↑</kbd> <kbd>↓</kbd></td><td>Previous / next type</td></tr>
+    <tr><td>Tree</td><td><kbd>↑</kbd> <kbd>↓</kbd></td><td>Previous / next row</td></tr>
+    <tr><td>Tree</td><td><kbd>→</kbd></td><td>Open a collection, or move into it</td></tr>
+    <tr><td>Tree</td><td><kbd>←</kbd></td><td>Close a collection, or move to its parent</td></tr>
+    <tr><td>Tree</td><td><kbd>Enter</kbd> or <kbd>Space</kbd></td><td>Select the row</td></tr>
+    <tr><td>Tree</td><td><kbd>Home</kbd> / <kbd>End</kbd></td><td>First / last row</td></tr>
+  </tbody>
+</table>
+</div>
+</section>
+
+<!-- ─────────────────────────────────────────────────────────────────────── -->
+<section aria-labelledby="themes">
+<h2 id="themes">Themes</h2>
+
+<p>The theme follows your system's light or dark setting. The button in the header
+cycles <strong>System → Light → Dark</strong>, and the choice is remembered — this guide
+follows it too.</p>
+
+<p>Clicking the hippo at the top left opens <strong>About</strong>. <strong>Support
+YamlHippo…</strong> there opens GitHub Sponsors, for anyone who wants to chip in.</p>
+</section>
+
+<!-- ─────────────────────────────────────────────────────────────────────── -->
+<section aria-labelledby="error-reference">
+<h2 id="error-reference">Error reference</h2>
+
+<p>Every error YamlHippo reports, with an example that causes it and how to fix it.</p>
+
+<div class="yh-guide-table">
+<table>
+  <thead>
+    <tr><th>Code</th><th>Example</th><th>What it means</th><th>Fix</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>INDENT_MISMATCH</code></td><td>a line at 3 spaces among siblings at 2; a dedent to 2 between levels at 0 and 4</td><td>The line's indentation matches no open block. The message says how deep it is and how deep its siblings are; the hint says where they are.</td><td>Line it up with the entries it belongs with.</td></tr>
+    <tr><td><code>TAB_INDENT</code></td><td>a tab before <code>key:</code></td><td>YAML indentation must be spaces.</td><td>Replace the tab with spaces — Fix paste does the whole document.</td></tr>
+    <tr><td><code>MAPPING_VALUE_NOT_ALLOWED</code></td><td><code>title: Note: read this</code></td><td>A <code>: </code> where no key can start: after a value on the same line, or after a value that ran on from the line above.</td><td>Quote the value if the colon is part of it, or move the nested mapping to its own line.</td></tr>
+    <tr><td><code>EXPECTED_COLON</code></td><td><code>version</code> alone on a line in a mapping</td><td>A line at the mapping's indentation must be <code>key: value</code>.</td><td>Add the <code>:</code>, or indent the line if it continues the value above.</td></tr>
+    <tr><td><code>EXPECTED_KEY</code></td><td><code>- item</code> at a mapping's indentation; <code>'it's'</code></td><td>Something other than the next key where a mapping continues.</td><td>Indent the list under its key; inside <code>'…'</code> write a quote as <code>''</code>.</td></tr>
+    <tr><td><code>EXPECTED_ENTRY</code></td><td><code>key: value</code> at a list's indentation</td><td>Something other than the next <code>- </code> entry where a list continues.</td><td>Indent it into the entry above, or start it with <code>- </code>.</td></tr>
+    <tr><td><code>ENTRY_NOT_ALLOWED</code></td><td><code>key: - a</code></td><td>A block list cannot start on its key's line.</td><td>Put the list on the next line, indented.</td></tr>
+    <tr><td><code>EXPECTED_VALUE</code></td><td><code>[1, , 2]</code></td><td>A value was needed and something else was there.</td><td>Put a value in the gap, or remove the extra comma.</td></tr>
+    <tr><td><code>UNTERMINATED_STRING</code></td><td><code>message: "Hello</code> and nothing closes it</td><td>A quoted string has no closing quote. The error points at the <strong>opening</strong> quote.</td><td>Add the closing quote.</td></tr>
+    <tr><td><code>BAD_ESCAPE</code></td><td><code>"C:\Users"</code></td><td>Inside <code>"…"</code> a backslash starts an escape, and this is not one (<code>\U</code> needs 8 hex digits).</td><td>Write <code>\\</code> for a backslash, or use single quotes.</td></tr>
+    <tr><td><code>EXPECTED_COMMA_OR_CLOSE</code></td><td><code>{a: 1 b: 2}</code></td><td>Inside <code>[ ]</code> or <code>{ }</code>, after an item comes <code>,</code> or the closer.</td><td>Add the missing comma.</td></tr>
+    <tr><td><code>MISMATCHED_CLOSE</code></td><td><code>[1, 2}</code></td><td>A closing bracket does not match the one that opened, or matches nothing.</td><td>Use the matching closer, or add the missing opener.</td></tr>
+    <tr><td><code>UNCLOSED_CONTAINER</code></td><td><code>ports: [80, 443</code> then the next key</td><td>A <code>[</code> or <code>{</code> was never closed. The error points at it, not at where the file ends.</td><td>Add the missing <code>]</code> or <code>}</code>.</td></tr>
+    <tr><td><code>BLOCK_IN_FLOW</code></td><td><code>[a, - b]</code>, <code>{a: |}</code></td><td>Block syntax (<code>- </code>, <code>|</code>, <code>&gt;</code>) inside <code>[ ]</code> or <code>{ }</code>.</td><td>Write items with commas; quote text.</td></tr>
+    <tr><td><code>RESERVED_CHAR</code></td><td><code>email: @me</code></td><td><code>@</code> and <code>`</code> are reserved and cannot start a value.</td><td>Quote the value.</td></tr>
+    <tr><td><code>UNEXPECTED_CHAR</code></td><td><code>a: %x</code>, <code>"b"#c</code></td><td>A character that cannot go here; a comment needs a space before its <code>#</code>.</td><td>Quote the value, or add the space.</td></tr>
+    <tr><td><code>BAD_BLOCK_HEADER</code></td><td><code>|x</code>, <code>|0</code></td><td>After <code>|</code> or <code>&gt;</code> only <code>+</code>/<code>-</code>, a digit 1–9 and a comment may follow.</td><td>Fix the header.</td></tr>
+    <tr><td><code>BAD_ANCHOR</code></td><td><code>&amp; name</code>, <code>&amp;a *b</code></td><td>An anchor or alias without a name, or an alias given an anchor or tag of its own.</td><td>Write <code>&amp;name</code> with no space.</td></tr>
+    <tr><td><code>UNKNOWN_ALIAS</code></td><td><code>*bse</code></td><td>An alias to an anchor not defined earlier in the document.</td><td>Fix the name, or define the anchor first.</td></tr>
+    <tr><td><code>BAD_TAG</code></td><td><code>!!int many</code>, <code>!e!x</code></td><td>A value its standard tag cannot have, a tag on the wrong kind of node, or an undeclared tag handle.</td><td>Fix the value or the tag; declare handles with <code>%TAG</code>.</td></tr>
+    <tr><td><code>BAD_DIRECTIVE</code></td><td><code>%YAML 2.0</code>; a directive after a document</td><td>A directive that is malformed, unsupported, or not followed by <code>---</code>.</td><td>End the previous document with <code>...</code>; follow directives with <code>---</code>.</td></tr>
+    <tr><td><code>TRAILING_CONTENT</code></td><td><code>[1]</code> then <code>[2]</code>; text after <code>...</code></td><td>More content after the document's one top-level value.</td><td>Start another document with <code>---</code>, or indent it under a key.</td></tr>
+    <tr><td><code>EMPTY_INPUT</code></td><td>only whitespace or comments</td><td>There is no YAML at all. Reported by Format and Copy as JSON.</td><td>Paste or type some YAML.</td></tr>
+    <tr><td><code>MAX_DEPTH</code></td><td>10,001 nested <code>[</code></td><td>Nesting deeper than 10,000 levels.</td><td>Almost certainly generated by mistake; flatten it.</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p>And the warnings, which do not stop the YAML being valid (see
+<a href="#warnings">Warnings</a>):</p>
+
+<div class="yh-guide-table">
+<table>
+  <thead>
+    <tr><th>Code</th><th>Example</th><th>Fix</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>YAML11_BOOLEAN</code></td><td><code>country: NO</code></td><td>Quote it, or write <code>true</code>/<code>false</code>.</td></tr>
+    <tr><td><code>SEXAGESIMAL</code></td><td><code>time: 1:30</code></td><td>Quote it.</td></tr>
+    <tr><td><code>YAML11_NUMBER</code></td><td><code>mode: 0755</code>, <code>1_000</code></td><td>Write <code>0o755</code>, or quote it.</td></tr>
+    <tr><td><code>VERSION_NUMBER</code></td><td><code>python: 3.10</code></td><td>Quote it.</td></tr>
+    <tr><td><code>NUMBER_PRECISION</code></td><td><code>12345678901234567890</code></td><td>If every digit matters, quote it.</td></tr>
+    <tr><td><code>DUPLICATE_KEY</code></td><td><code>id</code> twice in a mapping</td><td>Rename or remove one.</td></tr>
+    <tr><td><code>DUPLICATE_ANCHOR</code></td><td><code>&amp;x</code> twice</td><td>Rename one.</td></tr>
+    <tr><td><code>RUN_ON_VALUE</code></td><td><code>- a</code> / <code>&nbsp;&nbsp;&nbsp;- b</code></td><td>Line the entry up with its siblings.</td></tr>
+    <tr><td><code>EMPTY_KEY</code></td><td><code>"": 1</code></td><td>Give it its name.</td></tr>
+  </tbody>
+</table>
+</div>
+</section>
+
+<footer class="yh-guide-footer">
+  <p>Copyright © 2026 Jason Figge · GPL-3.0-or-later ·
+    <a href="https://github.com/jfigge/yamlhippo" rel="noopener noreferrer">Source on GitHub</a></p>
+</footer>
+
+</main>
+</div>
+
+</body>
+</html>

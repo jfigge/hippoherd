@@ -80,6 +80,16 @@
 //                       the app around about/ rather than deleting it. The
 //                       generator refuses a page that lands on the app.
 //
+//   desktopApp: {…}     The hippo's desktop build is a SHARED app, not its
+//                       own: ViewHippo, which hosts JsonHippo and YamlHippo
+//                       (features/viewhippo-app-build-brief.md). Its downloads
+//                       are that app's — read from the app's repository's
+//                       Releases (`repo`), not the hippo's — and its page says
+//                       so. A hippo with one has downloads even while its own
+//                       status is "development". scripts/build-versions.mjs
+//                       has the same mapping in RELEASES_FROM, and a test
+//                       keeps the two in step.
+//
 //   experimental: true  The index grid lists it below an "Experimental"
 //                       divider, apart from the hippos that are ready to use.
 //                       Keep Hippo and Scan Hippo carry it. Flagged hippos must
@@ -90,8 +100,8 @@
 //
 // HERD's order IS the order on the site. The index grid is three across on a
 // desktop, so every three entries make a row: Rest, Chip and Jump on the first,
-// JsonHippo, MarkHippo and Mind on the second, Roll and Maze on the third, then
-// the divider, then Scan and Keep.
+// JsonHippo, YamlHippo and MarkHippo on the second, Mind, Roll and Maze on the
+// third, then the divider, then Scan and Keep.
 
 export const OWNER = "jfigge";
 export const HERD_COLOR = "#2BC4B0";
@@ -115,6 +125,15 @@ const MAS = (url) => ({
   sub: "Download on the",
   url: url,
 });
+
+// ViewHippo: the herd's desktop app, built and released from this repository
+// (electron/, .github/workflows/release.yml). One download that opens JSON and
+// YAML files in JsonHippo and YamlHippo, and Markdown in MarkHippo.
+const VIEWHIPPO = {
+  name: "ViewHippo",
+  repo: "hippoherd",
+  formats: "JSON, YAML and Markdown",
+};
 
 // The iOS storefront. No `?mt=12` here — that flag is what sends a link to the
 // Mac side, and this one has to land on the phone listing. For a phone app the
@@ -308,10 +327,12 @@ export const HERD = [
     //         nav, footer and the rest all lead here; the page's Launch
     //         button leads on to the app.
     //
-    // The downloads come from jfigge/jsonhippo's GitHub Releases through
-    // versions.json, like every other hippo's; its Release workflow publishes
-    // them when that repo's package.json version moves.
+    // The desktop build is ViewHippo's (`desktopApp`): its downloads come
+    // from this repository's GitHub Releases through versions.json, published
+    // when electron/package.json's version moves. JsonHippo's own standalone
+    // app is retired.
     app: "/jsonhippo/",
+    desktopApp: VIEWHIPPO,
     page: "/jsonhippo/about/",
 
     // `domain` stays null: the app's home IS this site. If jsonhippo.com is
@@ -375,6 +396,83 @@ export const HERD = [
         icon: "lock",
         title: "Nothing leaves your machine",
         body: "No server, no account, no tracking — in the browser or the desktop app, which runs offline and opens links in your own browser. Files are read locally and never uploaded.",
+      },
+    ],
+  },
+
+  {
+    slug: "yamlhippo",
+    name: "YamlHippo",
+    // Lemon yellow, hue 50 — the Y. It sits 13 degrees past Keep's amber at
+    // 37 and is told apart from it by being lighter and greener. As accent
+    // text on #1c1c1c it reads at 12.0:1; the white hippo on top of it is
+    // pale (1.55:1), the price of a yellow brand — the mark's eyes and its
+    // snout motif are dark (#1C1C1C), as Chip's and Jump's eyes are, to carry
+    // it. It must stay in step with the same value in scripts/make-marks.mjs,
+    // and with --brand in jfigge/yamlhippo's src/css/app.css.
+    color: "#F5CC00",
+    tagline: "YAML viewer with pinpoint errors",
+
+    // Modelled on JsonHippo, its sibling: the web app runs here, at
+    // /yamlhippo/, copied in by `make site` in jfigge/yamlhippo (an rsync
+    // --delete of its dist/ that leaves about/ alone), and this generator
+    // writes the page about it at /yamlhippo/about/. Its user guide ships
+    // inside the app, at /yamlhippo/docs/.
+    //
+    // It has no desktop build of its own: ViewHippo, the herd's desktop app,
+    // hosts it with JsonHippo (`desktopApp`), and its page offers that app's
+    // downloads.
+    app: "/yamlhippo/",
+    desktopApp: VIEWHIPPO,
+    page: "/yamlhippo/about/",
+    domain: null,
+    docs: "https://hippoherd.com/yamlhippo/docs/",
+    stack: "Vanilla JS · jQuery",
+    license: "GPL-3.0",
+    platforms: ["macOS", "Windows", "Linux", "Web"],
+    status: "development",
+    stores: [],
+
+    lead: "Pinpoint errors for YAML that will not parse — down to the indentation: “indented 3 spaces but siblings use 2”. Plus smart paste that fixes tabs and curly quotes, a tree you can filter by key, path or tag, and warnings for the values other parsers read differently. In your browser or on your desktop; nothing is uploaded.",
+
+    blurb:
+      "Most YAML errors are whitespace, and most YAML tools report them as something else. YamlHippo's parser is written by hand, character by character, and keeps the stack of indentation levels that are open — so when a line does not fit, it says so in those words: <code>Line 7, col 1: indented 3 spaces but siblings use 2 (in $.spec.ports)</code>, with a link to the siblings it disagrees with. It fixes what a clipboard does to YAML on paste, shows anchors and aliases as what they are, gives every custom tag — <code>!Ref</code>, <code>!Person</code> — its own colour and a reference built from all its uses, and flags the values a YAML 1.1 parser would read differently: <code>no</code> as false, <code>3.10</code> as 3.1, <code>0755</code> as octal. JsonHippo's sibling, with the same tree, schema and order-blind diff.",
+
+    features: [
+      {
+        icon: "alert",
+        title: "Says where it broke",
+        body: "A hand-written parser with an indentation stack gives the line, column and path of every error — and for indentation, how deep the line is and how deep its siblings are. It passes the official YAML test suite.",
+      },
+      {
+        icon: "code",
+        title: "Smart paste",
+        body: "Tabs in the indentation, siblings at 3 spaces and 2, curly quotes from a word processor and no-break spaces from a web page are fixed on paste, with an Undo. Block scalars are left exactly as written.",
+      },
+      {
+        icon: "shield",
+        title: "The values parsers disagree on",
+        body: "<code>country: NO</code> is false to a YAML 1.1 parser, <code>python: 3.10</code> is 3.1, <code>0755</code> is 493 and <code>1:30</code> is 90. YamlHippo reads YAML 1.2 and flags each one rather than silently picking a side.",
+      },
+      {
+        icon: "search",
+        title: "A tree you can filter",
+        body: "By key or value, regex, a path like <code>$..image</code>, or a tag like <code>!Ref</code>. Aliases point at their anchors instead of copying them, and a stream of <code>---</code> documents gets a document switcher.",
+      },
+      {
+        icon: "grid",
+        title: "Custom tags, followed",
+        body: "Every custom tag gets its own colour, a chip, a tinted subtree and a legend. The Types tab unions every use of each tag into a reference: which fields always appear, which are optional, and where their types disagree.",
+      },
+      {
+        icon: "shuffle",
+        title: "Format, diff, schema",
+        body: "Format keeps the comments; Copy as JSON says what did not survive the trip; Diff ignores key and list order; Schema infers a JSON Schema from a sample, as JSON or YAML.",
+      },
+      {
+        icon: "lock",
+        title: "Nothing leaves your machine",
+        body: "No server, no account, no tracking. Files are read locally and never uploaded.",
       },
     ],
   },

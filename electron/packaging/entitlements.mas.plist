@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  App Sandbox entitlements for the Mac App Store (MAS) build of ViewHippo.
+
+  The MAS build runs under Apple's App Sandbox (NOT the hardened runtime — the
+  two are mutually exclusive; build.mas sets hardenedRuntime:false). Kept to the
+  minimum the app uses:
+
+    * app-sandbox                      required for every MAS app.
+    * files.user-selected.read-write   open and save the documents the user picks
+                                       through the native panels, or hands to the
+                                       app from Finder. Nothing else on disk.
+    * cs.allow-jit                     V8's JIT compiler.
+
+  Deliberately ABSENT (and why):
+    * network.client   the app makes no requests: main.js cancels every http(s)
+                       and ws(s) request, and links open in the system browser
+                       through Launch Services, which needs no entitlement.
+    * network.server   nothing listens.
+-->
+<plist version="1.0">
+  <dict>
+    <key>com.apple.security.app-sandbox</key>
+    <true/>
+    <key>com.apple.security.files.user-selected.read-write</key>
+    <true/>
+    <key>com.apple.security.cs.allow-jit</key>
+    <true/>
+  </dict>
+</plist>
