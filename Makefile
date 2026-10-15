@@ -108,7 +108,7 @@ help:
 	@echo "                  electron/packaging/embedded.provisionprofile)"
 	@echo "    mas-dev       Sandboxed MAS development build to run locally (skips"
 	@echo "                  without electron/packaging/development.provisionprofile)"
-	@echo "    icons         Re-render the app icons from website/favicon.svg"
+	@echo "    icons         Re-render the app icons from website/marks/viewhippo.svg"
 	@echo "    sync-mac      Push the macOS signing credentials from RELEASE_ENV to"
 	@echo "                  this repo's GitHub Actions secrets (needs gh)"
 	@echo "    clean         Remove build/"
@@ -227,8 +227,9 @@ mas-dev:
 		-c.mac.notarize=false -c.masDev.entitlements="$(MAS_ENTITLEMENTS)" -c.masDev.entitlementsInherit="$(MAS_ENTITLEMENTS_INHERIT)" ) && \
 	echo "  → $(DESKTOP_DIR)/dist/"
 
-# Re-render electron/icons/ from website/favicon.svg and the macOS variant,
-# electron/icons/hippoherd-mac-icon.svg. Runs under Electron (see the script).
+# Re-render electron/icons/ from ViewHippo's mark, website/marks/viewhippo.svg,
+# which scripts/make-marks.mjs writes (re-run that first after changing the
+# mark). Runs under Electron (see the script).
 icons: electron/node_modules
 	cd "$(ELECTRON_DIR)" && npx electron ../scripts/make-icons.mjs
 

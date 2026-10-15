@@ -18,7 +18,8 @@
  * with Hippo Herd. If not, see <https://www.gnu.org/licenses/>.
  */
 
-// Generate website/marks/*.svg and website/favicon.svg.
+// Generate website/marks/*.svg (the hippos, and ViewHippo's) and
+// website/favicon.svg.
 //
 // The family mark is ONE piece of geometry — two ear circles, a head, a snout,
 // two eyes — that every hippo shares; a hippo is that geometry, its own accent
@@ -254,10 +255,43 @@ function herdMark() {
   );
 }
 
+// ViewHippo, the herd's desktop app (electron/): the family hippo in glasses,
+// because it is the one that views, with three dots on its snout in the
+// colours of the viewers it hosts — JsonHippo, YamlHippo, MarkHippo — read
+// from HIPPOS so they stay in step. Deep indigo rather than a hue of its own:
+// it is the container, not another hippo on the wheel, and the three dots are
+// the colour. Light enough to keep its outline on a dark Dock.
+//
+// The glasses are rings round the eyes and a bridge, with no arms: an arm
+// reaches the edge of the head, and in the background colour it reads as a
+// notch cut out of the silhouette. scripts/make-icons.mjs rasterises this
+// file into the app's icons.
+const VIEW = "#2B3050";
+
+function viewMark() {
+  const dots = ["jsonhippo", "yamlhippo", "markhippo"]
+    .map((slug, i) => `<circle cx="${198 + i * 58}" cy="334" r="19" fill="${HIPPOS[slug].color}"/>`)
+    .join("");
+  return (
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="ViewHippo">' +
+    `<rect width="512" height="512" rx="114" fill="${VIEW}"/>` +
+    `<g fill="#FFFFFF">${BODY}</g>` +
+    `<circle cx="201" cy="198" r="17" fill="${VIEW}"/>` +
+    `<circle cx="311" cy="198" r="17" fill="${VIEW}"/>` +
+    `<g fill="none" stroke="${VIEW}" stroke-width="12" stroke-linecap="round">` +
+    '<circle cx="201" cy="198" r="38"/><circle cx="311" cy="198" r="38"/>' +
+    '<path d="M239 196 Q256 184 273 196"/></g>' +
+    dots +
+    "</svg>\n"
+  );
+}
+
 await mkdir(OUT, { recursive: true });
 for (const [slug, h] of Object.entries(HIPPOS)) {
   await writeFile(`${OUT}/${slug}.svg`, mark(slug, h));
   console.log(`  ${OUT}/${slug}.svg  ${h.color}`);
 }
+await writeFile(`${OUT}/viewhippo.svg`, viewMark());
+console.log(`  ${OUT}/viewhippo.svg  ${VIEW}`);
 await writeFile("website/favicon.svg", herdMark());
 console.log(`  website/favicon.svg  ${HERD}`);

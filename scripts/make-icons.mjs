@@ -28,13 +28,11 @@
 // SVG onto a canvas in a hidden Chromium window keeps the alpha channel end to
 // end, so the corners stay transparent.
 //
-// Two sources, because macOS is special:
-//   website/favicon.svg                 the app's own mark, edge to edge
-//                                         → Windows .ico and the Linux set
-//   electron/icons/hippoherd-mac-icon.svg the same art inside the macOS
-//                                         safe area, transparent margin round it
-//                                         → the macOS icon (electron-builder
-//                                           turns it into the .icns)
+// One source, ViewHippo's mark (website/marks/viewhippo.svg, written by
+// scripts/make-marks.mjs), drawn two ways, because macOS is special:
+//   edge to edge                          → Windows .ico and the Linux set
+//   inside the macOS safe area, with a    → the macOS icon (electron-builder
+//   transparent margin round it              turns it into the .icns)
 //
 // Outputs, committed and read by electron-builder:
 //   electron/icons/mac.png          1024², macOS
@@ -48,8 +46,7 @@ import { fileURLToPath } from "node:url";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const ICONS = path.join(repoRoot, "electron", "icons");
-const FULL_SVG = path.join(repoRoot, "website", "favicon.svg");
-const MAC_SVG = path.join(ICONS, "hippoherd-mac-icon.svg");
+const MARK_SVG = path.join(repoRoot, "website", "marks", "viewhippo.svg");
 const MAC_PNG = path.join(ICONS, "mac.png");
 const ICO = path.join(ICONS, "icon.ico");
 const LINUX_DIR = path.join(ICONS, "linux");
@@ -57,6 +54,18 @@ const LINUX_DIR = path.join(ICONS, "linux");
 const MAC_SIZE = 1024;
 const LINUX_SIZES = [16, 24, 32, 48, 64, 128, 256, 512, 1024];
 const ICO_SIZES = [256, 128, 64, 48, 32, 24, 16];
+
+// The mark on the macOS app-icon grid, as JsonHippo's and Chip Hippo's are:
+// the 512-unit artwork scaled by 826/512 and offset 99px, so the rounded
+// square fills a centred 826×826 region of the 1024 canvas (Big Sur's 824/100
+// safe area, one pixel larger each way) with a transparent margin round it.
+function macVariant(markSvg) {
+  const inner = markSvg.replace(/^<svg[^>]*>/, "").replace(/<\/svg>\s*$/, "");
+  return (
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">' +
+    `<g transform="translate(99,99) scale(1.61328125)">${inner}</g></svg>`
+  );
+}
 
 // One hidden window draws everything; the SVG goes in as a data: URL, so each
 // size is rendered straight from the vector rather than scaled from a bitmap.
@@ -120,10 +129,10 @@ const rel = (p) => path.relative(repoRoot, p);
 
 app.whenReady().then(async () => {
   try {
-    writeFileSync(MAC_PNG, await render(readFileSync(MAC_SVG, "utf8"), MAC_SIZE));
+    const full = readFileSync(MARK_SVG, "utf8");
+    writeFileSync(MAC_PNG, await render(macVariant(full), MAC_SIZE));
     console.log(`  ${rel(MAC_PNG)}  ${MAC_SIZE}²`);
 
-    const full = readFileSync(FULL_SVG, "utf8");
     const cache = new Map();
     const at = async (size) => {
       if (!cache.has(size)) cache.set(size, await render(full, size));

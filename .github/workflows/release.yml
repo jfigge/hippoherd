@@ -71,7 +71,7 @@ on:
       - "website/jsonhippo/**"
       - "website/yamlhippo/**"
       - "website/markhippo/**"
-      - "website/favicon.svg"
+      - "website/marks/viewhippo.svg"
       - "scripts/stage-desktop.mjs"
       - "test/**"
       - "Makefile"
