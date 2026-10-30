@@ -50,3 +50,24 @@
     // in the stylesheets follow the system.
   }
 })();
+
+/*
+ * ViewHippo's host chrome (hippoherd's features/viewhippo-app-build-brief.md,
+ * "Host chrome"). Inside the desktop app the page has ?chrome=tabs or
+ * ?chrome=full, copied here to <html data-viewhippo-chrome> before the first
+ * frame. Its presence says the page is hosted, and app.css hides what the
+ * app's File menu and tab already do (New, Open, Save, the file name);
+ * "tabs" says the app's tab strip shows the logo, the Hippo Herd and GitHub
+ * links and the light/dark mode, so app.css hides those too. The host
+ * changes the attribute itself on a live page when the setting changes. On
+ * the web there is no parameter and nothing changes.
+ */
+(function applyHostChrome() {
+  "use strict";
+  try {
+    var chrome = new URLSearchParams(window.location.search).get("chrome");
+    if (chrome === "tabs" || chrome === "full") document.documentElement.dataset.viewhippoChrome = chrome;
+  } catch {
+    // No URLSearchParams: a browser too old for any host to be.
+  }
+})();

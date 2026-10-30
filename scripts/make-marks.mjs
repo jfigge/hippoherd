@@ -258,15 +258,17 @@ function herdMark() {
 // ViewHippo, the herd's desktop app (electron/): the family hippo in glasses,
 // because it is the one that views, with three dots on its snout in the
 // colours of the viewers it hosts — JsonHippo, YamlHippo, MarkHippo — read
-// from HIPPOS so they stay in step. Deep indigo rather than a hue of its own:
-// it is the container, not another hippo on the wheel, and the three dots are
-// the colour. Light enough to keep its outline on a dark Dock.
+// from HIPPOS so they stay in step. A muted indigo rather than a hue of its
+// own: it is the container, not another hippo on the wheel, and the three dots
+// are the colour. It started darker (#2B3050), and the tile all but vanished
+// against a dark Dock; this is light enough for its square to show there and
+// still dark enough to read as a frame on a light one.
 //
 // The glasses are rings round the eyes and a bridge, with no arms: an arm
 // reaches the edge of the head, and in the background colour it reads as a
 // notch cut out of the silhouette. scripts/make-icons.mjs rasterises this
-// file into the app's icons.
-const VIEW = "#2B3050";
+// file into the app's icons, and the app's empty window shows it.
+const VIEW = "#4A55A2";
 
 function viewMark() {
   const dots = ["jsonhippo", "yamlhippo", "markhippo"]
@@ -293,5 +295,14 @@ for (const [slug, h] of Object.entries(HIPPOS)) {
 }
 await writeFile(`${OUT}/viewhippo.svg`, viewMark());
 console.log(`  ${OUT}/viewhippo.svg  ${VIEW}`);
+// The app's own copies (electron/chrome/): its mark for the empty window, and
+// the marks of the viewers it hosts for their tabs. The app ships only
+// electron/, so it cannot read website/marks/.
+await writeFile("electron/chrome/viewhippo.svg", viewMark());
+await mkdir("electron/chrome/marks", { recursive: true });
+for (const slug of ["jsonhippo", "yamlhippo", "markhippo"]) {
+  await writeFile(`electron/chrome/marks/${slug}.svg`, mark(slug, HIPPOS[slug]));
+}
+console.log("  electron/chrome/viewhippo.svg, electron/chrome/marks/{jsonhippo,yamlhippo,markhippo}.svg");
 await writeFile("website/favicon.svg", herdMark());
 console.log(`  website/favicon.svg  ${HERD}`);

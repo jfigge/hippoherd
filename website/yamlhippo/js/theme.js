@@ -31,3 +31,21 @@
     // Storage blocked (privacy mode, file://): follow the system theme.
   }
 })();
+
+/*
+ * ViewHippo's host chrome (hippoherd's features/viewhippo-app-build-brief.md,
+ * "Host chrome"). Inside the desktop app, ?chrome=tabs says its tab strip
+ * already shows this page's logo, its Hippo Herd and GitHub links and the
+ * theme, so app.css hides the header row; ?chrome=full (tabs off) keeps it.
+ * The host changes the attribute itself on a live page when the setting
+ * changes. On the web there is no parameter and nothing changes.
+ */
+(function applyHostChrome() {
+  "use strict";
+  try {
+    var chrome = new URLSearchParams(window.location.search).get("chrome");
+    if (chrome === "tabs" || chrome === "full") document.documentElement.dataset.viewhippoChrome = chrome;
+  } catch {
+    // No URLSearchParams: a browser too old for any host to be.
+  }
+})();

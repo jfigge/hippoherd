@@ -41,7 +41,8 @@ export const THEMES = ["system", "light", "dark"];
 
 /**
  * The API over an app with load(text, name) → Promise, a `text` getter and
- * setTheme(theme).
+ * setTheme(theme)
+ * and showAbout().
  */
 export function createHippoViewer(app) {
   return {
@@ -78,7 +79,25 @@ export function createHippoViewer(app) {
       if (!THEMES.includes(mode)) throw new Error(`Unknown theme "${mode}": use ${THEMES.join(", ")}.`);
       app.setTheme(mode);
     },
+
+    /**
+     * Open the About dialog. Its way in, the brand hippo, is hidden while
+     * ViewHippo's tab strip shows; the app offers Help → About instead.
+     */
+    showAbout() {
+      app.showAbout();
+    },
   };
+}
+
+/**
+ * Tell ViewHippo the text may have changed: every edit, and every change made
+ * from code. Its bridge (window.viewHippoHost, its host-preload.js) compares
+ * the text with the saved text itself, for the tab's unsaved-changes dot. In a
+ * browser tab, or a ViewHippo without the bridge, there is none: nothing.
+ */
+export function textChanged(host = globalThis.viewHippoHost) {
+  if (typeof host?.changed === "function") host.changed();
 }
 
 /** Publish the API on `target` and tell the host it is ready. Call once the app has booted. */

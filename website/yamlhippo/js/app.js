@@ -63,7 +63,7 @@ import { TypesView } from "./types-view.js";
 import { SchemaView } from "./schema-view.js";
 import { DiffView, fixNotice } from "./diff-view.js";
 import { WarningsView } from "./warnings-view.js";
-import { installHippoViewer } from "./viewhippo.js";
+import { installHippoViewer, textChanged } from "./viewhippo.js";
 import { copyText, debounce, nextFrame, plural, utf8Length } from "./util.js";
 
 const TYPING_DEBOUNCE_MS = 400;
@@ -185,6 +185,7 @@ class App {
 
   onEdit(text, paste) {
     this.version++;
+    textChanged();
     // Typing invalidates Undo: restoring the pre-fix text would throw the
     // edits away without saying so.
     if (this.fixOriginal !== null && !paste) this.dropUndo();
@@ -275,6 +276,7 @@ class App {
     this.validateSoon.cancel();
     this.version++;
     this.textView.setText(text);
+    textChanged();
   }
 
   /** Format from the tree, comments kept. Never changes the text when it is invalid. */
@@ -544,6 +546,12 @@ class App {
     button.setAttribute("aria-label", ui.aria);
   }
 
+  /** Open About: the brand hippo, and ViewHippo's Help menu (viewhippo.js). */
+  showAbout() {
+    const about = document.getElementById("yh-about");
+    if (!about.open) about.showModal();
+  }
+
   bindChrome() {
     TABS.forEach((id, i) => {
       const tab = document.getElementById(`yh-tab-${id}`);
@@ -588,7 +596,7 @@ class App {
     // The brand hippo opens About. Esc and Close dismiss it natively; a click
     // on the backdrop lands on the <dialog> itself, so that closes it too.
     const about = document.getElementById("yh-about");
-    document.getElementById("yh-about-open").addEventListener("click", () => about.showModal());
+    document.getElementById("yh-about-open").addEventListener("click", () => this.showAbout());
     about.addEventListener("click", (e) => {
       if (e.target === about) about.close();
     });

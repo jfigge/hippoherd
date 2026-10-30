@@ -32,6 +32,8 @@
       "policy.js",
       "router.js",
       "debug.js",
+      "host-preload.js",
+      "chrome/**/*",
       "package.json",
       "icons/linux/512x512.png",
       "web/**/*"

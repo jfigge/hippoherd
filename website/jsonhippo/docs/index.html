@@ -257,6 +257,13 @@ nothing is shown. The setting is remembered.</p>
     (<code>12345678901234567890</code> stays as it is), strings keep their escapes, and keys
     stay in their original order, duplicates included.</li>
   <li>Neither changes invalid text; they show the error instead.</li>
+  <li><strong>Copy as YAML</strong> puts the document on the clipboard as block-style YAML,
+    indented as the <strong>Indent</strong> menu says (a tab becomes 2 spaces: YAML has no
+    tab indentation). Numbers keep every digit and keys keep their order. A string
+    is quoted only when YAML would otherwise read it as something else —
+    <code>"yes"</code>, <code>"1.0"</code>, <code>"null"</code> and <code>"2026-10-18"</code>
+    stay quoted, <code>name</code> does not. YAML does not allow duplicate keys, so
+    they are copied as they are and the notice says how many there were.</li>
   <li><strong>Copy</strong> copies the text; <strong>Clear</strong> empties it.</li>
 </ul>
 </section>

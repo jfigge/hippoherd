@@ -1,0 +1,44 @@
+<!doctype html>
+<!--
+  The tab strip: ViewHippo's own page, across the top of the window. Each open
+  document is a WebContentsView laid out below it (main.js). With tabs off the
+  strip is hidden and the one document fills the window. With no document
+  open, this page is all there is, and it says how to open one.
+
+  The strip stands in for each viewer's own header: the viewer's logo is on
+  its tab, and the theme is at the right. The viewers hide their header while
+  the strip shows (?chrome=tabs; features/viewhippo-app-build-brief.md, "Host
+  chrome"). Their Hippo Herd and GitHub links are in the Help menu, to leave
+  the strip its room for tabs.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'" />
+    <title>ViewHippo</title>
+    <link rel="stylesheet" href="tabs.css" />
+  </head>
+  <body>
+    <svg class="sprite" aria-hidden="true">
+      <symbol id="i-system" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path fill="currentColor" d="M12 3a9 9 0 0 1 0 18z"/></symbol>
+      <symbol id="i-light" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></g></symbol>
+      <symbol id="i-dark" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></symbol>
+    </svg>
+    <header id="bar">
+      <div id="tabs" role="tablist" aria-label="Open documents"></div>
+      <div id="actions">
+        <button type="button" class="action" id="theme">
+          <svg class="icon" aria-hidden="true"><use id="theme-icon" href="#i-system"/></svg><span id="theme-label">System</span>
+        </button>
+      </div>
+    </header>
+    <main id="empty" hidden>
+      <img src="viewhippo.svg" width="88" height="88" alt="" />
+      <h1>No document open</h1>
+      <p>Open a <span id="formats">document</span> to view it here.</p>
+      <p><button id="open" type="button">Open…</button> <kbd id="shortcut"></kbd></p>
+      <p id="new" class="new"></p>
+    </main>
+    <script src="tabs.js"></script>
+  </body>
+</html>

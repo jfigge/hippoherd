@@ -23,8 +23,10 @@
 // its own static page, built in its own repository and copied to
 // website/<id>/ by that repository's `make site`. This table is the only
 // thing the host knows about them — a name, the format the viewer owns, the
-// extensions that route to it, and its data `model`. A viewer listed here but
-// missing from the bundle (website/<id>/index.html absent) is simply switched
+// extensions that route to it, its data `model`, its brand `color` (its
+// tab's accent; the same value as in content/hippos.mjs), and its `source`
+// (Help → <Viewer> on GitHub while one of its documents is on screen). A
+// viewer listed here but missing from the bundle (website/<id>/index.html absent) is simply switched
 // off: main.js passes the ids that ARE present as `available`.
 //
 // Conversion is offered only between viewers of the same model: JSON and
@@ -39,11 +41,26 @@ const path = require("node:path");
 const viewer = (v) => Object.freeze({ ...v, extensions: Object.freeze(v.extensions) });
 
 const VIEWERS = Object.freeze([
-  viewer({ id: "jsonhippo", name: "JsonHippo", format: "json", formatName: "JSON", model: "tree", extensions: ["json"] }),
-  viewer({ id: "yamlhippo", name: "YamlHippo", format: "yaml", formatName: "YAML", model: "tree", extensions: ["yaml", "yml"] }),
+  // Only these extensions open, matched without regard to case (FILE.JSN is a
+  // .jsn). JSON's variants are the ones that are strict JSON: GeoJSON and
+  // JSON-LD. JSONC and JSON5 allow comments and trailing commas, which
+  // JsonHippo would report as errors, so they are left out.
+  viewer({
+    id: "jsonhippo",
+    name: "JsonHippo",
+    format: "json",
+    formatName: "JSON",
+    model: "tree",
+    color: "#B65CF0",
+    source: "https://github.com/jfigge/jsonhippo",
+    extensions: ["json", "jsn", "geojson", "jsonld"],
+  }),
+  viewer({ id: "yamlhippo", name: "YamlHippo", format: "yaml", formatName: "YAML", model: "tree", color: "#F5CC00", source: "https://github.com/jfigge/yamlhippo", extensions: ["yaml", "yml"] }),
   viewer({
     id: "markhippo",
     name: "MarkHippo",
+    color: "#E06000",
+    source: "https://github.com/jfigge/markhippo",
     format: "markdown",
     formatName: "Markdown",
     model: "document",

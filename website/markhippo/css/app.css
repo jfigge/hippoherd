@@ -236,6 +236,28 @@ body {
   margin-left: auto;
 }
 
+/* Inside ViewHippo (theme.js sets the attribute; hippoherd's brief, "Host
+   chrome"). The app's File menu opens and saves, and its tab or title names
+   the file, so these go whenever the page is hosted. */
+[data-viewhippo-chrome] .mh-file [data-action],
+[data-viewhippo-chrome] #mh-filename {
+  display: none;
+}
+
+/* With the app's tab strip showing, the strip carries the logo, Hippo Herd,
+   the light/dark mode and GitHub. What is left is MarkHippo's own: Export,
+   Plugins, the guide and Themes, as a slimmer row. */
+[data-viewhippo-chrome="tabs"] .mh-brand,
+[data-viewhippo-chrome="tabs"] #mh-herd-link,
+[data-viewhippo-chrome="tabs"] #mh-theme,
+[data-viewhippo-chrome="tabs"] #mh-github-link {
+  display: none;
+}
+
+[data-viewhippo-chrome="tabs"] .mh-header {
+  padding-block: 4px;
+}
+
 @media (max-width: 900px) {
   .mh-header-actions .mh-btn span,
   .mh-file .mh-btn span {

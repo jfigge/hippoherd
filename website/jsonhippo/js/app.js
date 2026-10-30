@@ -48,6 +48,7 @@ import { JsonHippoError } from "./parser/errors.js";
 import { Linter } from "./lint/linter.js";
 import { detectAndUnescape } from "./smart-paste.js";
 import { format, minify, INDENTS } from "./formatter.js";
+import { toYaml, YAML_INDENTS } from "./yaml-export.js";
 import { TextView } from "./text-view.js";
 import { StatusBar } from "./status-bar.js";
 import { Settings } from "./settings.js";
@@ -56,8 +57,8 @@ import { TreeFilter } from "./tree-filter.js";
 import { SchemaView } from "./schema-view.js";
 import { DiffView } from "./diff-view.js";
 import { WarningsView } from "./warnings-view.js";
-import { installHippoViewer } from "./viewhippo.js";
-import { debounce, nextFrame, utf8Length } from "./util.js";
+import { installHippoViewer, textChanged } from "./viewhippo.js";
+import { copyText, debounce, nextFrame, utf8Length } from "./util.js";
 
 const TYPING_DEBOUNCE_MS = 400;
 
@@ -149,6 +150,7 @@ class App {
 
   onEdit(text, paste) {
     this.version++;
+    textChanged();
     // Typing invalidates Undo: restoring the pre-unescape text would throw
     // the edits away without saying so.
     if (this.unescapeOriginal !== null && !paste) this.dropUndo();
@@ -211,6 +213,9 @@ class App {
           this.validate();
         }
         break;
+      case "to-yaml":
+        this.copyAsYaml();
+        break;
       case "clear":
         this.dropUndo();
         this.replaceText("");
@@ -237,6 +242,7 @@ class App {
     this.validateSoon.cancel();
     this.version++;
     this.textView.setText(text);
+    textChanged();
   }
 
   /** Format / Minify from the AST. Never changes the text when it is invalid. */
@@ -250,11 +256,25 @@ class App {
     await this.validate();
   }
 
+  /** Copy the document as YAML. Copies nothing when the text is invalid. */
+  async copyAsYaml() {
+    const result = await this.validate({ explicit: true });
+    if (!result?.ok) return;
+    const { text, duplicates } = toYaml(result.ast, { indent: YAML_INDENTS[this.settings.indent] });
+    if (!(await copyText(text))) {
+      this.textView.showNotice("Could not copy to the clipboard.", { undo: false });
+    } else if (duplicates > 0) {
+      this.textView.showNotice(`Copied as YAML. ${duplicates === 1 ? "1 duplicate key" : `${duplicates} duplicate keys`} kept — most YAML parsers reject them.`, { undo: false });
+    } else {
+      this.textView.showNotice("Copied as YAML.", { undo: false });
+    }
+  }
+
   // ── Validation ───────────────────────────────────────────────────────────
 
   /**
    * Parse the current text and show the outcome everywhere.
-   * `explicit` (Format/Minify) reports an empty input as EMPTY_INPUT rather
+   * `explicit` (Format/Minify, Copy as YAML) reports an empty input as EMPTY_INPUT rather
    * than as the idle prompt. Returns the result, or null if the text changed
    * while waiting to paint.
    */
@@ -420,6 +440,12 @@ class App {
     button.setAttribute("aria-label", ui.aria);
   }
 
+  /** Open About: the brand hippo, and ViewHippo's Help menu (viewhippo.js). */
+  showAbout() {
+    const about = document.getElementById("jh-about");
+    if (!about.open) about.showModal();
+  }
+
   bindChrome() {
     TABS.forEach((id, i) => {
       const tab = document.getElementById(`jh-tab-${id}`);
@@ -464,7 +490,7 @@ class App {
     // The brand hippo opens About. Esc and Close dismiss it natively; a click
     // on the backdrop lands on the <dialog> itself, so that closes it too.
     const about = document.getElementById("jh-about");
-    document.getElementById("jh-about-open").addEventListener("click", () => about.showModal());
+    document.getElementById("jh-about-open").addEventListener("click", () => this.showAbout());
     about.addEventListener("click", (e) => {
       if (e.target === about) about.close();
     });

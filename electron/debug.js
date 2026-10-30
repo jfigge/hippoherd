@@ -22,16 +22,18 @@
 // Development only. main.js loads it when VIEWHIPPO_DEBUG=1 in an unpackaged
 // run, and never in a packaged build. It adds:
 //
-//   * DevTools in every window (VIEWHIPPO_DEVTOOLS: right, bottom, undocked,
-//     detach or none), and each viewer's console echoed to the terminal,
-//     prefixed with the viewer's id.
+//   * DevTools for every document (VIEWHIPPO_DEVTOOLS: detach, undocked, or
+//     none), and each viewer's console echoed to the terminal, prefixed with
+//     the viewer's id.
 //   * Viewer hot reload. A change under website/<id>/ (a viewer's `make site`,
-//     or a hand edit while chasing a bug) reloads that viewer's windows, each
-//     handed back the document it held. A viewer published for the first time
+//     or a hand edit while chasing a bug) reloads that viewer's documents,
+//     each handed back the text it held. A viewer published for the first time
 //     restarts the host, which only looks for viewers at startup.
-//   * Host hot restart. An edit to electron/*.js restarts the host. The open
+//   * Host hot restart. An edit to electron/*.js restarts the host (an edit
+//     to the tab strip, electron/chrome/, just reloads the strip). The open
 //     documents are written to a session file first, and the new process
-//     reopens them, unsaved edits included. The restart itself is the
+//     reopens them — same tabs, same order, same window — unsaved edits
+//     included. The restart itself is the
 //     Makefile's: this process exits with RESTART_EXIT_CODE and `make debug`
 //     runs Electron again. An edit that doesn't parse is reported, and the
 //     running host is kept.
@@ -57,10 +59,13 @@ const SETTLE_MS = 300;
 const SESSION_FILE = "debug-session.json";
 const SESSION_MAX_AGE_MS = 60_000;
 
-// How long a restart waits for each window's text before saving the session.
+// How long a restart waits for each document's text before saving the session.
 const SNAPSHOT_TIMEOUT_MS = 1000;
 
-const DEVTOOLS_MODES = ["right", "bottom", "undocked", "detach"];
+// A document is a WebContentsView, and DevTools can only dock into a
+// BrowserWindow's own page; so a document's DevTools are a window of their
+// own. "right" and "bottom" (the old `make debug` modes) mean the same.
+const DEVTOOLS_MODES = { detach: "detach", undocked: "undocked", right: "detach", bottom: "detach" };
 
 /**
  * The viewer a change under website/ belongs to, or null. `filename` is
@@ -100,12 +105,12 @@ function settle(fn) {
 
 const log = (...args) => console.log("[debug]", ...args);
 
-/** DevTools, and the page's console in the terminal. Called for every new window. */
-function instrument(win, viewerId) {
-  const mode = process.env.VIEWHIPPO_DEVTOOLS || "right";
-  if (DEVTOOLS_MODES.includes(mode)) win.webContents.openDevTools({ mode, activate: false });
+/** DevTools, and the page's console in the terminal. Called for every new document. */
+function instrument(contents, viewerId) {
+  const mode = DEVTOOLS_MODES[process.env.VIEWHIPPO_DEVTOOLS || "detach"];
+  if (mode) contents.openDevTools({ mode, activate: false });
 
-  win.webContents.on("console-message", (event) => {
+  contents.on("console-message", (event) => {
     const where = event.sourceId ? ` (${event.sourceId.replace(/^viewhippo:\/\/[^/]+\//, "")}:${event.lineNumber})` : "";
     const line = `[${viewerId}] ${event.message}${where}`;
     if (event.level === "error") console.error(line);
@@ -117,11 +122,13 @@ function instrument(win, viewerId) {
 // ── The session a restart hands to the next host ─────────────────────────────
 
 async function snapshot(host) {
-  return Promise.all(
-    [...host.docs].map(async ([win, doc]) => {
+  const docs = host.documents();
+  const win = host.window();
+  const saved = await Promise.all(
+    docs.map(async (doc) => {
       const formats = await host.withTimeout(doc.ready, SNAPSHOT_TIMEOUT_MS, null);
       const text = formats
-        ? await host.withTimeout(host.callViewer(win, "getText").catch(() => ({})), SNAPSHOT_TIMEOUT_MS, {})
+        ? await host.withTimeout(host.callViewer(doc, "getText").catch(() => ({})), SNAPSHOT_TIMEOUT_MS, {})
         : {};
       return {
         viewer: doc.viewer,
@@ -130,13 +137,22 @@ async function snapshot(host) {
         savedText: doc.savedText,
         delivered: doc.delivered,
         text: typeof text.value === "string" ? text.value : null,
-        bounds: win.isDestroyed() ? null : win.getBounds(),
       };
     }),
   );
+  return {
+    bounds: win ? win.getBounds() : null,
+    active: docs.indexOf(host.activeDocument()),
+    docs: saved,
+  };
 }
 
-/** Reopen the documents a restart saved. Resolves once each has its text back. */
+/**
+ * Reopen the documents a restart saved. Resolves, once each has its text
+ * back, to the document that was on screen (or null): main.js shows it again
+ * after reopening the launch's own files, which are already open and would
+ * otherwise each take the front in turn.
+ */
 async function restoreSession(host) {
   const file = path.join(host.app.getPath("userData"), SESSION_FILE);
   let session;
@@ -145,34 +161,46 @@ async function restoreSession(host) {
     session = fresh ? JSON.parse(fs.readFileSync(file, "utf8")) : null;
     fs.rmSync(file, { force: true });
   } catch {
-    return; // No restart to resume.
+    return null; // No restart to resume.
   }
-  if (!Array.isArray(session)) return;
+  if (!session || !Array.isArray(session.docs)) return null;
 
-  const reopened = session.filter((d) => d && host.available.includes(d.viewer));
-  log(`reopening ${reopened.length} document(s) from the last host`);
+  const reopened = session.docs.map((d) => (d && host.available.includes(d.viewer) ? d : null));
+  log(`reopening ${reopened.filter(Boolean).length} document(s) from the last host`);
+  // Placed in order (place() puts each after the active one), then filled.
+  const docs = reopened.map((d) => {
+    if (!d) return null;
+    const doc = host.createDoc(d.viewer, { suggestedName: d.suggestedName });
+    doc.filePath = d.filePath || null;
+    host.place(doc);
+    return doc;
+  });
+  const win = host.window();
+  if (win && session.bounds) win.setBounds(session.bounds);
+  if (docs[session.active]) host.activate(docs[session.active]);
+  host.updateTitle();
+  host.sendTabs();
+
   await Promise.all(
-    reopened.map(async (d) => {
-      const win = host.createWindow(d.viewer, { suggestedName: d.suggestedName });
-      if (d.bounds) win.setBounds(d.bounds);
-      const doc = host.docs.get(win);
-      doc.filePath = d.filePath || null;
-      host.updateTitle(win);
-      // An untouched new window starts over as one; anything else gets its
+    reopened.map(async (d, i) => {
+      const doc = docs[i];
+      // An untouched new document starts over as one; anything else gets its
       // text back, and keeps the saved state it had, so unsaved stays unsaved.
-      if (typeof d.text !== "string" || (!d.delivered && d.text === d.savedText)) return;
-      await host.deliver(win, d.text, path.basename(d.filePath || d.suggestedName), { saved: false });
+      if (!doc || typeof d.text !== "string" || (!d.delivered && d.text === d.savedText)) return;
+      await host.deliver(doc, d.text, path.basename(d.filePath || d.suggestedName), { saved: false });
       doc.savedText = d.savedText;
     }),
   );
+  return docs[session.active] || null;
 }
 
 // ── Watching ─────────────────────────────────────────────────────────────────
 
 /**
  * Start hot reload. `host` is main.js's: app, webDir, appDir, ids (every
- * viewer the router knows), available (those in this run), docs, createWindow,
- * deliver, callViewer, reloadViewer, updateTitle, withTimeout.
+ * viewer the router knows), available (those in this run), documents(),
+ * activeDocument(), window(), createDoc, place, activate, deliver,
+ * callViewer, reloadViewer, updateTitle, sendTabs, withTimeout.
  */
 function watch(host) {
   const { app, webDir, appDir } = host;
@@ -207,10 +235,10 @@ function watch(host) {
       reloads.set(
         id,
         settle(() => {
-          const wins = [...host.docs].filter(([, doc]) => doc.viewer === id).map(([win]) => win);
-          if (!wins.length) return;
-          log(`website/${id}/ changed: reloading ${wins.length} window(s)`);
-          for (const win of wins) host.reloadViewer(win).catch((err) => console.error("[debug] reload failed:", err));
+          const docs = host.documents().filter((doc) => doc.viewer === id);
+          if (!docs.length) return;
+          log(`website/${id}/ changed: reloading ${docs.length} document(s)`);
+          for (const doc of docs) host.reloadViewer(doc).catch((err) => console.error("[debug] reload failed:", err));
         }),
       );
     }
@@ -229,6 +257,21 @@ function watch(host) {
   fs.watch(appDir, (_event, filename) => {
     if (filename && String(filename).endsWith(".js")) restartSoon(`electron/${filename} changed`);
   }).on("error", onError(appDir));
+
+  // The tab strip (chrome/) is a page: an edit reloads it, and main.js's
+  // tabs:ready handler redraws it. Its preload only loads with a new window,
+  // so an edit there restarts the host.
+  const chromeDir = path.join(appDir, "chrome");
+  const reloadStrip = settle(() => {
+    const win = host.window();
+    if (!win) return;
+    log("electron/chrome/ changed: reloading the tab strip");
+    win.webContents.reloadIgnoringCache();
+  });
+  fs.watch(chromeDir, (_event, filename) => {
+    if (filename === "preload.js") restartSoon("electron/chrome/preload.js changed");
+    else if (filename) reloadStrip();
+  }).on("error", onError(chromeDir));
 
   log(`watching ${webDir} (viewers) and ${appDir} (host)`);
 }

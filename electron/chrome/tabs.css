@@ -1,0 +1,260 @@
+/*
+ * The tab strip. 36px tall; main.js STRIP_HEIGHT must match. It follows the
+ * Appearance menu through prefers-color-scheme, as the viewers do.
+ */
+:root {
+  --strip: #e4e4e7;
+  --tab: transparent;
+  --tab-hover: #d6d6da;
+  --tab-active: #ffffff;
+  --text: #3f3f46;
+  --text-active: #18181b;
+  --rule: #c9c9cf;
+  --muted: #71717a;
+  --button: #ffffff;
+  --button-border: #c9c9cf;
+  color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --strip: #18181b;
+    --tab-hover: #27272a;
+    --tab-active: #2e2e33;
+    --text: #a1a1aa;
+    --text-active: #f4f4f5;
+    --rule: #3f3f46;
+    --muted: #8b8b94;
+    --button: #2e2e33;
+    --button-border: #45454d;
+  }
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  background: var(--strip);
+  font: 12px/1 system-ui, -apple-system, "Segoe UI", sans-serif;
+  user-select: none;
+  cursor: default;
+}
+
+body[hidden] {
+  display: block;
+  visibility: hidden;
+}
+
+/* The icon sprite. Positioned here, not in a style attribute: the page's CSP
+   refuses inline styles, and an unpositioned <svg> is an inline box that
+   pushes the strip down out of its 36px. */
+.sprite {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+#bar[hidden],
+#empty[hidden] {
+  display: none;
+}
+
+#bar {
+  display: flex;
+  height: 36px;
+  box-sizing: border-box;
+  border-bottom: 1px solid var(--rule);
+}
+
+#tabs {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  padding: 4px 6px 0;
+  gap: 2px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+#tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.tab {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex: 0 1 200px;
+  min-width: 96px;
+  padding: 0 6px 0 10px;
+  border-radius: 7px 7px 0 0;
+  background: var(--tab);
+  color: var(--text);
+}
+
+.tab:hover {
+  background: var(--tab-hover);
+}
+
+.tab[aria-selected="true"] {
+  background: var(--tab-active);
+  color: var(--text-active);
+  box-shadow: inset 0 2px 0 var(--viewer);
+}
+
+/* The viewer's own logo, shrunk to fit; its colour also marks the active
+   tab's top edge. */
+.mark {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+}
+
+/* What the viewers' headers held that the strip keeps: the theme. */
+#actions {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 2px;
+  padding: 0 8px 0 12px;
+}
+
+.action {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 26px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text);
+  font: 12px system-ui, -apple-system, "Segoe UI", sans-serif;
+  white-space: nowrap;
+}
+
+.action:hover {
+  background: var(--tab-hover);
+  color: var(--text-active);
+}
+
+.icon {
+  width: 15px;
+  height: 15px;
+}
+
+.name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.close {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: inherit;
+  font: 14px/18px system-ui, sans-serif;
+  opacity: 0;
+}
+
+.tab:hover .close,
+.tab[aria-selected="true"] .close {
+  opacity: 0.7;
+}
+
+.close:hover {
+  opacity: 1;
+  background: var(--tab-hover);
+}
+
+/* Unsaved changes: a dot where the × goes, on every such tab, until the
+   pointer is on it. */
+.tab.dirty .close {
+  opacity: 0.7;
+}
+
+.tab.dirty .close:not(:hover) {
+  font-size: 0;
+}
+
+.tab.dirty .close:not(:hover)::after {
+  content: "●";
+  font-size: 10px;
+}
+
+/* No document open: the whole window, with the mark and the way in. */
+#empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding-bottom: 8vh;
+  box-sizing: border-box;
+  color: var(--text);
+  text-align: center;
+  user-select: none;
+}
+
+#empty img {
+  margin-bottom: 18px;
+  opacity: 0.9;
+}
+
+#empty h1 {
+  margin: 0 0 10px;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-active);
+}
+
+#empty p {
+  margin: 0 0 14px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+#open {
+  padding: 6px 16px;
+  border: 1px solid var(--button-border);
+  border-radius: 6px;
+  background: var(--button);
+  color: var(--text-active);
+  font: 13px system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+#open:hover {
+  border-color: var(--muted);
+}
+
+kbd {
+  margin-left: 6px;
+  color: var(--muted);
+  font: 12px system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+.new {
+  color: var(--muted);
+}
+
+.new a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+
+.new a:hover {
+  color: var(--text-active);
+}

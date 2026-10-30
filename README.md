@@ -154,7 +154,7 @@ touching.
 
 This repo also builds **ViewHippo**, a desktop app: a thin Electron shell
 (`electron/`) hosting the herd's viewers, JsonHippo, YamlHippo and MarkHippo, in
-one window per document. It has no viewer logic of its own. The viewers it hosts
+one window of tabs. It has no viewer logic of its own. The viewers it hosts
 are exactly the ones published here, `website/<viewer>/`, minus their `about/`
 pages. A viewer joins the app when its `make site` lands it here, and a viewer
 that isn't here yet is simply switched off.

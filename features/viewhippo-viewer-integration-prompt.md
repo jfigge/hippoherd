@@ -13,8 +13,9 @@ and to publish it there.
 ## How ViewHippo works (read this before changing anything)
 
 - ViewHippo is a thin Electron shell in the **hippoherd** repository (`electron/`,
-  usually checked out at `../hippoherd`). It owns **no viewer logic**. It opens one
-  window per document and routes each file to the viewer that owns its extension.
+  usually checked out at `../hippoherd`). It owns **no viewer logic**. It shows
+  each document in one window, as a tab or on its own, and routes each file to the
+  viewer that owns its extension. Each document is still its own page.
   It provides Open / Save / Save As / Open Recent, an app-wide Appearance menu, and
   JSON ↔ YAML conversion.
 - **This repository stays the source of truth.** ViewHippo packages exactly what
@@ -23,7 +24,7 @@ and to publish it there.
   generated page about the viewer. Nothing is fetched at build time. What's
   committed in hippoherd is what ships.
 - In ViewHippo, the viewer's page loads **unchanged**, as
-  `viewhippo://<id>/index.html?desktop=<app version>&host=viewhippo`:
+  `viewhippo://<id>/index.html?desktop=<app version>&host=viewhippo&chrome=<tabs|full>`:
   - Each viewer gets its own origin, and so its own `localStorage`.
   - The renderer is sandboxed, with **no preload and no Node**.
   - **Every network request is cancelled.**
@@ -41,7 +42,7 @@ and to publish it there.
 
 | Viewer | id (`website/<id>/`) | Extensions it opens | `formats` | Data model |
 |---|---|---|---|---|
-| JsonHippo | `jsonhippo` | `.json` | `{ reads: ["json"], writes: ["json"] }` | tree |
+| JsonHippo | `jsonhippo` | `.json` `.jsn` `.geojson` `.jsonld` | `{ reads: ["json"], writes: ["json"] }` | tree |
 | YamlHippo | `yamlhippo` | `.yaml` `.yml` | `{ reads: ["yaml", "json"], writes: ["yaml", "json"] }` | tree |
 | MarkHippo | `markhippo` | `.md` `.markdown` `.mdown` `.mkd` `.mkdn` | `{ reads: ["markdown"], writes: ["markdown"] }` | document |
 
@@ -90,6 +91,7 @@ window.hippoViewer = {
   getText() {},             // the document's current text, exactly as Save should write it
   exportAs(format) {},      // → { text, dropped: [{ what, where }] }
   setTheme(mode) {},        // optional: "system" | "light" | "dark"
+  showAbout() {},           // optional: open the viewer's About dialog
 };
 window.dispatchEvent(new Event("hippoviewer-ready"));
 ```
@@ -136,6 +138,11 @@ Per-format duties:
 - **MarkHippo:** `reads`/`writes` `["markdown"]`. `exportAs("markdown")` returns
   `{ text: getText(), dropped: [] }`. ViewHippo offers no conversion for
   Markdown; HTML/PDF exports stay MarkHippo's own feature.
+
+### 3b. Host chrome
+With tabs on, ViewHippo's tab strip shows the viewer's logo and its header's Hippo
+Herd link, theme control and GitHub link, so the viewer hides those itself. Follow
+this viewer's section of `../hippoherd/features/viewhippo-host-chrome-prompts.md`.
 
 ### 4. Desktop-only features
 ViewHippo gives the page **no bridge of its own** (no preload). If this viewer has

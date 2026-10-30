@@ -26,7 +26,7 @@
 
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import router from "../electron/router.js";
@@ -34,7 +34,7 @@ import policy from "../electron/policy.js";
 import debug from "../electron/debug.js";
 
 const { viewerForFile, conversionTargets, convertibleViewers, conversionRoute, openFilters, renameFor, fileAssociations } = router;
-const { viewerUrl, classifyNavigation, resolveAppFile } = policy;
+const { viewerUrl, classifyNavigation, resolveAppFile, findPlugins } = policy;
 const { viewerOfChange, syntaxErrors } = debug;
 
 const BOTH = ["jsonhippo", "yamlhippo"];
@@ -44,15 +44,15 @@ const JSON_AND_MARK = ["jsonhippo", "markhippo"];
 
 describe("routing", () => {
   test("files go to the viewer that owns their extension, case-insensitively", () => {
-    assert.equal(viewerForFile("/a/b.json").id, "jsonhippo");
-    assert.equal(viewerForFile("/a/B.JSON").id, "jsonhippo");
-    assert.equal(viewerForFile("/a/b.yaml").id, "yamlhippo");
-    assert.equal(viewerForFile("/a/b.yml").id, "yamlhippo");
+    for (const ext of ["json", "JSON", "jsn", "Jsn", "geojson", "jsonld"]) assert.equal(viewerForFile(`/a/b.${ext}`).id, "jsonhippo", ext);
+    for (const ext of ["yaml", "yml", "YAML", "Yml"]) assert.equal(viewerForFile(`/a/b.${ext}`).id, "yamlhippo", ext);
     for (const ext of ["md", "markdown", "mdown", "mkd", "mkdn", "MD"]) assert.equal(viewerForFile(`/a/b.${ext}`).id, "markhippo", ext);
   });
 
   test("anything else has no viewer", () => {
     assert.equal(viewerForFile("/a/b.txt"), null);
+    assert.equal(viewerForFile("/a/b.jsonc"), null); // comments: not JSON
+    assert.equal(viewerForFile("/a/b.json5"), null);
     assert.equal(viewerForFile("/a/json"), null);
     assert.equal(viewerForFile("/a/b.json.bak"), null);
   });
@@ -77,8 +77,13 @@ describe("routing", () => {
   });
 
   test("the open dialog offers what this build opens", () => {
-    assert.deepEqual(openFilters(JSON_ONLY), [{ name: "JSON Documents", extensions: ["json"] }]);
-    assert.deepEqual(openFilters(BOTH)[0], { name: "All Supported Documents", extensions: ["json", "yaml", "yml"] });
+    const JSON_EXTS = ["json", "jsn", "geojson", "jsonld"];
+    assert.deepEqual(openFilters(JSON_ONLY), [{ name: "JSON Documents", extensions: JSON_EXTS }]);
+    assert.deepEqual(openFilters(BOTH)[0], { name: "All Supported Documents", extensions: [...JSON_EXTS, "yaml", "yml"] });
+    // Known types only: no "All Files" filter, ever.
+    for (const set of [JSON_ONLY, BOTH, ALL]) {
+      for (const f of openFilters(set)) assert.ok(!f.extensions.includes("*"), JSON.stringify(f));
+    }
   });
 
   test("a converted document is named after its source", () => {
@@ -89,8 +94,8 @@ describe("routing", () => {
   });
 
   test("the OS is never offered .yaml before YamlHippo is in the build", () => {
-    assert.deepEqual(fileAssociations(JSON_ONLY).flatMap((a) => a.ext), ["json"]);
-    assert.deepEqual(fileAssociations(BOTH).flatMap((a) => a.ext), ["json", "yaml", "yml"]);
+    assert.deepEqual(fileAssociations(JSON_ONLY).flatMap((a) => a.ext), ["json", "jsn", "geojson", "jsonld"]);
+    assert.deepEqual(fileAssociations(BOTH).flatMap((a) => a.ext), ["json", "jsn", "geojson", "jsonld", "yaml", "yml"]);
     assert.deepEqual(fileAssociations(JSON_AND_MARK).map((a) => a.name), ["JSON Document", "Markdown Document"]);
   });
 });
@@ -98,7 +103,9 @@ describe("routing", () => {
 describe("classifyNavigation", () => {
   test("the viewer's own page loads", () => {
     assert.equal(classifyNavigation(viewerUrl("jsonhippo", "1.2.3"), "jsonhippo"), "app");
-    assert.equal(new URL(viewerUrl("jsonhippo", "1.2.3")).search, "?desktop=1.2.3&host=viewhippo");
+    assert.equal(new URL(viewerUrl("jsonhippo", "1.2.3")).search, "?desktop=1.2.3&host=viewhippo&chrome=full");
+    assert.equal(new URL(viewerUrl("jsonhippo", "1.2.3", "tabs")).searchParams.get("chrome"), "tabs");
+    assert.equal(new URL(viewerUrl("jsonhippo", "1.2.3", "bogus")).searchParams.get("chrome"), "full");
     assert.equal(classifyNavigation("viewhippo://jsonhippo/", "jsonhippo"), "app");
     assert.equal(classifyNavigation("viewhippo://jsonhippo/index.html#tree", "jsonhippo"), "app");
   });
@@ -161,6 +168,64 @@ describe("resolveAppFile", () => {
     assert.equal(resolveAppFile("viewhippo://jsonhippo/about/index.html", web, BOTH), null);
     assert.equal(resolveAppFile("viewhippo://jsonhippo/docs/about.html", web, BOTH), at("jsonhippo", "docs", "about.html"));
   });
+
+  const plugins = path.resolve("/home/user/plugins");
+
+  test("/@plugins/ is the viewer's own plugins folder, and only a plugin's kinds of file", () => {
+    const resolve = (url) => resolveAppFile(url, web, BOTH, plugins);
+    assert.equal(resolve("viewhippo://jsonhippo/@plugins/sort.js"), path.join(plugins, "jsonhippo", "sort.js"));
+    assert.equal(resolve("viewhippo://jsonhippo/@plugins/My%20Kit/index.mjs"), path.join(plugins, "jsonhippo", "My Kit", "index.mjs"));
+    assert.equal(resolve("viewhippo://yamlhippo/@plugins/kit/look.CSS"), path.join(plugins, "yamlhippo", "kit", "look.CSS"));
+    assert.equal(resolve("viewhippo://jsonhippo/@plugins/notes.md"), null);
+    assert.equal(resolve("viewhippo://jsonhippo/@plugins/"), null);
+  });
+
+  test("a plugin URL reaches neither another viewer's plugins nor anything outside", () => {
+    const resolve = (url) => resolveAppFile(url, web, BOTH, plugins);
+    for (const url of [
+      "viewhippo://jsonhippo/@plugins/../yamlhippo/x.js",
+      "viewhippo://jsonhippo/@plugins/%2e%2e/yamlhippo/x.js",
+      "viewhippo://jsonhippo/@plugins/%2e%2e%2f%2e%2e%2fsecret.js",
+      "viewhippo://jsonhippo/@plugins/a%5cb.js",
+    ]) {
+      // A literal ../ is gone before the handler sees it: the URL's own path
+      // climbs out of /@plugins/, into the viewer's directory.
+      const file = resolve(url);
+      const safe = [path.join(plugins, "jsonhippo"), at("jsonhippo")].some((root) => file?.startsWith(root + path.sep));
+      assert.ok(file === null || safe, `${url} → ${file}`);
+    }
+    assert.equal(resolve("viewhippo://jsonhippo/@plugins/%2e%2e%2fyamlhippo%2fx.js"), null);
+  });
+
+  test("without a plugins folder, /@plugins/ serves nothing", () => {
+    assert.equal(resolveAppFile("viewhippo://jsonhippo/@plugins/sort.js", web, BOTH), null);
+  });
+});
+
+describe("findPlugins", () => {
+  test("each .js/.mjs file, and each folder with an index, as URLs on the viewer's origin", async () => {
+    const dir = mkdtempSync(path.join(tmpdir(), "viewhippo-plugins-"));
+    try {
+      writeFileSync(path.join(dir, "b.mjs"), "");
+      writeFileSync(path.join(dir, "a b.js"), "");
+      writeFileSync(path.join(dir, "readme.md"), "");
+      writeFileSync(path.join(dir, ".hidden.js"), "");
+      mkdirSync(path.join(dir, "kit"));
+      writeFileSync(path.join(dir, "kit", "index.mjs"), "");
+      mkdirSync(path.join(dir, "empty"));
+      assert.deepEqual(await findPlugins(dir, "markhippo"), [
+        { name: "a b.js", url: "viewhippo://markhippo/@plugins/a%20b.js" },
+        { name: "b.mjs", url: "viewhippo://markhippo/@plugins/b.mjs" },
+        { name: "kit", url: "viewhippo://markhippo/@plugins/kit/index.mjs" },
+      ]);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  test("a folder that is not there yet has none", async () => {
+    assert.deepEqual(await findPlugins(path.join(tmpdir(), "viewhippo-no-such-folder"), "markhippo"), []);
+  });
 });
 
 describe("packaging", () => {
@@ -172,6 +237,12 @@ describe("packaging", () => {
     const local = [...main.matchAll(/require\("\.\/([^"]+)"\)/g)].map((m) => `${m[1]}.js`);
     assert.ok(local.length > 0);
     for (const file of local) assert.ok(build.files.includes(file), `${file} is not in build.files`);
+  });
+
+  test("the viewers' preload is packaged", () => {
+    const main = readFileSync(new URL("../electron/main.js", import.meta.url), "utf8");
+    assert.match(main, /preload: path\.join\(__dirname, "host-preload\.js"\)/);
+    assert.ok(build.files.includes("host-preload.js"));
   });
 
   test("the six direct-download installers are the ones release.yml expects", () => {

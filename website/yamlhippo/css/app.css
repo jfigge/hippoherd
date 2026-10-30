@@ -247,6 +247,22 @@ textarea {
   text-overflow: ellipsis;
 }
 
+/* Inside ViewHippo with its tab strip showing, the strip carries everything in
+   this row: the logo on the tab, Hippo Herd, the theme and GitHub at its right
+   (theme.js sets the attribute; hippoherd's brief, "Host chrome"). The tagline
+   goes with them. */
+[data-viewhippo-chrome="tabs"] .yh-header {
+  display: none;
+}
+
+/* Inside ViewHippo, with or without its tab strip, the app's File menu opens
+   documents. A file loaded here would replace the document without the app
+   knowing, and its Save would write it over the file that was opened. The
+   diff panes keep theirs: what they load is only compared. */
+[data-viewhippo-chrome] #yh-panel-text [data-action="open"] {
+  display: none;
+}
+
 .yh-header-actions {
   display: flex;
   gap: 6px;

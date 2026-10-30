@@ -86,10 +86,10 @@
     <button type="button" class="mh-btn mh-btn--ghost" id="mh-plugins-open" aria-haspopup="dialog" title="The plugins MarkHippo is running">
       <svg class="mh-icon" aria-hidden="true"><use href="#mh-i-plugin"/></svg><span>Plugins</span>
     </button>
-    <a class="mh-btn mh-btn--ghost" href="docs/" title="User guide">
+    <a class="mh-btn mh-btn--ghost" id="mh-guide-link" href="docs/" title="User guide">
       <svg class="mh-icon" aria-hidden="true"><use href="#mh-i-guide"/></svg><span>Guide</span>
     </a>
-    <a class="mh-btn mh-btn--ghost" href="https://hippoherd.com/" title="Hippo Herd">
+    <a class="mh-btn mh-btn--ghost" id="mh-herd-link" href="https://hippoherd.com/" title="Hippo Herd">
       <svg class="mh-icon" aria-hidden="true"><use href="#mh-i-home"/></svg><span>Hippo Herd</span>
     </a>
     <button type="button" class="mh-btn mh-btn--ghost" id="mh-themes-open" aria-haspopup="dialog" title="Palettes, and your own themes">
@@ -99,7 +99,7 @@
       <svg class="mh-icon" aria-hidden="true"><use href="#mh-i-system"/></svg>
       <span class="mh-theme-label">System</span>
     </button>
-    <a class="mh-btn mh-btn--ghost" href="https://github.com/jfigge/markhippo" rel="noopener noreferrer">
+    <a class="mh-btn mh-btn--ghost" id="mh-github-link" href="https://github.com/jfigge/markhippo" rel="noopener noreferrer">
       <svg class="mh-icon" aria-hidden="true"><use href="#mh-i-github"/></svg><span>GitHub</span>
     </a>
   </div>
@@ -114,7 +114,7 @@
   <p class="mh-about-desc">CommonMark and GitHub's extensions, with math and diagrams, rendered by MarkHippo's own parser. Nothing you write leaves this machine.</p>
   <p class="mh-about-links">
     <a href="https://hippoherd.com/" target="_blank" rel="noopener noreferrer">Hippo Herd</a>
-    <a href="docs/" target="_blank" rel="noopener noreferrer">User guide</a>
+    <a id="mh-about-guide" href="docs/" target="_blank" rel="noopener noreferrer">User guide</a>
     <a href="https://github.com/jfigge/markhippo" target="_blank" rel="noopener noreferrer">Source on GitHub</a>
   </p>
   <p class="mh-about-version" id="mh-about-version" hidden></p>
@@ -128,10 +128,11 @@
 </dialog>
 
 <!-- The plugins, listed from the running host. On the web the set is the
-     bundled one; the desktop app adds the user's own (js/desktop.js). -->
+     bundled one; the desktop app adds the user's own (js/desktop.js), and so
+     does ViewHippo (its bridge, js/viewhippo.js). -->
 <dialog class="mh-plugins" id="mh-plugins" aria-labelledby="mh-plugins-title">
   <h2 class="mh-plugins-title" id="mh-plugins-title">Plugins</h2>
-  <p class="mh-plugins-intro">Everything MarkHippo understands comes from a plugin, CommonMark included. The web app runs the plugins bundled with it; the desktop app also loads your own.</p>
+  <p class="mh-plugins-intro">Everything MarkHippo understands comes from a plugin, CommonMark included. The web app runs the plugins bundled with it; the desktop app, and ViewHippo, also load your own.</p>
   <ul class="mh-plugin-list" id="mh-plugin-list"></ul>
   <div class="mh-plugins-desktop" id="mh-plugins-desktop" hidden>
     <p>To add a plugin, put its <code>.js</code> file, or its folder, in your plugins folder, then reload.</p>

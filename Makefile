@@ -83,9 +83,17 @@ MAS_DEV_PROFILE := $(ELECTRON_DIR)/packaging/development.provisionprofile
 MAS_ENTITLEMENTS         := $(DESKTOP_DIR)/packaging/entitlements.mas.plist
 MAS_ENTITLEMENTS_INHERIT := $(DESKTOP_DIR)/packaging/entitlements.mas.inherit.plist
 
+# ── The viewers' own repos ────────────────────────────────────────────────────
+# Each viewer is published into website/<id>/ by `make site` in its own repo
+# (the README's website/jsonhippo/ section). `make site` here runs that in each
+# one, checked out beside this repo, and points it at this checkout. VIEWERS
+# picks some: make site VIEWERS=markhippo.
+HERD_DIR ?= $(abspath $(WORKSPACE)/..)
+VIEWERS  ?= jsonhippo yamlhippo markhippo
+
 .DEFAULT_GOAL := help
 
-.PHONY: help test desktop debug desktop-setup desktop-pack dist-mac dist-linux dist-win \
+.PHONY: help site test desktop debug desktop-setup desktop-pack dist-mac dist-linux dist-win \
         dist-mas mas-dev icons sync-mac clean
 
 help:
@@ -93,6 +101,11 @@ help:
 	@echo "  Hippo Herd — the site, and ViewHippo, the desktop app hosting the herd's viewers"
 	@echo ""
 	@echo "  The site needs no make: see the README (node scripts/build-site.mjs, …)."
+	@echo ""
+	@echo "  Viewers:"
+	@echo "    site          make site in each viewer's repo beside this one, publishing"
+	@echo "                  it into website/<id>/ (VIEWERS=…, default: all three;"
+	@echo "                  HERD_DIR=… where the repos are, default: ..)"
 	@echo ""
 	@echo "  Desktop (Electron):"
 	@echo "    test          Unit tests for the shell's routing and policy (node --test)"
@@ -125,6 +138,16 @@ test:
 clean:
 	rm -rf "$(BUILD_DIR)"
 
+# Each viewer's own `make site`: its lint and tests, then its dist/ rsynced
+# into website/<id>/ here. The first that fails stops the rest.
+site:
+	@for v in $(VIEWERS); do \
+		dir="$(HERD_DIR)/$$v"; \
+		test -f "$$dir/Makefile" || { echo "No $$v checkout at $$dir — set HERD_DIR=…"; exit 1; }; \
+		echo "── $$v"; \
+		$(MAKE) -C "$$dir" site HIPPOHERD="$(WORKSPACE)" || exit 1; \
+	done
+
 # ── Desktop (Electron) ───────────────────────────────────────────────────────
 
 # npm ci only re-runs when the lockfile changes; the touch stops make from
@@ -141,18 +164,18 @@ desktop: electron/node_modules
 	cd "$(ELECTRON_DIR)" && VIEWHIPPO_WEB_DIR="$(WEB_DIR)" npx electron . $(ARGS)
 
 # `desktop` for debugging (electron/debug.js has the details):
-#   * DevTools open in every window, docked per DEVTOOLS (right, bottom,
-#     undocked, detach, or none), and each viewer's console echoed here;
+#   * DevTools open for every document, in a window of its own (DEVTOOLS=none
+#     to skip them), and each viewer's console echoed here;
 #   * the main process's inspector on INSPECT, for VS Code's "Attach" or
 #     chrome://inspect;
 #   * hot reload: a change under website/<id>/ (a viewer's `make site`)
-#     reloads that viewer's windows with their documents, and an edit to
+#     reloads that viewer's documents, keeping their text, and an edit to
 #     electron/*.js restarts the shell, which reopens the documents, unsaved
 #     edits included.
 # The loop is the restart: the shell exits with 75 to be run again (debug.js
 # RESTART_EXIT_CODE), and any other exit, ⌘Q or Ctrl-C included, ends it.
 INSPECT  ?= 9229
-DEVTOOLS ?= right
+DEVTOOLS ?= detach
 debug: electron/node_modules
 	@cd "$(ELECTRON_DIR)" && while :; do \
 		VIEWHIPPO_WEB_DIR="$(WEB_DIR)" VIEWHIPPO_DEBUG=1 VIEWHIPPO_DEVTOOLS="$(DEVTOOLS)" \

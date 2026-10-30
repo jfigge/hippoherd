@@ -57,6 +57,7 @@ import { EditorView } from "./editor-view.js";
 import { PreviewView } from "./preview-view.js";
 import { StatusBar } from "./status-bar.js";
 import { SAMPLE } from "./sample.js";
+import { host, installHippoViewer } from "./viewhippo.js";
 
 const STORE = {
   document: "markhippo.document",
@@ -68,12 +69,27 @@ const STORE = {
 
 const $ = (id) => document.getElementById(id);
 
+// Inside ViewHippo, the herd's desktop app (hippoherd's
+// features/viewhippo-app-build-brief.md). The app owns the document's file:
+// it opens and saves through window.hippoViewer (viewhippo.js), and keeps a
+// document per tab. So the page keeps none in the browser — one tab's would
+// turn up in the next — and leaves Open and Save to the app's File menu.
+const hosted = new URLSearchParams(window.location.search).get("host") === "viewhippo";
+const GUIDE_URL = "https://hippoherd.com/markhippo/docs/";
+
 const storage = {
   get(key) {
     try {
       return window.localStorage.getItem(key);
     } catch {
       return null;
+    }
+  },
+  remove(key) {
+    try {
+      window.localStorage.removeItem(key);
+    } catch {
+      // Storage blocked: there is nothing to remove.
     }
   },
   // Answers whether it was kept.
@@ -104,9 +120,13 @@ function loadDisabled() {
 
 let disabled = loadDisabled();
 
+// What saves exports, prints, makes PDFs and keeps the user's plugins
+// folder: MarkHippo's own desktop app, or ViewHippo's bridge; null on the web.
+const shell = desktop ?? host;
+
 // The desktop app's plugins, from the user's own folder: [{ name, plugin }]
 // or, for one that would not load, [{ name, error }]. None on the web.
-const userPlugins = await loadUserPlugins();
+const userPlugins = await loadUserPlugins(shell);
 // Plugins that would not install, with why (a user's plugin that throws in
 // setup, say, or uses an id already taken).
 let pluginErrors = new Map();
@@ -120,7 +140,11 @@ function createHost() {
   const errors = new Map();
   const onError = (plugin, err) => errors.set(plugin, err?.message ?? String(err));
   let host = createMarkHippo({ plugins, onError });
-  if (errors.size) host = createMarkHippo({ plugins: plugins.filter((p) => !errors.has(p)), onError });
+  // Again until none fails: one may fail only for want of one left out.
+  for (let failed = 0; errors.size > failed; ) {
+    failed = errors.size;
+    host = createMarkHippo({ plugins: plugins.filter((p) => !errors.has(p)), onError });
+  }
   pluginErrors = errors;
   return host;
 }
@@ -141,7 +165,7 @@ const EXPORT_OPTIONS = { html: true, safe: true, headingIds: true };
 let ast = null;
 let parsedText = null;
 let renderedText = null;
-let filename = storage.get(STORE.filename) || "untitled.md";
+let filename = (!hosted && storage.get(STORE.filename)) || "untitled.md";
 // The desktop app's document: its file (null while untitled, and always on
 // the web), and the text last opened or saved, against which an edit is an
 // unsaved change.
@@ -188,6 +212,8 @@ const editor = new EditorView($("mh-source"), {
     scheduleParse();
     scheduleRender();
     showDirty();
+    // ViewHippo compares the text with the saved text itself.
+    host?.changed();
   },
   onCursor: (pos) => status.cursor(pos),
 });
@@ -202,10 +228,17 @@ const scheduleRender = debounce(render, RENDER_DELAY_MS);
 // when it has changed: with pictures in it, a write can be megabytes.
 let storedText = storage.get(STORE.document);
 function store() {
+  if (hosted) return;
   const text = editor.value;
   if (text === storedText) return;
   const kept = storage.set(STORE.document, text);
   if (kept) storedText = text;
+  // In the desktop app a reload takes the kept text as the open file's:
+  // an older one, perhaps another file's, must not stand in for it.
+  else if (desktop) {
+    storage.remove(STORE.document);
+    storedText = null;
+  }
   // A document too big for the browser's storage would come back as it
   // last fitted: say so while it is true.
   status.warning(kept ? "" : "Too big to keep in this browser: Save to keep a copy");
@@ -323,7 +356,7 @@ function load(text, name) {
 
 function showName(name) {
   filename = name;
-  storage.set(STORE.filename, name);
+  if (!hosted) storage.set(STORE.filename, name);
   $("mh-filename").textContent = name;
   $("mh-filename").title = docPath ?? "The document's file name";
 }
@@ -333,10 +366,11 @@ async function openFile(file) {
   // The desktop app opens the file itself, in place, so Save writes it back.
   if (desktop) {
     const path = desktop.pathForFile(file);
-    if (path) {
-      desktop.open(path);
-      return;
-    }
+    if (path) desktop.open(path);
+    // Not a file on disk (dragged from another app): loading it here would
+    // leave Save writing to the open document's file.
+    else status.note(`${file.name} is not a file on disk: save it, then open it`, { warn: true });
+    return;
   }
   load(await file.text(), file.name);
 }
@@ -354,10 +388,10 @@ function showDirty() {
 // The file name without its markdown extension, for exports.
 const baseName = () => filename.replace(/\.(md|markdown|mdown|mkd|txt)$/i, "") || "untitled";
 
-// A file for the user: downloaded, or in the desktop app saved where they
-// choose.
+// A file for the user: downloaded, or in the desktop app (or ViewHippo)
+// saved where they choose.
 function download(text, name, type) {
-  if (desktop) return desktop.saveExport(name, text);
+  if (shell) return shell.saveExport(name, text);
   const blob = new Blob([text], { type: `${type};charset=utf-8` });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
@@ -380,7 +414,13 @@ function save() {
 // chooses). Answers whether it saved.
 async function saveInPlace({ as = false } = {}) {
   const text = editor.value;
-  const saved = await desktop.save(text, { as });
+  let saved;
+  try {
+    saved = await desktop.save(text, { as });
+  } catch (err) {
+    status.note(`Not saved: ${err?.message ?? err}`, { warn: true });
+    return false;
+  }
   if (!saved) return false;
   const moved = saved.path !== docPath;
   docPath = saved.path;
@@ -418,9 +458,11 @@ document.addEventListener("click", (e) => {
 });
 
 document.addEventListener("keydown", (e) => {
-  // The desktop app's menu has these shortcuts, and runs them itself.
+  // The desktop app's menu has these shortcuts, and runs them itself; so does
+  // ViewHippo's, for Save and Open (Print stays the page's).
   if (desktop || !(e.ctrlKey || e.metaKey) || e.altKey || e.shiftKey) return;
   const key = e.key.toLowerCase();
+  if (hosted && key !== "p") return;
   if (key === "s") {
     e.preventDefault();
     save();
@@ -461,7 +503,10 @@ document.addEventListener("drop", (e) => {
   const files = [...e.dataTransfer.files];
   const images = files.filter(isImage);
   if (!images.length) {
-    openFile(files[0]);
+    // In ViewHippo a document is opened by the app, which then knows its
+    // file: loaded here, Save would write it over the open one.
+    if (hosted) status.note(`To open ${files[0].name}, use File → Open`, { warn: true });
+    else openFile(files[0]);
     return;
   }
   const onEditor = e.target instanceof Node && $("mh-source-scroll").contains(e.target);
@@ -496,7 +541,14 @@ async function addImages(files, at) {
     try {
       // In a saved desktop document the picture is a file beside it;
       // otherwise (or if that fails) it goes in the document.
-      const beside = docPath ? await saveBeside(file) : null;
+      let beside = null;
+      if (docPath) {
+        try {
+          beside = await saveBeside(file);
+        } catch (err) {
+          console.warn("MarkHippo: the picture could not be saved beside the document:", err);
+        }
+      }
       image = beside ? { path: beside } : await importImage(file);
     } catch (err) {
       status.note(err.message, { warn: true });
@@ -569,6 +621,9 @@ const exporter = new Exporter({
     printer: () => desktop.print(),
     clipboard: (html, text) => desktop.copy(html, text),
   }),
+  // ViewHippo prints; copying is the browser's, and its documents have no
+  // pictures beside them that the page can reach.
+  ...(!desktop && host && { printer: () => host.print() }),
 });
 
 // The desktop document's own pictures, into an export as data: URLs: the
@@ -598,7 +653,7 @@ function documentTitle() {
 
 const EXPORTS = {
   print: () => exporter.print(),
-  pdf: () => exporter.pdf(() => desktop.printToPDF(`${baseName()}.pdf`)),
+  pdf: () => exporter.pdf(() => shell.printToPDF(`${baseName()}.pdf`)),
   html: async () => download(await exporter.html(), `${baseName()}.html`, "text/html"),
   rtf: async () => download(await exporter.rtf(), `${baseName()}.rtf`, "application/rtf"),
   text: () => download(exporter.text(), `${baseName()}.txt`, "text/plain"),
@@ -772,19 +827,35 @@ $("mh-plugins-open").addEventListener("click", () => {
   $("mh-plugins").showModal();
 });
 
-// The desktop app: the folder the user's plugins go in, and picking up
-// what was added there (the page loads them as it starts).
-if (desktop) {
+// The desktop app (or ViewHippo): the folder the user's plugins go in, and
+// picking up what was added there (the page loads them as it starts).
+// ViewHippo reloads the page itself, to hand the document back to it.
+if (shell) {
   $("mh-plugins-desktop").hidden = false;
   $("mh-plugins-folder").addEventListener("click", () =>
-    desktop.openPluginsFolder().catch((err) => status.note(`The plugins folder could not be opened: ${err.message}`, { warn: true })),
+    shell.openPluginsFolder().catch((err) => status.note(`The plugins folder could not be opened: ${err.message}`, { warn: true })),
   );
-  $("mh-plugins-reload").addEventListener("click", () => window.location.reload());
+  $("mh-plugins-reload").addEventListener("click", () => (desktop ? window.location.reload() : host.reload()));
 }
+// ViewHippo makes PDFs too.
+if (!desktop && host) $("mh-export-pdf").hidden = false;
 
 // ── About ──────────────────────────────────────────────────────────────────
 
-$("mh-about-open").addEventListener("click", () => $("mh-about").showModal());
+// From the brand hippo, and in ViewHippo from its Help menu (viewhippo.js).
+function showAbout() {
+  const about = $("mh-about");
+  if (!about.open) about.showModal();
+}
+$("mh-about-open").addEventListener("click", showAbout);
+
+// ViewHippo opens only its own page in its tabs, and links leave for the
+// browser: the guide is on hippoherd.com there, not beside the page.
+if (hosted) {
+  $("mh-guide-link").href = GUIDE_URL;
+  $("mh-guide-link").target = "_blank";
+  $("mh-about-guide").href = GUIDE_URL;
+}
 
 // ── The desktop app ────────────────────────────────────────────────────────
 
@@ -812,10 +883,7 @@ const COMMANDS = {
 // last time; or, a reload, the one in the browser; or, as on the web, the
 // browser's — untitled.
 async function startDesktop() {
-  const start = await desktop.initial();
-  $("mh-export-pdf").hidden = false;
-  $("mh-about-version").textContent = `Version ${start.version} · desktop app`;
-  $("mh-about-version").hidden = false;
+  // Listening before asking: a document opened meanwhile is not missed.
   desktop.onLoad((doc) => {
     docPath = doc.path;
     savedText = doc.text;
@@ -827,6 +895,11 @@ async function startDesktop() {
     if (command.startsWith("export:")) return runExport(command.slice(7));
     return COMMANDS[command]?.();
   });
+  const untitled = storage.get(STORE.document) ?? SAMPLE;
+  const start = await desktop.initial(untitled);
+  $("mh-export-pdf").hidden = false;
+  $("mh-about-version").textContent = `Version ${start.version} · desktop app`;
+  $("mh-about-version").hidden = false;
   const doc = start.document;
   if (doc && start.reload) {
     docPath = doc.path;
@@ -840,10 +913,9 @@ async function startDesktop() {
     showName(doc.name);
     return doc.text;
   }
-  const text = storage.get(STORE.document) ?? SAMPLE;
-  savedText = text;
+  savedText = untitled;
   showName("untitled.md");
-  return text;
+  return untitled;
 }
 
 // ── Start ──────────────────────────────────────────────────────────────────
@@ -853,9 +925,25 @@ themes.apply();
 const split = Number(storage.get(STORE.split));
 if (split) setSplit(split);
 $("mh-filename").textContent = filename;
-editor.setValue(desktop ? await startDesktop() : (storage.get(STORE.document) ?? SAMPLE));
+// ViewHippo starts each new document empty, as New does here; it hands the
+// page a file with hippoViewer.load.
+editor.setValue(desktop ? await startDesktop() : hosted ? "" : (storage.get(STORE.document) ?? SAMPLE));
 render();
 showDirty();
+
+// The API ViewHippo drives the page through. Harmless anywhere else: in a
+// browser tab, or MarkHippo's own desktop app, nothing calls it.
+installHippoViewer({
+  load(text, name) {
+    load(text, name);
+    editor.focus();
+  },
+  get text() {
+    return editor.value;
+  },
+  setTheme: (mode) => themes.setMode(mode),
+  showAbout,
+});
 // Leaving, or hidden (and perhaps never shown again): keep what is there.
 const keep = () => {
   scheduleParse.flush();
