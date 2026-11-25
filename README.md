@@ -135,9 +135,10 @@ jsonhippo's Release workflow publishes them to its GitHub Releases, and the
 daily deploy picks them up like every other hippo's.
 
 `website/duelhippo/` follows the same pattern. Everything in it except
-`about/` is the game's web build, copied in by `make site` in
-[jfigge/duelhippo](https://github.com/jfigge/duelhippo). Its installers come
-from that repo's own GitHub Releases.
+`about/` is the game's web build. That repo's Release workflow commits it here
+on every tag, using a token scoped to this repo; `make site` there does the
+same by hand. Its installers come from
+[jfigge/duelhippo](https://github.com/jfigge/duelhippo)'s own GitHub Releases.
 
 Its entry has two extra fields:
 

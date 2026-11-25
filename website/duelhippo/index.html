@@ -21,8 +21,8 @@
       http-equiv="Content-Security-Policy"
       content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self' ws: wss:; worker-src 'self' blob:"
     />
-    <script type="module" crossorigin src="./assets/index-DU_Vfp3E.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-BSt2gmOC.css">
+    <script type="module" crossorigin src="./assets/index-CbxGfZAj.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-B2ghanps.css">
   </head>
   <body data-mode="classic">
     <div id="view"></div>
@@ -50,6 +50,10 @@
           <span>AMMO</span><b id="hAmmo">300</b><span>BOMBS</span
           ><b id="hBombs">6</b>
         </div>
+        <div class="row hidden" id="hRivalRow">
+          <span id="hRivalLabel">RIVAL</span><b id="hRival">0</b
+          ><span>PLANES</span><b id="hRivalLives">3</b>
+        </div>
         <div class="row hidden" id="hSpeedRow">
           <span>SPEED</span><b id="hSpeed">100%</b>
         </div>
@@ -67,7 +71,7 @@
         <b>A/D</b> rudder<br />
         <b>I</b> invert · <b>M</b> sound · <b>F</b> fullscreen ·
         <b>P</b> pause<br />
-        <b>-/=</b> game speed
+        <b>-/=</b> game speed (one player)
       </div>
       <div class="hint">H controls · P pause</div>
     </div>
@@ -103,6 +107,13 @@
           <button class="mode free" data-start="free">
             <b>Free flight</b
             ><span>Full 3D chase cam, banking turns, radar.</span>
+          </button>
+          <button class="mode online" id="bOnline">
+            <b>Two player</b
+            ><span
+              >Duel a friend or team up, online. Phones, computers and browsers
+              all play together.</span
+            >
           </button>
         </div>
         <div class="keys kk">
@@ -142,13 +153,20 @@
 
     <section id="over" class="ov hidden">
       <div class="box">
-        <h2>Out of planes</h2>
+        <h2 id="oTitle">Out of planes</h2>
         <div class="stats">
           <span>Score<b id="oScore">0</b></span
           ><span>Kills<b id="oKills">0</b></span
-          ><span>Best<b id="oBest">0</b></span>
+          ><span><i id="oThird">Best</i><b id="oBest">0</b></span>
         </div>
-        <div class="modes">
+        <div class="foot hidden" id="overMp">
+          <span id="oNote"></span>
+          <span class="btns"
+            ><button id="oAgain" class="ghost">PLAY AGAIN</button
+            ><button id="oLeave" class="ghost">LEAVE</button></span
+          >
+        </div>
+        <div class="modes" id="overModes">
           <button class="mode" data-start="classic">
             <b>Classic</b><span>Fly again, side-on.</span>
           </button>
@@ -161,7 +179,7 @@
 
     <section id="pause" class="ov hidden">
       <div class="box">
-        <h2>Paused</h2>
+        <h2 id="pTitle">Paused</h2>
         <div class="modes">
           <button class="mode" id="resume">
             <b>Resume</b><span>Back to the skies.</span>
@@ -170,9 +188,69 @@
             <b>Quit</b><span>End this flight.</span>
           </button>
         </div>
-        <div class="foot">
+        <div class="foot" id="pauseFoot">
           <span>Slow the game down while you learn to fly.</span>
           <button id="bSpeedPause" class="ghost">SPEED 100%</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="online" class="ov hidden">
+      <div class="box">
+        <h2>Two player</h2>
+        <div id="onMenu">
+          <div class="modes">
+            <button class="mode" id="onHost">
+              <b>Host a game</b><span>Get a code to give your friend.</span>
+            </button>
+            <button class="mode free" id="onJoin">
+              <b>Join a game</b><span>Type in your friend's code.</span>
+            </button>
+          </div>
+        </div>
+        <div id="onSetup" class="hidden">
+          <div class="pick">
+            <button data-kind="duel">DUEL</button
+            ><button data-kind="coop">CO-OP</button>
+          </div>
+          <p class="pickNote">
+            Duel: one airfield and town each; shoot your friend down. Co-op: fly
+            together against the magenta flyers.
+          </p>
+          <div class="pick">
+            <button data-mmode="classic">CLASSIC</button
+            ><button data-mmode="free">FREE FLIGHT</button>
+          </div>
+          <div class="foot">
+            <span></span
+            ><button id="onCreate" class="ghost">CREATE GAME</button>
+          </div>
+        </div>
+        <div id="onEnter" class="hidden">
+          <input
+            id="onCode"
+            maxlength="4"
+            autocomplete="off"
+            autocapitalize="characters"
+            spellcheck="false"
+            placeholder="CODE"
+            aria-label="Room code"
+          />
+          <div class="foot">
+            <span></span><button id="onGo" class="ghost">JOIN</button>
+          </div>
+        </div>
+        <div id="onRoom" class="hidden">
+          <div id="onCodeShow" class="code"></div>
+          <div class="foot">
+            <span></span><button id="onStart" class="ghost">START</button>
+          </div>
+        </div>
+        <div id="onCount" class="hidden code"></div>
+        <p id="onMsg"></p>
+        <div class="foot">
+          <span id="onLink"></span>
+          <button id="onBack" class="ghost">BACK</button>
         </div>
       </div>
     </section>
