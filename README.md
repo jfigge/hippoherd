@@ -16,7 +16,7 @@ get nothing".
 | Jump Hippo | On-demand SSH tunnels | [jumphippo.com](https://jumphippo.com) | [jfigge/jumphippo](https://github.com/jfigge/jumphippo) |
 | Keep Hippo | Vault-compatible secrets manager | [keephippo.com](https://keephippo.com) | [jfigge/keephippo](https://github.com/jfigge/keephippo) |
 | Maze Hippo | Tap-to-clear arrow puzzle (iOS / Android) | — | [jfigge/mazehippo](https://github.com/jfigge/mazehippo) |
-| Duel Hippo | Biplane dogfighter in 3D — played here, and on the desktop; App Store to come | [hippoherd.com/duelhippo](https://hippoherd.com/duelhippo/) (the game) | [jfigge/duelhippo](https://github.com/jfigge/duelhippo) |
+| Duel Hippo | Biplane dogfighter in 3D, one or two players — played here, and on the desktop | [hippoherd.com/duelhippo](https://hippoherd.com/duelhippo/) (the game) | [jfigge/duelhippo](https://github.com/jfigge/duelhippo) |
 | Mind Hippo | ML runtime written from scratch in Go | — | [jfigge/mindhippo](https://github.com/jfigge/mindhippo) |
 | Roll Hippo | Shake-to-roll dice tray ([App Store](https://apps.apple.com/us/app/roll-hippo/id6798933169); Android to come) | — | [jfigge/rollhippo](https://github.com/jfigge/rollhippo) |
 | JsonHippo | JSON viewer with pinpoint errors — runs here, and on the desktop | [hippoherd.com/jsonhippo](https://hippoherd.com/jsonhippo/) (the app) | [jfigge/jsonhippo](https://github.com/jfigge/jsonhippo) |
@@ -140,12 +140,14 @@ on every tag, using a token scoped to this repo; `make site` there does the
 same by hand. Its installers come from
 [jfigge/duelhippo](https://github.com/jfigge/duelhippo)'s own GitHub Releases.
 
-Its entry has two extra fields:
+Two more things about its entry:
 
 - `launch: "Play"` changes the Launch button to Play, both on its page and as
   the second button on its card.
-- `stores: [APP_STORE_SOON]` shows the App Store badge greyed out with "Coming
-  soon" until the game is listed. When it is, swap it for `APP_STORE(url)`.
+- Its repository also builds an iPhone app, which is not being released for
+  now, so the page doesn't mention it. A store entry with `soon: true` and no
+  `url` is drawn as a greyed-out "Coming soon" badge (`build-site.mjs`), for
+  whenever a listing is on its way.
 
 (`webApp: true`, which JsonHippo carried until it had desktop builds, is still
 supported for a hippo that is a web page and nothing else.)

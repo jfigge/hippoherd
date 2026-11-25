@@ -58,14 +58,13 @@
     // Runs in the browser here; the desktop app is a later milestone, and
     // this flips to true when it ships installers.
     markhippo: { name: "MarkHippo", desktop: false },
-    // A game with desktop installers, played in the browser here, and on its
-    // way to the App Store. `mobile` is what its page says to a phone, which
-    // can play it right now without installing anything.
+    // A game with desktop installers, also played in the browser here.
+    // `mobile` is what its page says to a phone or tablet, which has no
+    // installer to be offered but can play it in the browser.
     duelhippo: {
       name: "Duel Hippo",
       desktop: true,
-      mobile:
-        "You can play Duel Hippo right here in your browser — tap Play at the top. The App Store version is on its way.",
+      mobile: "You can play Duel Hippo right here in your browser — tap Play at the top.",
     },
   };
 

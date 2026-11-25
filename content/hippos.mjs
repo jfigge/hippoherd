@@ -156,18 +156,6 @@ const APP_STORE = (url) => ({
   url: url,
 });
 
-// A phone app that is on its way to the App Store but not listed yet. The
-// page shows the badge greyed out and saying so, with no link: there is no
-// listing to land on, and a link to a store search would be worse than none.
-// Swap it for APP_STORE(url) the day the listing goes live.
-const APP_STORE_SOON = {
-  store: "ios",
-  name: "App Store",
-  sub: "Coming soon to the",
-  url: null,
-  soon: true,
-};
-
 export const HERD = [
   {
     slug: "resthippo",
@@ -846,22 +834,26 @@ export const HERD = [
     // which leaves about/ alone), and this generated page sits inside it at
     // /duelhippo/about/ (`page`). Desktop installers come from its own GitHub
     // Releases through versions.json, as Rest Hippo's do.
+    //
+    // The repository also builds an iPhone app, which is not being released
+    // for now: no iOS in `platforms`, no store, and no mention of it here
+    // until it is.
     app: "/duelhippo/",
     page: "/duelhippo/about/",
     launch: "Play",
 
     domain: null,
     docs: null,
-    stack: "three.js · Electron · Capacitor",
+    stack: "three.js · Electron",
     license: "GPL-3.0",
-    platforms: ["macOS", "Windows", "Linux", "iOS", "Web"],
+    platforms: ["macOS", "Windows", "Linux", "Web"],
     status: "prerelease",
-    stores: [APP_STORE_SOON],
+    stores: [],
 
-    lead: "A biplane dogfighter in the spirit of the 1984 side-scrollers, rebuilt in 3D. Take off, shoot down the magenta flyers, bomb their town and get home before the tank runs dry. Leave the hippos alone.",
+    lead: "A biplane dogfighter in the spirit of the 1984 side-scrollers, rebuilt in 3D. Take off, shoot down the magenta flyers, bomb their town and get home before the tank runs dry — alone, or against a friend online. Leave the hippos alone.",
 
     blurb:
-      "Duel Hippo is a biplane game with one flight model and two ways to fly it. <strong>Classic</strong> is the side-on lane of the 1984 originals: loop, flip onto your back, dive on the town, with a perspective camera that gives the trees, hangars and clouds real depth. <strong>Free flight</strong> is the same aeroplane in full 3D, with banking turns, a chase camera and radar. The plane has weight — it stalls, dives pick up speed, climbs bleed it away — and fuel, ammunition and bombs run out, so every sortie ends with the hardest part: landing it back on your own runway. Play it right here in the browser, or install it on a Mac, a PC or Linux; the iPhone version is on its way to the App Store.",
+      "Duel Hippo is a biplane game with one flight model and two ways to fly it. <strong>Classic</strong> is the side-on lane of the 1984 originals: loop, flip onto your back, dive on the town, with a perspective camera that gives the trees, hangars and clouds real depth. <strong>Free flight</strong> is the same aeroplane in full 3D, with banking turns, a chase camera and radar. The plane has weight — it stalls, dives pick up speed, climbs bleed it away — and fuel, ammunition and bombs run out, so every sortie ends with the hardest part: landing it back on your own runway. Play it right here in the browser, or install it on a Mac, a PC or Linux — and fly it against a friend, or alongside one, in either.",
 
     callout: {
       title: "Landing is the hard part",
@@ -895,9 +887,9 @@ export const HERD = [
         body: "Run the game at 75, 50 or 25 percent while you learn to land. Only game time slows — the flight, the enemies, the bullets — and the setting is remembered between sessions.",
       },
       {
-        icon: "phone",
-        title: "Made for a phone too",
-        body: "A virtual stick, a throttle slider and FIRE, BOMB and FLIP buttons, laid out for a phone held sideways. Let go of the stick and the plane eases itself back to straight and level flight.",
+        icon: "network",
+        title: "Two player, online",
+        body: "Host a game and read your friend a four-letter code. Duel — one airfield and one town each, shoot the other plane down — or fly together against the magenta flyers. The browser and the desktop apps all play each other, connected directly where the network allows.",
       },
       {
         icon: "code",
@@ -907,12 +899,12 @@ export const HERD = [
       {
         icon: "monitor",
         title: "One game, everywhere",
-        body: "The same game runs in your browser here, as a desktop app for macOS, Windows and Linux, and on the iPhone. A test suite flies the original prototype and this build side by side and holds them to the same result, frame by frame.",
+        body: "The same game runs in your browser here and as a desktop app for macOS, Windows and Linux. A test suite flies the original prototype and this build side by side and holds them to the same result, frame by frame.",
       },
       {
         icon: "offline",
         title: "No account, no ads",
-        body: "No sign-in, no advertising and no tracking. The game makes no network requests once it has loaded, and the only thing it keeps is your best score, on your own device.",
+        body: "No sign-in, no advertising and no tracking. A one-player game makes no network requests once it has loaded; a two-player one talks only to the other player, through a match server that keeps nothing. The only thing the game stores is your best score, on your own device.",
       },
     ],
   },
