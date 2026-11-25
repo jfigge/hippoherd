@@ -129,6 +129,22 @@ const HIPPOS = {
       `<circle cx="308" cy="320" r="15" fill="${c}"/>` +
       `<circle cx="256" cy="368" r="15" fill="${c}"/>`,
   },
+  duelhippo: {
+    name: "Duel Hippo",
+    // Hue 122 — the midpoint of the 56-degree arc between Scan at 94 and
+    // Chip at 150, the widest left. See the same value, and the same note, in
+    // content/hippos.mjs.
+    color: "#279B2B",
+    eye: "#279B2B",
+    // A two-bladed propeller across the snout, its blades twisted the way a
+    // real one's are, and tilted so it reads as spinning rather than as a
+    // bar. Copied character for character from jfigge/duelhippo's
+    // src/icons/duelhippo.svg, the drawing of record that the game's desktop,
+    // iPhone and web icons are rasterised from. If that file changes, this
+    // copies it.
+    motif: (c) =>
+      `<g fill="${c}" transform="rotate(-22 256 336)"><path d="M262 343 C288 348 326 354 342 343 C352 336 349 323 337 320 C318 315 288 324 262 329 Z"/><path d="M262 343 C288 348 326 354 342 343 C352 336 349 323 337 320 C318 315 288 324 262 329 Z" transform="rotate(180 256 336)"/><circle cx="256" cy="336" r="19"/></g>`,
+  },
   rollhippo: {
     name: "Roll Hippo",
     color: "#D7263D",

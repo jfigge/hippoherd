@@ -16,6 +16,7 @@ get nothing".
 | Jump Hippo | On-demand SSH tunnels | [jumphippo.com](https://jumphippo.com) | [jfigge/jumphippo](https://github.com/jfigge/jumphippo) |
 | Keep Hippo | Vault-compatible secrets manager | [keephippo.com](https://keephippo.com) | [jfigge/keephippo](https://github.com/jfigge/keephippo) |
 | Maze Hippo | Tap-to-clear arrow puzzle (iOS / Android) | — | [jfigge/mazehippo](https://github.com/jfigge/mazehippo) |
+| Duel Hippo | Biplane dogfighter in 3D — played here, and on the desktop; App Store to come | [hippoherd.com/duelhippo](https://hippoherd.com/duelhippo/) (the game) | [jfigge/duelhippo](https://github.com/jfigge/duelhippo) |
 | Mind Hippo | ML runtime written from scratch in Go | — | [jfigge/mindhippo](https://github.com/jfigge/mindhippo) |
 | Roll Hippo | Shake-to-roll dice tray ([App Store](https://apps.apple.com/us/app/roll-hippo/id6798933169); Android to come) | — | [jfigge/rollhippo](https://github.com/jfigge/rollhippo) |
 | JsonHippo | JSON viewer with pinpoint errors — runs here, and on the desktop | [hippoherd.com/jsonhippo](https://hippoherd.com/jsonhippo/) (the app) | [jfigge/jsonhippo](https://github.com/jfigge/jsonhippo) |
@@ -132,6 +133,18 @@ that excludes `about/`; do not edit those files here. `about/index.html` is
 generated here like any hippo page. The installers are never copied in:
 jsonhippo's Release workflow publishes them to its GitHub Releases, and the
 daily deploy picks them up like every other hippo's.
+
+`website/duelhippo/` follows the same pattern. Everything in it except
+`about/` is the game's web build, copied in by `make site` in
+[jfigge/duelhippo](https://github.com/jfigge/duelhippo). Its installers come
+from that repo's own GitHub Releases.
+
+Its entry has two extra fields:
+
+- `launch: "Play"` changes the Launch button to Play, both on its page and as
+  the second button on its card.
+- `stores: [APP_STORE_SOON]` shows the App Store badge greyed out with "Coming
+  soon" until the game is listed. When it is, swap it for `APP_STORE(url)`.
 
 (`webApp: true`, which JsonHippo carried until it had desktop builds, is still
 supported for a hippo that is a web page and nothing else.)

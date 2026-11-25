@@ -335,7 +335,16 @@ function hippoCard(x) {
   // knows the machine. It ships pointing at the releases page, which is the
   // correct destination when there is nothing better to offer. A phone app's
   // store listing outranks both it and the repo.
-  const action = x.webApp && !x.repoPrivate
+  //
+  // A hippo with a `launch` word (a game) is played here, and that beats a
+  // download on the card: one click and it is running. Its page carries the
+  // installers.
+  const action = x.launch && x.app
+    ? `<a class="btn btn-ghost" href="${h(x.app)}">
+        ${icon("play", 14)}
+        ${h(x.launch)}
+      </a>`
+    : x.webApp && !x.repoPrivate
     ? `<a class="btn btn-ghost" href="${repoUrl(x.slug)}" rel="noopener noreferrer">
         ${GITHUB_MARK}
         View the source
@@ -550,16 +559,23 @@ function preview(x) {
 }
 
 function downloads(x) {
-  const stores = (x.stores || [])
-    .filter((s) => s.url)
-    .map(
-      (s) => `      <a class="store-badge" href="${h(s.url)}" rel="noopener noreferrer">
+  // A listing that is on its way (`soon`, APP_STORE_SOON in content/hippos.mjs)
+  // is drawn as the same badge, greyed and not a link: there is nowhere yet
+  // for it to go.
+  const badgeBody = (s) => `
         ${APPLE_MARK}
         <span>
           <span class="store-badge-sub">${h(s.sub)}</span>
           <span class="store-badge-name">${h(s.name)}</span>
-        </span>
-      </a>`,
+        </span>`;
+  const stores = (x.stores || [])
+    .filter((s) => s.url || s.soon)
+    .map((s) =>
+      s.url
+        ? `      <a class="store-badge" href="${h(s.url)}" rel="noopener noreferrer">${badgeBody(s)}
+      </a>`
+        : `      <span class="store-badge store-badge-soon" aria-disabled="true">${badgeBody(s)}
+      </span>`,
     )
     .join("\n");
 
@@ -568,10 +584,10 @@ function downloads(x) {
   // A store listing that exists but has no URL recorded yet still deserves a
   // sentence — a visitor on a Mac should not have to guess whether searching
   // the App Store is worth their time. See the TODO in content/hippos.mjs.
-  const storeNote =
-    (x.stores || []).length && !stores
-      ? `\n    <p class="dl-note">${h(x.name)} is also published on the <strong>Mac App Store</strong> — search for it there if you'd rather have automatic updates and sandboxed installation.</p>\n`
-      : "";
+  const unlinked = (x.stores || []).find((s) => !s.url && !s.soon);
+  const storeNote = unlinked
+    ? `\n    <p class="dl-note">${h(x.name)} is also published on the <strong>${h(unlinked.name)}</strong> — search for it there if you'd rather have automatic updates and sandboxed installation.</p>\n`
+    : "";
 
   const osCards = ["mac", "win", "linux"]
     .map(
@@ -684,7 +700,7 @@ function links(x) {
   if (x.app) {
     rows.push(`      <a class="link-card" href="${h(x.app)}">
         ${icon("play", 16)}
-        <span>hippoherd.com${h(x.app)}<small>The app, in your browser</small></span>
+        <span>hippoherd.com${h(x.app)}<small>${x.launch ? `${h(x.launch)} it in your browser` : "The app, in your browser"}</small></span>
       </a>`);
   }
   if (x.domain) {
@@ -744,7 +760,7 @@ function herdNav(x) {
 function heroActions(x) {
   const actions = [];
   if (x.app) {
-    actions.push(`<a class="btn btn-primary" href="${h(x.app)}">${icon("play", 16)} Launch ${h(x.name)}</a>`);
+    actions.push(`<a class="btn btn-primary" href="${h(x.app)}">${icon("play", 16)} ${h(x.launch || "Launch")} ${h(x.name)}</a>`);
   }
   actions.push(
     hasDownloads(x)

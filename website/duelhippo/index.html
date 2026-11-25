@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#05060c" />
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
+    <title>Duel Hippo</title>
+    <!--
+  Content-Security-Policy: everything from the app's own origin (app:// in
+  Electron, capacitor://localhost on iOS, the page's host on the web). Inline
+  styles are allowed because the HUD sets element styles from script and the
+  Vite dev server injects CSS that way; ws: is the dev server's HMR socket
+  and its client starts a blob: worker.
+-->
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self' ws: wss:; worker-src 'self' blob:"
+    />
+    <script type="module" crossorigin src="./assets/index-DU_Vfp3E.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-BSt2gmOC.css">
+  </head>
+  <body data-mode="classic">
+    <div id="view"></div>
+
+    <div id="hud" class="off">
+      <div id="card" class="glass">
+        <div class="row big"><span>SCORE</span><b id="hScore">0</b></div>
+        <div class="row">
+          <span>PLANES</span><b id="hLives">3</b><span>KILLS</span
+          ><b id="hKills">0</b>
+        </div>
+        <div class="row">
+          <span>KM/H</span><b id="hSpd">0</b><span>ALT</span><b id="hAlt">0</b>
+        </div>
+        <div class="bar">
+          <span>THR</span><i><u id="bThr"></u></i>
+        </div>
+        <div class="bar">
+          <span>FUEL</span><i><u id="bFuel"></u></i>
+        </div>
+        <div class="bar">
+          <span>DMG</span><i><u id="bDmg"></u></i>
+        </div>
+        <div class="row">
+          <span>AMMO</span><b id="hAmmo">300</b><span>BOMBS</span
+          ><b id="hBombs">6</b>
+        </div>
+        <div class="row hidden" id="hSpeedRow">
+          <span>SPEED</span><b id="hSpeed">100%</b>
+        </div>
+      </div>
+      <canvas id="radar" width="300" height="300"></canvas>
+      <canvas id="strip" width="1120" height="120"></canvas>
+      <div id="msg"></div>
+      <div id="warn"></div>
+      <div id="svc" class="hidden"></div>
+      <div id="ret"></div>
+      <div id="help" class="glass hidden">
+        <b>W/S</b> throttle · <b>↓/↑</b> pull up / push down<br />
+        <b>Space</b> guns · <b>B</b> bomb · <b>C</b> camera<br />
+        Classic: <b>←/→</b> flip · Free: <b>←/→</b> roll,
+        <b>A/D</b> rudder<br />
+        <b>I</b> invert · <b>M</b> sound · <b>F</b> fullscreen ·
+        <b>P</b> pause<br />
+        <b>-/=</b> game speed
+      </div>
+      <div class="hint">H controls · P pause</div>
+    </div>
+
+    <div id="touchui" class="hidden">
+      <div id="stick"><div id="knob"></div></div>
+      <div id="thr">
+        <div id="thrFill"></div>
+        <span>THR</span>
+      </div>
+      <button id="bFire" class="tbtn">FIRE</button>
+      <button id="bBomb" class="tbtn">BOMB</button>
+      <button id="bFlip" class="tbtn">FLIP</button>
+      <button id="bCam" class="mini">CAM</button>
+      <button id="bPause" class="mini">II</button>
+    </div>
+
+    <section id="title" class="ov">
+      <div class="box" id="titleBody">
+        <div class="head">
+          <div id="mascot"></div>
+          <h1>DUEL<br /><em>HIPPO</em></h1>
+        </div>
+        <p>
+          Take off, shoot down the magenta flyers and bomb their town. Then get
+          home and land before the tank runs dry.
+        </p>
+        <div class="modes">
+          <button class="mode" data-start="classic">
+            <b>Classic</b
+            ><span>Side-on like the 1984 original. Loop, flip and dive.</span>
+          </button>
+          <button class="mode free" data-start="free">
+            <b>Free flight</b
+            ><span>Full 3D chase cam, banking turns, radar.</span>
+          </button>
+        </div>
+        <div class="keys kk">
+          <b>W / S</b><span>Throttle up / down</span> <b>↓ / ↑</b
+          ><span>Pull up / push down (I to invert)</span> <b>Space · B</b
+          ><span>Guns · drop a bomb</span> <b>← / →</b
+          ><span>Classic: flip over · Free: roll (A/D rudder)</span> <b>- / =</b
+          ><span>Game speed: slower / faster</span> <b>Landing</b
+          ><span
+            >Line up with the cyan runway, wings level, sink gently, then roll
+            to a stop to refuel</span
+          >
+        </div>
+        <div class="keys tk">
+          <b>Stick</b
+          ><span
+            >Pull back to climb · push to dive (free: sideways to roll) · let go
+            to level out</span
+          >
+          <b>Slider</b><span>Throttle</span> <b>Buttons</b
+          ><span>FIRE · BOMB · FLIP</span> <b>Landing</b
+          ><span
+            >Line up with the cyan runway, wings level, sink gently, then roll
+            to a stop to refuel</span
+          >
+        </div>
+        <p class="rot">Turn your phone sideways for the best view.</p>
+        <div class="foot">
+          <span>Best score <b id="best">0</b></span>
+          <span class="btns"
+            ><button id="bSpeed" class="ghost">SPEED 100%</button
+            ><button id="bMute" class="ghost">SOUND ON</button></span
+          >
+        </div>
+      </div>
+    </section>
+
+    <section id="over" class="ov hidden">
+      <div class="box">
+        <h2>Out of planes</h2>
+        <div class="stats">
+          <span>Score<b id="oScore">0</b></span
+          ><span>Kills<b id="oKills">0</b></span
+          ><span>Best<b id="oBest">0</b></span>
+        </div>
+        <div class="modes">
+          <button class="mode" data-start="classic">
+            <b>Classic</b><span>Fly again, side-on.</span>
+          </button>
+          <button class="mode free" data-start="free">
+            <b>Free flight</b><span>Fly again in full 3D.</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section id="pause" class="ov hidden">
+      <div class="box">
+        <h2>Paused</h2>
+        <div class="modes">
+          <button class="mode" id="resume">
+            <b>Resume</b><span>Back to the skies.</span>
+          </button>
+          <button class="mode free" id="quit">
+            <b>Quit</b><span>End this flight.</span>
+          </button>
+        </div>
+        <div class="foot">
+          <span>Slow the game down while you learn to fly.</span>
+          <button id="bSpeedPause" class="ghost">SPEED 100%</button>
+        </div>
+      </div>
+    </section>
+
+  </body>
+</html>

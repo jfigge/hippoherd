@@ -732,6 +732,16 @@ nav.site {
   border-color: var(--brand);
   background: color-mix(in srgb, var(--brand) 7%, var(--mantle));
 }
+/* A listing on its way: the badge, not yet a link (APP_STORE_SOON in
+   content/hippos.mjs). */
+.store-badge-soon {
+  opacity: 0.55;
+  cursor: default;
+}
+.store-badge-soon:hover {
+  border-color: var(--surface-1);
+  background: var(--mantle);
+}
 .store-badge svg {
   flex-shrink: 0;
   color: var(--text);

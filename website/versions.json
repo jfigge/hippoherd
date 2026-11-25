@@ -500,6 +500,15 @@
       "prerelease": false,
       "assets": []
     },
+    "duelhippo": {
+      "repo": "jfigge/duelhippo",
+      "latest": null,
+      "tag": null,
+      "url": "https://github.com/jfigge/duelhippo/releases",
+      "publishedAt": null,
+      "prerelease": false,
+      "assets": []
+    },
     "scanhippo": {
       "repo": "jfigge/scanhippo",
       "latest": null,

@@ -58,6 +58,15 @@
     // Runs in the browser here; the desktop app is a later milestone, and
     // this flips to true when it ships installers.
     markhippo: { name: "MarkHippo", desktop: false },
+    // A game with desktop installers, played in the browser here, and on its
+    // way to the App Store. `mobile` is what its page says to a phone, which
+    // can play it right now without installing anything.
+    duelhippo: {
+      name: "Duel Hippo",
+      desktop: true,
+      mobile:
+        "You can play Duel Hippo right here in your browser — tap Play at the top. The App Store version is on its way.",
+    },
   };
 
   var DL_ICON =
@@ -416,11 +425,13 @@
       if (btn) btn.remove();
       if (note) {
         note.textContent =
-          hippo && !HIPPOS[hippo].desktop
-            ? "It isn't in the stores yet — the repo is the place to watch."
-            : p.os === "ios"
-              ? "Most of the herd is desktop software — Roll Hippo is on the App Store, and its card below goes straight there."
-              : "Most of the herd is desktop software — Roll Hippo is on the App Store now, and coming to Google Play.";
+          hippo && HIPPOS[hippo].mobile
+            ? HIPPOS[hippo].mobile
+            : hippo && !HIPPOS[hippo].desktop
+              ? "It isn't in the stores yet — the repo is the place to watch."
+              : p.os === "ios"
+                ? "Most of the herd is desktop software — Roll Hippo is on the App Store, and its card below goes straight there."
+                : "Most of the herd is desktop software — Roll Hippo is on the App Store now, and coming to Google Play.";
       }
       strip.setAttribute("data-resolved", "true");
       return;

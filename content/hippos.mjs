@@ -80,6 +80,9 @@
 //                       the app around about/ rather than deleting it. The
 //                       generator refuses a page that lands on the app.
 //
+//   launch: "Play"      The word on the Launch button of a hippo with an `app`.
+//                       A game is played, not launched; Duel Hippo's says Play.
+//
 //   desktopApp: {…}     The hippo's desktop build is a SHARED app, not its
 //                       own: ViewHippo, which hosts JsonHippo and YamlHippo
 //                       (features/viewhippo-app-build-brief.md). Its downloads
@@ -101,7 +104,7 @@
 // HERD's order IS the order on the site. The index grid is three across on a
 // desktop, so every three entries make a row: Rest, Chip and Jump on the first,
 // JsonHippo, YamlHippo and MarkHippo on the second, Mind, Roll and Maze on the
-// third, then the divider, then Scan and Keep.
+// third, Duel on a fourth of its own, then the divider, then Scan and Keep.
 
 export const OWNER = "jfigge";
 export const HERD_COLOR = "#2BC4B0";
@@ -145,6 +148,18 @@ const APP_STORE = (url) => ({
   sub: "Download on the",
   url: url,
 });
+
+// A phone app that is on its way to the App Store but not listed yet. The
+// page shows the badge greyed out and saying so, with no link: there is no
+// listing to land on, and a link to a store search would be worse than none.
+// Swap it for APP_STORE(url) the day the listing goes live.
+const APP_STORE_SOON = {
+  store: "ios",
+  name: "App Store",
+  sub: "Coming soon to the",
+  url: null,
+  soon: true,
+};
 
 export const HERD = [
   {
@@ -799,6 +814,95 @@ export const HERD = [
         icon: "offline",
         title: "Nothing leaves the phone",
         body: "No account, no network call, no telemetry, no advertising identifier, and no permission prompt of any kind. The Android package ships without the <code>INTERNET</code> permission, so the OS itself would refuse a connection the game tried to open.",
+      },
+    ],
+  },
+
+  {
+    slug: "duelhippo",
+    name: "Duel Hippo",
+    // Hue 122, found the way Scan's and JsonHippo's were: the midpoint of the
+    // widest arc still free, the 56 degrees between Scan at 94 and Chip at
+    // 150. A grass green, which is also the colour of the airfield the game
+    // starts on. Readable as accent text on #1c1c1c (4.72:1) with the white
+    // hippo still clear on top of it (3.61:1). jfigge/duelhippo's
+    // src/icons/duelhippo.svg is the drawing of record; this and the same
+    // value in scripts/make-marks.mjs copy it.
+    color: "#279B2B",
+    tagline: "Biplane dogfighter, in 3D",
+
+    // Modelled on JsonHippo: the game runs here, at hippoherd.com/duelhippo/
+    // (`app`, the web build copied in by `make site` in jfigge/duelhippo,
+    // which leaves about/ alone), and this generated page sits inside it at
+    // /duelhippo/about/ (`page`). Desktop installers come from its own GitHub
+    // Releases through versions.json, as Rest Hippo's do.
+    app: "/duelhippo/",
+    page: "/duelhippo/about/",
+    launch: "Play",
+
+    domain: null,
+    docs: null,
+    stack: "three.js · Electron · Capacitor",
+    license: "GPL-3.0",
+    platforms: ["macOS", "Windows", "Linux", "iOS", "Web"],
+    status: "prerelease",
+    stores: [APP_STORE_SOON],
+
+    lead: "A biplane dogfighter in the spirit of the 1984 side-scrollers, rebuilt in 3D. Take off, shoot down the magenta flyers, bomb their town and get home before the tank runs dry. Leave the hippos alone.",
+
+    blurb:
+      "Duel Hippo is a biplane game with one flight model and two ways to fly it. <strong>Classic</strong> is the side-on lane of the 1984 originals: loop, flip onto your back, dive on the town, with a perspective camera that gives the trees, hangars and clouds real depth. <strong>Free flight</strong> is the same aeroplane in full 3D, with banking turns, a chase camera and radar. The plane has weight — it stalls, dives pick up speed, climbs bleed it away — and fuel, ammunition and bombs run out, so every sortie ends with the hardest part: landing it back on your own runway. Play it right here in the browser, or install it on a Mac, a PC or Linux; the iPhone version is on its way to the App Store.",
+
+    callout: {
+      title: "Landing is the hard part",
+      body: "Touch down on a runway sinking slower than 6.5 m/s, wings level, nose not pointing down and — in free flight — lined up with the strip. Anything else is a crash. Roll to a stop on your own runway with the throttle closed and the ground crew refuel, rearm and patch you up while you wait.",
+    },
+
+    features: [
+      {
+        icon: "layers",
+        title: "Two games, one aeroplane",
+        body: "Classic locks you to a side-on lane, where pull-up turns the other way once you have flipped onto your back, as it did in the original. Free flight opens the same world up in full 3D — roll, rudder and a coordinated turn from the bank — with a chase camera, a cockpit view and radar.",
+      },
+      {
+        icon: "activity",
+        title: "Flies like it has weight",
+        body: "Thrust against drag tops out at about 320 km/h in level flight, and gravity acts along the nose: dives speed you up, climbs slow you down. Below 32 m/s the wing stalls and the nose drops until you have the speed back. Banking costs lift.",
+      },
+      {
+        icon: "zap",
+        title: "Guns, bombs and a town",
+        body: "Three hundred rounds from alternating muzzles and six bombs that whistle all the way down. Depots, factories, hangars and an HQ stand between the runways; flatten the lot for a thousand-point bonus, and it rebuilds with a harder wave of flyers.",
+      },
+      {
+        icon: "heart",
+        title: "Leave the hippos alone",
+        body: "Hippos graze between your airfield and the town. Shoot or bomb one and it costs you fifty points and wanders off. Fly into one and you crash. The hippo is fine.",
+      },
+      {
+        icon: "clock",
+        title: "Slow it down to learn",
+        body: "Run the game at 75, 50 or 25 percent while you learn to land. Only game time slows — the flight, the enemies, the bullets — and the setting is remembered between sessions.",
+      },
+      {
+        icon: "phone",
+        title: "Made for a phone too",
+        body: "A virtual stick, a throttle slider and FIRE, BOMB and FLIP buttons, laid out for a phone held sideways. Let go of the stick and the plane eases itself back to straight and level flight.",
+      },
+      {
+        icon: "code",
+        title: "8-bit sound, synthesised",
+        body: "Every sound is made live by Web Audio, with no audio files at all: two square waves an octave apart for the engine's putt-putt, a falling whistle timed to each bomb's drop, and explosions of quantised noise through a closing filter.",
+      },
+      {
+        icon: "monitor",
+        title: "One game, everywhere",
+        body: "The same game runs in your browser here, as a desktop app for macOS, Windows and Linux, and on the iPhone. A test suite flies the original prototype and this build side by side and holds them to the same result, frame by frame.",
+      },
+      {
+        icon: "offline",
+        title: "No account, no ads",
+        body: "No sign-in, no advertising and no tracking. The game makes no network requests once it has loaded, and the only thing it keeps is your best score, on your own device.",
       },
     ],
   },

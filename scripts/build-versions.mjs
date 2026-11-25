@@ -53,6 +53,7 @@ const HERD = [
   "mazehippo",
   "mindhippo",
   "rollhippo",
+  "duelhippo",
   "scanhippo",
   "jsonhippo",
   "yamlhippo",
