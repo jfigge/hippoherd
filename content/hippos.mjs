@@ -83,6 +83,13 @@
 //   launch: "Play"      The word on the Launch button of a hippo with an `app`.
 //                       A game is played, not launched; Duel Hippo's says Play.
 //
+//   navName: "…"        The label in the "The Hippos" nav dropdown, when it
+//                       should differ from `name`. The rest of the herd is two
+//                       words there ("Rest Hippo"), so JsonHippo, YamlHippo and
+//                       MarkHippo carry "Json Hippo" etc. to match; their
+//                       `name` — the product's own spelling — is used
+//                       everywhere else. Defaults to `name`.
+//
 //   desktopApp: {…}     The hippo's desktop build is a SHARED app, not its
 //                       own: ViewHippo, which hosts JsonHippo and YamlHippo
 //                       (features/viewhippo-app-build-brief.md). Its downloads
@@ -321,6 +328,7 @@ export const HERD = [
   {
     slug: "jsonhippo",
     name: "JsonHippo",
+    navName: "Json Hippo",
     // Hue 276, found the way Maze's and Scan's were: the midpoint of the
     // widest arc still free once Scan took 94 — the 64 degrees between Rest at
     // 246 and Maze at 310. Readable as accent text on #1c1c1c (4.69:1) with the
@@ -418,6 +426,7 @@ export const HERD = [
   {
     slug: "yamlhippo",
     name: "YamlHippo",
+    navName: "Yaml Hippo",
     // Lemon yellow, hue 50 — the Y. It sits 13 degrees past Keep's amber at
     // 37 and is told apart from it by being lighter and greener. As accent
     // text on #1c1c1c it reads at 12.0:1; the white hippo on top of it is
@@ -495,6 +504,7 @@ export const HERD = [
   {
     slug: "markhippo",
     name: "MarkHippo",
+    navName: "Mark Hippo",
     // Orange, hue 25.7: the colour of MarkHippo's own logo and app
     // (src/img/markhippo.svg, and --brand in its src/css/app.css), chosen
     // there rather than found in a gap on the wheel the way Maze's, Scan's

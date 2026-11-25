@@ -204,7 +204,7 @@ const STATUS_LABEL = {
 function navDropdown(current) {
   const items = HERD.map((x) => {
     const here = x.slug === current ? ' aria-current="page"' : "";
-    return `        <a class="nav-dropdown-item" href="${pageUrl(x)}"${here}><img src="/marks/${x.slug}.svg" width="16" height="16" alt=""> ${h(x.name)}</a>`;
+    return `        <a class="nav-dropdown-item" href="${pageUrl(x)}"${here}><img src="/marks/${x.slug}.svg" width="16" height="16" alt=""> ${h(x.navName || x.name)}</a>`;
   }).join("\n");
 
   return `    <details class="nav-dropdown">
