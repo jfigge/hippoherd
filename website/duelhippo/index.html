@@ -15,19 +15,25 @@
   Electron, capacitor://localhost on iOS, the page's host on the web). Inline
   styles are allowed because the HUD sets element styles from script and the
   Vite dev server injects CSS that way; ws: is the dev server's HMR socket
-  and its client starts a blob: worker.
+  and its client starts a blob: worker. The match server's address is only
+  known at build time, so ws:, wss: and its scoreboard's http:/https: are
+  open to any host.
 -->
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self' ws: wss:; worker-src 'self' blob:"
+      content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self' ws: wss: http: https:; worker-src 'self' blob:"
     />
-    <script type="module" crossorigin src="./assets/index-D3UzZ0e1.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-BZgnbW-Z.css">
+    <script type="module" crossorigin src="./assets/index-CsRcxAx8.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-CjykekHX.css">
   </head>
   <body data-mode="classic">
     <div id="view"></div>
+    <!-- Lightning (the Storm map): a flash over the scene that fades. -->
+    <div id="flash"></div>
 
     <div id="hud" class="off">
+      <!-- First, so its darkened edges lie under the rest of the HUD. -->
+      <div id="sight"><i></i><span>Sights</span></div>
       <div id="card" class="glass">
         <div class="row big"><span>SCORE</span><b id="hScore">0</b></div>
         <div class="row">
@@ -50,9 +56,14 @@
           <span>AMMO</span><b id="hAmmo">300</b><span>BOMBS</span
           ><b id="hBombs">6</b>
         </div>
-        <div class="row hidden" id="hRivalRow">
-          <span id="hRivalLabel">RIVAL</span><b id="hRival">0</b
-          ><span>PLANES</span><b id="hRivalLives">3</b>
+        <div class="row">
+          <span>PLANE</span><b id="hPlane" class="name">Kite</b
+          ><span id="hMslRow" class="hidden">MSL <b id="hMsl">0</b></span>
+        </div>
+        <div class="teams hidden" id="hTeams"></div>
+        <div class="row hidden" id="hCourseRow">
+          <span>RING</span><b id="hRing">0</b><span>LEFT</span
+          ><b id="hTime">0:00.0</b>
         </div>
         <div class="row hidden" id="hSpeedRow">
           <span>SPEED</span><b id="hSpeed">100%</b>
@@ -63,15 +74,30 @@
       <div id="msg"></div>
       <div id="warn"></div>
       <div id="svc" class="hidden"></div>
+      <div id="planes" class="hidden">
+        <button id="pPrev" aria-label="Previous plane">‹</button
+        ><span
+          >Change plane <i class="kk"><kbd>&lt;</kbd><kbd>&gt;</kbd></i
+          ><i class="tk">swipe</i></span
+        ><button id="pNext" aria-label="Next plane">›</button>
+      </div>
+      <div id="planeTag"><b></b><span></span><small></small></div>
       <div id="ret"></div>
+      <div id="lock"><span></span></div>
       <div id="help" class="glass hidden">
-        <b>W/S</b> throttle · <b>↓/↑</b> pull up / push down<br />
-        <b>Space</b> guns · <b>B</b> bomb · <b>C</b> camera<br />
-        Classic: <b>←/→</b> flip · Free: <b>←/→</b> roll,
-        <b>A/D</b> rudder<br />
-        <b>I</b> invert · <b>M</b> sound · <b>F</b> fullscreen ·
-        <b>P</b> pause<br />
-        <b>-/=</b> game speed (one player)
+        <kbd>W</kbd><kbd>S</kbd> throttle · <kbd>↓</kbd><kbd>↑</kbd> pull up /
+        push down<br />
+        <kbd>Space</kbd> guns · <kbd>B</kbd> bomb · <kbd>C</kbd> camera<br />
+        <kbd>&lt;</kbd><kbd>&gt;</kbd> or <kbd>1</kbd>–<kbd>4</kbd> change
+        plane, stopped on your runway<br />
+        Classic: <kbd>←</kbd><kbd>→</kbd> flip · Free: <kbd>←</kbd
+        ><kbd>→</kbd> roll, <kbd>A</kbd><kbd>D</kbd> rudder<br />
+        Free: <kbd>Shift</kbd> hold or <kbd>Caps Lock</kbd> on: aim down the
+        sights<br />
+        Free: hold the sights on a plane 3 s to lock, <kbd>R</kbd> missile<br />
+        <kbd>I</kbd> invert · <kbd>M</kbd> sound · <kbd>F</kbd> fullscreen ·
+        <kbd>P</kbd> pause<br />
+        <kbd>-</kbd><kbd>=</kbd> game speed (one player only)
       </div>
       <div class="hint">H controls · P pause</div>
     </div>
@@ -85,42 +111,162 @@
       <button id="bFire" class="tbtn">FIRE</button>
       <button id="bBomb" class="tbtn">BOMB</button>
       <button id="bFlip" class="tbtn">FLIP</button>
+      <button id="bAim" class="tbtn">AIM</button>
+      <button id="bMsl" class="tbtn">MSL</button>
       <button id="bCam" class="mini">CAM</button>
-      <button id="bPause" class="mini">II</button>
+      <button id="bPause" class="mini" aria-label="Pause">II</button>
     </div>
 
     <section id="title" class="ov">
       <div class="box" id="titleBody">
         <div class="head">
-          <div id="mascot"></div>
-          <h1>DUEL<br /><em>HIPPO</em></h1>
+          <!-- The app's icon (src/icons/duelhippo.svg, served as the
+               favicon), as on the About card. -->
+          <img id="mascot" src="./favicon.svg" alt="" draggable="false" />
+          <div>
+            <h1><span>DUEL</span> <em>HIPPO</em></h1>
+            <p class="tag">Shoot · Bomb · Land</p>
+          </div>
         </div>
-        <p>
-          Take off, shoot down the magenta flyers and bomb their town. Then get
-          home and land before the tank runs dry.
-        </p>
         <div class="modes">
           <button class="mode" data-start="classic">
-            <b>Classic</b
-            ><span>Side-on like the 1984 original. Loop, flip and dive.</span>
+            <b>Classic</b><span>Side-scroller classic game</span>
           </button>
           <button class="mode free" data-start="free">
-            <b>Free flight</b
-            ><span>Full 3D chase cam, banking turns, radar.</span>
+            <b>Solo-player</b><span>Full 3D: banking turns and radar.</span>
           </button>
-          <button class="mode online" id="bOnline">
-            <b>Two player</b
-            ><span
-              >Duel a friend or team up, online. Phones, computers and browsers
-              all play together.</span
-            >
+          <button
+            class="mode course"
+            id="bCourse"
+            title="Thirty rings against the clock"
+          >
+            <b><i aria-hidden="true">◎</i> Obstacle course</b
+            ><span>Thirty rings against the clock</span>
+          </button>
+          <button
+            class="mode online"
+            id="bOnline"
+            title="Up to nine friends online, in teams or each for themselves"
+          >
+            <b><i aria-hidden="true">⚑</i> Multi-player</b
+            ><span>Up to nine friends online</span>
           </button>
         </div>
+        <div
+          class="mapPick"
+          title="Maps for solo-player and multi-player games"
+        >
+          <span class="mapLabel">Map</span>
+          <button id="mapPrev" class="mapStep" aria-label="Previous map">
+            ‹</button
+          ><button
+            id="mapName"
+            aria-expanded="false"
+            aria-controls="maps"
+            title="Every map, and what opens it"
+          ></button
+          ><button id="mapNext" class="mapStep" aria-label="Next map">›</button>
+          <span id="mapNote" class="mapNote"></span>
+        </div>
+        <div
+          class="pick maps hidden"
+          id="maps"
+          role="group"
+          aria-label="Map"
+        ></div>
+        <p class="rot">Turn your phone sideways for the best view.</p>
+        <div class="foot">
+          <span class="best">Best score <b id="best">0</b></span>
+          <span class="btns"
+            ><button id="bScores" class="ghost">Scores</button
+            ><button id="bControls" class="ghost">Controls</button
+            ><button
+              id="bSettings"
+              class="ghost gear"
+              aria-label="Settings"
+              title="Settings"
+            >
+              ⚙
+            </button></span
+          >
+        </div>
+      </div>
+    </section>
+
+    <!-- Settings, off the title: the switches that used to crowd its foot. -->
+    <section id="settings" class="ov hidden">
+      <div class="box setBox">
+        <h2>Settings</h2>
+        <div class="setRows">
+          <span>Pitch</span
+          ><button id="bInvert" class="ghost"><i>Pitch</i> normal</button>
+          <span>Game speed <i>(one player)</i></span
+          ><button id="bSpeed" class="ghost"><i>Speed</i> 100%</button>
+          <span>Sound</span
+          ><button id="bMute" class="ghost"><i>Sound</i> on</button>
+          <span class="updRow hidden">Check for updates</span
+          ><button id="bUpdates" class="ghost hidden">
+            <i>Updates</i> manual
+          </button>
+        </div>
+        <div class="foot">
+          <button id="bAbout" class="ghost">About Duel Hippo</button
+          ><button id="setBack" class="ghost">Back</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- The desktop app's update notes (scripts/updates.js). -->
+    <div id="upd" class="glass hidden" role="status">
+      <span></span
+      ><button id="updRestart" class="ghost hidden">Restart now</button>
+    </div>
+
+    <section id="course" class="ov hidden">
+      <div class="box">
+        <h2>Obstacle course</h2>
+        <p>
+          Thirty rings over the countryside, climbing, diving and turning. Fly
+          through them in order: the clock runs from the first to the last, and
+          you have twice a perfect run's time to finish. Each level packs the
+          rings closer and the turns tighter, and scores more a ring. Finish a
+          level to open the next.
+        </p>
+        <div class="pick" id="cSizes" role="group" aria-label="Level"></div>
+        <ol id="cBoard" class="board"></ol>
+        <div class="foot">
+          <button id="cBack" class="ghost">Back</button
+          ><button id="cFly" class="ghost">Fly</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="controls" class="ov hidden">
+      <div class="box">
+        <h2>Controls</h2>
         <div class="keys kk">
-          <b>W / S</b><span>Throttle up / down</span> <b>↓ / ↑</b
-          ><span>Pull up / push down (I to invert)</span> <b>Space · B</b
-          ><span>Guns · drop a bomb</span> <b>← / →</b
-          ><span>Classic: flip over · Free: roll (A/D rudder)</span> <b>- / =</b
+          <b><kbd>W</kbd><kbd>S</kbd></b
+          ><span>Throttle up / down</span> <b><kbd>↓</kbd><kbd>↑</kbd></b
+          ><span>Pull up / push down <i>(I to invert)</i></span>
+          <b><kbd>Space</kbd><kbd>B</kbd></b
+          ><span>Guns · drop a bomb</span> <b><kbd>←</kbd><kbd>→</kbd></b
+          ><span>Classic: flip over · Free: roll <i>(A/D rudder)</i></span>
+          <b><kbd>Shift</kbd><kbd>Caps</kbd></b
+          ><span
+            >Free: aim down the sights, for finer turns
+            <i>(hold Shift, or Caps Lock on)</i></span
+          >
+          <b><kbd>&lt;</kbd><kbd>&gt;</kbd></b
+          ><span
+            >Change plane, stopped on your runway <i>(or 1–4)</i>. Each flies
+            differently</span
+          >
+          <b><kbd>R</kbd></b
+          ><span
+            >Free: missile, once the sights have held a plane for 3 s
+            <i>(not on the Kite)</i></span
+          >
+          <b><kbd>-</kbd><kbd>=</kbd></b
           ><span>Game speed: slower / faster</span> <b>Landing</b
           ><span
             >Line up with the cyan runway, wings level, sink gently, then roll
@@ -134,19 +280,18 @@
             to level out</span
           >
           <b>Slider</b><span>Throttle</span> <b>Buttons</b
-          ><span>FIRE · BOMB · FLIP</span> <b>Landing</b
+          ><span>FIRE · BOMB · FLIP · AIM, then MSL once locked</span>
+          <b>Planes</b
+          ><span>Stopped on your runway, swipe or tap ‹ › to change</span>
+          <b>Landing</b
           ><span
             >Line up with the cyan runway, wings level, sink gently, then roll
             to a stop to refuel</span
           >
         </div>
-        <p class="rot">Turn your phone sideways for the best view.</p>
         <div class="foot">
-          <span>Best score <b id="best">0</b></span>
-          <span class="btns"
-            ><button id="bSpeed" class="ghost">SPEED 100%</button
-            ><button id="bMute" class="ghost">SOUND ON</button></span
-          >
+          <span class="kk">In flight, H shows the keys.</span
+          ><button id="ctBack" class="ghost">Back</button>
         </div>
       </div>
     </section>
@@ -156,14 +301,34 @@
         <h2 id="oTitle">Out of planes</h2>
         <div class="stats">
           <span>Score<b id="oScore">0</b></span
-          ><span>Kills<b id="oKills">0</b></span
+          ><span><i id="oSecond">Kills</i><b id="oKills">0</b></span
           ><span><i id="oThird">Best</i><b id="oBest">0</b></span>
         </div>
+        <p id="oUnlock" class="unlock hidden"></p>
+        <ol id="oCourse" class="board hidden"></ol>
+        <div id="oSolo" class="hidden">
+          <div class="foot">
+            <span id="oRank"></span>
+            <button id="oScores" class="ghost">Scores</button>
+          </div>
+          <div id="oInit" class="initials hidden">
+            <input
+              id="oInitials"
+              maxlength="3"
+              autocomplete="off"
+              autocapitalize="characters"
+              spellcheck="false"
+              placeholder="AAA"
+              aria-label="Your initials"
+            /><button id="oInitSave" class="ghost">Save</button>
+          </div>
+        </div>
+        <div id="oGroup" class="group hidden"></div>
         <div class="foot hidden" id="overMp">
           <span id="oNote"></span>
           <span class="btns"
-            ><button id="oAgain" class="ghost">PLAY AGAIN</button
-            ><button id="oLeave" class="ghost">LEAVE</button></span
+            ><button id="oAgain" class="ghost">Play again</button
+            ><button id="oLeave" class="ghost">Leave</button></span
           >
         </div>
         <div class="modes" id="overModes">
@@ -171,8 +336,37 @@
             <b>Classic</b><span>Fly again, side-on.</span>
           </button>
           <button class="mode free" data-start="free">
-            <b>Free flight</b><span>Fly again in full 3D.</span>
+            <b>Solo-player</b><span>Fly again in full 3D.</span>
           </button>
+          <button class="mode course wide hidden" id="oCourseAgain">
+            <b>Fly the course again</b><span>Same rings, new clock.</span>
+          </button>
+          <button class="mode wide" id="oMenu">
+            <b>Main menu</b><span>Back to the start.</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section id="scores" class="ov hidden">
+      <div class="box">
+        <h2>High scores</h2>
+        <ol id="scList" class="board"></ol>
+        <p id="scMsg"></p>
+        <div class="initials">
+          <input
+            id="scInitials"
+            maxlength="3"
+            autocomplete="off"
+            autocapitalize="characters"
+            spellcheck="false"
+            placeholder="AAA"
+            aria-label="Your initials"
+          /><button id="scSave" class="ghost">Save initials</button>
+        </div>
+        <div class="foot">
+          <span>Three letters, A to Z. One-player games.</span>
+          <button id="scBack" class="ghost">Back</button>
         </div>
       </div>
     </section>
@@ -187,43 +381,43 @@
           <button class="mode free" id="quit">
             <b>Quit</b><span>End this flight.</span>
           </button>
+          <button class="mode wide" id="menu">
+            <b>Main menu</b
+            ><span>End this flight and go back to the start.</span>
+          </button>
+        </div>
+        <div class="foot">
+          <span>Flip up and down on the stick and arrow keys.</span>
+          <button id="bInvertPause" class="ghost"><i>Pitch</i> normal</button>
         </div>
         <div class="foot" id="pauseFoot">
           <span>Slow the game down while you learn to fly.</span>
-          <button id="bSpeedPause" class="ghost">SPEED 100%</button>
+          <button id="bSpeedPause" class="ghost"><i>Speed</i> 100%</button>
         </div>
       </div>
     </section>
 
     <section id="online" class="ov hidden">
       <div class="box">
-        <h2>Two player</h2>
+        <h2>Multi-player</h2>
         <div id="onMenu">
+          <label class="callsign"
+            ><span>Your name</span
+            ><input
+              id="onName"
+              maxlength="12"
+              autocomplete="nickname"
+              spellcheck="false"
+              placeholder="Pilot"
+              aria-label="Your name"
+          /></label>
           <div class="modes">
             <button class="mode" id="onHost">
-              <b>Host a game</b><span>Get a code to give your friend.</span>
+              <b>Make a room</b><span>Get a code to give your friends.</span>
             </button>
             <button class="mode free" id="onJoin">
-              <b>Join a game</b><span>Type in your friend's code.</span>
+              <b>Join a room</b><span>Type in a friend's code.</span>
             </button>
-          </div>
-        </div>
-        <div id="onSetup" class="hidden">
-          <div class="pick">
-            <button data-kind="duel">DUEL</button
-            ><button data-kind="coop">CO-OP</button>
-          </div>
-          <p class="pickNote">
-            Duel: one airfield and town each; shoot your friend down. Co-op: fly
-            together against the magenta flyers.
-          </p>
-          <div class="pick">
-            <button data-mmode="classic">CLASSIC</button
-            ><button data-mmode="free">FREE FLIGHT</button>
-          </div>
-          <div class="foot">
-            <span></span
-            ><button id="onCreate" class="ghost">CREATE GAME</button>
           </div>
         </div>
         <div id="onEnter" class="hidden">
@@ -237,21 +431,93 @@
             aria-label="Room code"
           />
           <div class="foot">
-            <span></span><button id="onGo" class="ghost">JOIN</button>
+            <span></span><button id="onGo" class="ghost">Join</button>
           </div>
         </div>
         <div id="onRoom" class="hidden">
           <div id="onCodeShow" class="code"></div>
+          <div class="pick">
+            <button data-gmode="dogfight">Dogfight</button
+            ><button data-gmode="flag">Flag</button
+            ><button data-gmode="endless">Endless</button>
+          </div>
+          <div
+            class="pick maps"
+            id="onMaps"
+            role="group"
+            aria-label="Map"
+          ></div>
+          <div class="pick">
+            <select id="onLayout" aria-label="Teams"></select
+            ><button id="onFF"><i>Friendly fire</i> off</button>
+          </div>
+          <p id="onDesc" class="pickNote"></p>
+          <p id="onRules" class="pickNote"></p>
+          <div id="onTeams" class="teamgrid"></div>
+          <div id="onBoard" class="group hidden"></div>
           <div class="foot">
-            <span></span><button id="onStart" class="ghost">START</button>
+            <span>Tap a team to join it.</span
+            ><button id="onStart" class="ghost">Start</button>
           </div>
         </div>
         <div id="onCount" class="hidden code"></div>
         <p id="onMsg"></p>
         <div class="foot">
           <span id="onLink"></span>
-          <button id="onBack" class="ghost">BACK</button>
+          <button id="onBack" class="ghost">Back</button>
         </div>
+      </div>
+    </section>
+
+    <!-- About (scripts/about.js): over whatever is showing, as in Rest Hippo
+         and Chip Hippo. -->
+    <section
+      id="about"
+      class="ov hidden"
+      role="dialog"
+      aria-modal="true"
+      aria-label="About Duel Hippo"
+    >
+      <div class="box aboutCard">
+        <img class="aboutLogo" src="./favicon.svg" alt="" draggable="false" />
+        <div class="aboutName">
+          <h2>Duel Hippo</h2>
+          <button
+            id="aboutInfo"
+            class="aboutInfo"
+            aria-controls="aboutBuild"
+            aria-expanded="false"
+            aria-label="Version information"
+            title="Version information"
+          >
+            i
+          </button>
+          <div id="aboutBuild" class="aboutBuild" hidden></div>
+        </div>
+        <p class="aboutSub">A 3D biplane dogfighter</p>
+        <p class="aboutDesc">
+          Take off, shoot down the flyers, bomb their town and land before the
+          tank runs dry. Alone, or online with up to nine friends.
+        </p>
+        <p class="aboutLine aboutCredit">
+          <span>Created by Jason, coded by Claude</span
+          ><span class="aboutDot" aria-hidden="true">·</span
+          ><span>Copyright © 2026 Jason Figge</span>
+        </p>
+        <p class="aboutLine aboutSupport">
+          <span
+            ><span class="aboutLabel">Support:</span>
+            <a href="mailto:hippoherd@gmail.com">hippoherd@gmail.com</a></span
+          ><span id="aboutDonateDot" class="aboutDot" aria-hidden="true">·</span
+          ><a
+            id="aboutDonate"
+            href="https://github.com/sponsors/jfigge"
+            target="_blank"
+            rel="noopener noreferrer"
+            ><span aria-hidden="true">♥</span> Sponsor Duel Hippo…</a
+          >
+        </p>
+        <button id="aboutClose" class="ghost">Close</button>
       </div>
     </section>
 
