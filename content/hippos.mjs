@@ -850,31 +850,56 @@ export const HERD = [
     status: "prerelease",
     stores: [],
 
-    lead: "A biplane dogfighter in the spirit of the 1984 side-scrollers, rebuilt in 3D. Take off, shoot down the magenta flyers, bomb their town and get home before the tank runs dry — alone, or against a friend online. Leave the hippos alone.",
+    lead: "A biplane dogfighter in the spirit of the 1984 side-scrollers, rebuilt in 3D. Shoot down the magenta flyers, bomb their town and land before the tank runs dry — over ten maps, in four planes, alone or with up to eight friends online. Leave the hippos alone.",
 
     blurb:
-      "Duel Hippo is a biplane game with one flight model and two ways to fly it. <strong>Classic</strong> is the side-on lane of the 1984 originals: loop, flip onto your back, dive on the town, with a perspective camera that gives the trees, hangars and clouds real depth. <strong>Free flight</strong> is the same aeroplane in full 3D, with banking turns, a chase camera and radar. The plane has weight — it stalls, dives pick up speed, climbs bleed it away — and fuel, ammunition and bombs run out, so every sortie ends with the hardest part: landing it back on your own runway. Play it right here in the browser, or install it on a Mac, a PC or Linux — and fly it against a friend, or alongside one, in either.",
+      "Duel Hippo is a biplane game with one flight model and four ways to fly it. <strong>Classic</strong> is the side-on lane of the 1984 originals: loop, flip onto your back, dive on the town, with a perspective camera that gives the trees, hangars and clouds real depth. <strong>Solo-player</strong> is the same aeroplane in full 3D, with banking turns, radar and a gunsight to aim down. The <strong>obstacle course</strong> is thirty rings against the clock, and <strong>multi-player</strong> puts up to nine friends in one sky, in teams or each for themselves. The plane has weight — it stalls, dives pick up speed, climbs bleed it away — and fuel, ammunition and bombs run out, so every sortie ends with the hardest part: landing it back on your own runway. Play it right here in the browser, or install it on a Mac, a PC or Linux.",
 
     callout: {
       title: "Landing is the hard part",
-      body: "Touch down on a runway sinking slower than 6.5 m/s, wings level, nose not pointing down and — in free flight — lined up with the strip. Anything else is a crash. Roll to a stop on your own runway with the throttle closed and the ground crew refuel, rearm and patch you up while you wait.",
+      body: "Touch down on a runway sinking gently — under 6.5 m/s in the Kite, less in the other planes — wings level, nose not pointing down and, in 3D, lined up with the strip. Anything else is a crash. Roll to a stop on your own runway with the throttle closed and the ground crew refuel, rearm and patch you up while you wait. At sea and on the airships, the runway is a flight deck little more than half as long, with arrester wires.",
     },
 
     features: [
       {
         icon: "layers",
-        title: "Two games, one aeroplane",
-        body: "Classic locks you to a side-on lane, where pull-up turns the other way once you have flipped onto your back, as it did in the original. Free flight opens the same world up in full 3D — roll, rudder and a coordinated turn from the bank — with a chase camera, a cockpit view and radar.",
+        title: "Side-on or full 3D",
+        body: "Classic locks you to a side-on lane, where pull-up turns the other way once you have flipped onto your back, as it did in the original. In 3D the same plane rolls, yaws on the rudder and turns from the bank, with a chase camera, a cockpit view and radar.",
       },
       {
         icon: "activity",
         title: "Flies like it has weight",
-        body: "Thrust against drag tops out at about 320 km/h in level flight, and gravity acts along the nose: dives speed you up, climbs slow you down. Below 32 m/s the wing stalls and the nose drops until you have the speed back. Banking costs lift.",
+        body: "Thrust against drag tops the Kite out at about 320 km/h in level flight, and gravity acts along the nose: dives speed you up, climbs slow you down. Below its stall speed the wing quits and the nose drops until you have the speed back. Banking costs lift.",
+      },
+      {
+        icon: "shuffle",
+        title: "Four planes, four temperaments",
+        body: "The <strong>Kite</strong> lands anywhere and never spins. The <strong>Hornet</strong> out-turns anything, but its rotary engine pulls it left and a hard pull when slow flicks it into a spin. The <strong>Lancer</strong> is the fastest, at nearly 390 km/h, and lands on a knife edge. The <strong>Brute</strong> shrugs off rounds and carries twelve bombs. Swap on your own runway while stopped.",
+      },
+      {
+        icon: "eye",
+        title: "Aim down the sights",
+        body: "In 3D, hold Shift and the camera moves onto the gun line and zooms in, and the controls slow down for a fine aim. Hold another plane in the sights for three seconds and the Hornet, Lancer and Brute lock on and fire a homing missile — with a warning tone for whoever it is chasing.",
       },
       {
         icon: "zap",
         title: "Guns, bombs and a town",
-        body: "Three hundred rounds from alternating muzzles and six bombs that whistle all the way down. Depots, factories, hangars and an HQ stand between the runways; flatten the lot for a thousand-point bonus, and it rebuilds with a harder wave of flyers.",
+        body: "Hundreds of rounds from alternating muzzles and bombs that whistle all the way down. Depots, factories, hangars and an HQ stand between the runways; flatten the lot for a thousand-point bonus, and it rebuilds with a harder wave of flyers.",
+      },
+      {
+        icon: "grid",
+        title: "Ten maps to earn",
+        body: "Start in the Countryside; every thousand points of your best score opens another. Floating sky islands over a sea of cloud. An Arctic fjord with ice runways and a convoy to bomb. A canyon with arches and flak on the rim. Carrier airships, a fleet at sea, a night raid under searchlights, a volcano whose ash chokes the engine, a thunderstorm, and a city of towers under a cloud ceiling.",
+      },
+      {
+        icon: "move",
+        title: "An obstacle course",
+        body: "Thirty rings over the Countryside, flown in order against the clock, with twice a perfect run's time to finish. Three levels — Easy, Tight and Twisting — pack the rings closer and the turns tighter, and finishing one opens the next. No enemies, a full tank, and a scoreboard of its own.",
+      },
+      {
+        icon: "network",
+        title: "Up to nine, online",
+        body: "Make a room and give your friends the four-letter code. <strong>Dogfight</strong>: three planes each, last team flying wins. <strong>Bomb the flag</strong>: fly on while your flag stands, and bomb theirs. <strong>Endless enemies</strong>: most points against the magenta flyers wins. Two to eight teams, friendly fire on or off, on any map the organiser has earned — and the same friends keep a scoreboard of their own.",
       },
       {
         icon: "heart",
@@ -884,27 +909,17 @@ export const HERD = [
       {
         icon: "clock",
         title: "Slow it down to learn",
-        body: "Run the game at 75, 50 or 25 percent while you learn to land. Only game time slows — the flight, the enemies, the bullets — and the setting is remembered between sessions.",
-      },
-      {
-        icon: "network",
-        title: "Two player, online",
-        body: "Host a game and read your friend a four-letter code. Duel — one airfield and one town each, shoot the other plane down — or fly together against the magenta flyers. The browser and the desktop apps all play each other, connected directly where the network allows.",
+        body: "Run a one-player game at 75, 50 or 25 percent while you learn to land. Only game time slows — the flight, the enemies, the bullets — and the setting is remembered. On a phone or tablet there is a stick, a throttle and buttons, and the plane levels itself when you let go.",
       },
       {
         icon: "code",
         title: "8-bit sound, synthesised",
-        body: "Every sound is made live by Web Audio, with no audio files at all: two square waves an octave apart for the engine's putt-putt, a falling whistle timed to each bomb's drop, and explosions of quantised noise through a closing filter.",
-      },
-      {
-        icon: "monitor",
-        title: "One game, everywhere",
-        body: "The same game runs in your browser here and as a desktop app for macOS, Windows and Linux. A test suite flies the original prototype and this build side by side and holds them to the same result, frame by frame.",
+        body: "Every sound is made live by Web Audio, with no audio files at all: two square waves an octave apart for the engine's putt-putt, a falling whistle timed to each bomb's drop, the ticks of a missile lock, and explosions of quantised noise through a closing filter.",
       },
       {
         icon: "offline",
         title: "No account, no ads",
-        body: "No sign-in, no advertising and no tracking. A one-player game makes no network requests once it has loaded; a two-player one talks only to the other player, through a match server that keeps nothing. The only thing the game stores is your best score, on your own device.",
+        body: "No sign-in, no advertising and no tracking. Give three initials and your best one-player score goes on a board shared by everyone, kept against a random id made on your device and never shown. In a multi-player game the planes talk to each other directly where the network allows. The desktop app looks for updates only once you turn that on.",
       },
     ],
   },

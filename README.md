@@ -16,7 +16,7 @@ get nothing".
 | Jump Hippo | On-demand SSH tunnels | [jumphippo.com](https://jumphippo.com) | [jfigge/jumphippo](https://github.com/jfigge/jumphippo) |
 | Keep Hippo | Vault-compatible secrets manager | [keephippo.com](https://keephippo.com) | [jfigge/keephippo](https://github.com/jfigge/keephippo) |
 | Maze Hippo | Tap-to-clear arrow puzzle (iOS / Android) | — | [jfigge/mazehippo](https://github.com/jfigge/mazehippo) |
-| Duel Hippo | Biplane dogfighter in 3D, one or two players — played here, and on the desktop | [hippoherd.com/duelhippo](https://hippoherd.com/duelhippo/) (the game) | [jfigge/duelhippo](https://github.com/jfigge/duelhippo) |
+| Duel Hippo | Biplane dogfighter in 3D, alone or up to nine players online — played here, and on the desktop | [hippoherd.com/duelhippo](https://hippoherd.com/duelhippo/) (the game) | [jfigge/duelhippo](https://github.com/jfigge/duelhippo) |
 | Mind Hippo | ML runtime written from scratch in Go | — | [jfigge/mindhippo](https://github.com/jfigge/mindhippo) |
 | Roll Hippo | Shake-to-roll dice tray ([App Store](https://apps.apple.com/us/app/roll-hippo/id6798933169); Android to come) | — | [jfigge/rollhippo](https://github.com/jfigge/rollhippo) |
 | JsonHippo | JSON viewer with pinpoint errors — runs here, and on the desktop | [hippoherd.com/jsonhippo](https://hippoherd.com/jsonhippo/) (the app) | [jfigge/jsonhippo](https://github.com/jfigge/jsonhippo) |
