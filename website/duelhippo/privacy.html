@@ -1,0 +1,187 @@
+<!doctype html>
+<!--
+  Duel Hippo's privacy policy. It ships in every build (Vite copies public/
+  into www/), and `make site` publishes it at
+  https://hippoherd.com/duelhippo/privacy.html, the address the About card
+  links to and App Store Connect's Privacy Policy URL names. Keep it true to
+  the code: scores.js, server/board.js, net/link.js and app/updater.js.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Privacy — Duel Hippo</title>
+    <meta
+      name="description"
+      content="What Duel Hippo keeps on your device, what it sends, and to whom."
+    />
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <style>
+      :root {
+        color-scheme: light dark;
+        --ink: #1d2a1e;
+        --soft: #4d5b4e;
+        --paper: #f7f9f4;
+        --mark: #279b2b;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --ink: #e6ede4;
+          --soft: #a9b6a7;
+          --paper: #121812;
+          --mark: #5ccf5f;
+        }
+      }
+      body {
+        margin: 0;
+        background: var(--paper);
+        color: var(--ink);
+        font:
+          17px/1.6 system-ui,
+          -apple-system,
+          "Segoe UI",
+          sans-serif;
+      }
+      main {
+        max-width: 42rem;
+        margin: 0 auto;
+        padding: 2.5rem 1.25rem 4rem;
+      }
+      h1 {
+        margin: 0;
+        font-size: 2rem;
+      }
+      h2 {
+        margin: 2rem 0 0.5rem;
+        font-size: 1.2rem;
+      }
+      .lede {
+        margin-top: 0.25rem;
+        color: var(--soft);
+      }
+      a {
+        color: var(--mark);
+      }
+      li + li {
+        margin-top: 0.35rem;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Privacy</h1>
+      <p class="lede">Duel Hippo · last updated 27 November 2026</p>
+
+      <p>
+        Duel Hippo has no accounts, no advertising, no analytics and no
+        tracking. It does not sell or share anything about you, and nothing it
+        sends is used to follow you across other apps or websites. What it does
+        keep and send is listed here in full. It is the same in the browser, the
+        desktop app and the iPhone app.
+      </p>
+
+      <h2>On your device</h2>
+      <p>
+        The game keeps these in its own storage on your device, and nowhere else
+        unless a section below says so:
+      </p>
+      <ul>
+        <li>
+          a random player id, made the first time the game runs. It is not tied
+          to your name, your device or any account, and it is never shown to
+          anyone;
+        </li>
+        <li>
+          the three-letter initials and the match name you choose, if you choose
+          them;
+        </li>
+        <li>
+          your settings, best scores, obstacle-course times and the scoreboards
+          of the team games you have played.
+        </li>
+      </ul>
+      <p>
+        Clearing the game's site data (in the browser), uninstalling the app, or
+        deleting its data removes all of it.
+      </p>
+
+      <h2>The one-player scoreboard</h2>
+      <p>
+        When a one-player game ends and you have entered initials, the game
+        sends your player id, initials, score, game mode and plane type to Duel
+        Hippo's scoreboard server. The server keeps one row per player id: your
+        best score, with its mode, plane and time. Everyone can see the top ten
+        and their own place, showing initials, score, mode and plane only.
+        Player ids are never shown or given out. Until you enter initials,
+        nothing is sent; the game only reads the board.
+      </p>
+
+      <h2>Team games</h2>
+      <p>
+        A team game is played with people you share a four-letter room code
+        with. The other players in the room see your match name (or your
+        initials), your plane, your score and what you do in the match. Instead
+        of your player id they get a one-way hash of it, which is used to keep
+        scoreboards for the groups you play with on each player's device. Those
+        group scoreboards are never sent to the server.
+      </p>
+      <p>
+        To play, the players' devices connect directly to each other where they
+        can, which means each device in a room can see the others' IP addresses,
+        as in any peer-to-peer game. To find a direct route, your device asks a
+        public address server (Cloudflare's and Google's STUN servers) for its
+        own address. Where no direct route works, the match server passes the
+        messages along. It forwards them without reading or storing them, and
+        forgets the room when everyone leaves.
+      </p>
+
+      <h2>Who runs the servers</h2>
+      <p>
+        The scoreboard and match server runs on Cloudflare, which logs requests
+        to its own infrastructure, including IP addresses, as described in
+        <a
+          href="https://www.cloudflare.com/privacypolicy/"
+          rel="noopener noreferrer"
+          >Cloudflare's privacy policy</a
+        >. The browser version is served from hippoherd.com by GitHub Pages,
+        which does the same under
+        <a
+          href="https://docs.github.com/site-policy/privacy-policies/github-privacy-statement"
+          rel="noopener noreferrer"
+          >GitHub's privacy statement</a
+        >. We do not receive those logs or keep any of our own.
+      </p>
+
+      <h2>The desktop app's updates</h2>
+      <p>
+        The desktop app looks for updates on GitHub Releases only when you turn
+        the automatic check on, or choose Help ▸ Check for Updates… The iPhone
+        app updates through the App Store and makes no such check.
+      </p>
+
+      <h2>The phone's motion</h2>
+      <p>
+        Repairing a plane by shaking or turning the phone reads its motion
+        sensors during the repair only, and only after you allow it. The
+        readings stay on the phone.
+      </p>
+
+      <h2>Children</h2>
+      <p>
+        Duel Hippo asks no one for a name, an email address, a birthday or a
+        location. The most it shows other people is three letters on the public
+        scoreboard, and a match name to the friends in a team game. Initials
+        that spell something rude are refused.
+      </p>
+
+      <h2>Removing your score, and questions</h2>
+      <p>
+        To have your row taken off the public scoreboard, or to ask anything
+        about this policy, write to
+        <a href="mailto:hippoherd@gmail.com">hippoherd@gmail.com</a> with your
+        initials and score. If this policy changes, the new one appears here
+        with a new date.
+      </p>
+    </main>
+  </body>
+</html>

@@ -23,8 +23,8 @@
       http-equiv="Content-Security-Policy"
       content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self' ws: wss: http: https:; worker-src 'self' blob:"
     />
-    <script type="module" crossorigin src="./assets/index-Cgf8D-fM.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-CjykekHX.css">
+    <script type="module" crossorigin src="./assets/index-DIoskHk-.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-CL-iS_n6.css">
   </head>
   <body data-mode="classic">
     <div id="view"></div>
@@ -43,16 +43,16 @@
         <div class="row">
           <span>KM/H</span><b id="hSpd">0</b><span>ALT</span><b id="hAlt">0</b>
         </div>
-        <div class="bar">
+        <div class="bar dash">
           <span>THR</span><i><u id="bThr"></u></i>
         </div>
-        <div class="bar">
+        <div class="bar dash">
           <span>FUEL</span><i><u id="bFuel"></u></i>
         </div>
         <div class="bar">
           <span>DMG</span><i><u id="bDmg"></u></i>
         </div>
-        <div class="row">
+        <div class="row dash">
           <span>AMMO</span><b id="hAmmo">300</b><span>BOMBS</span
           ><b id="hBombs">6</b>
         </div>
@@ -71,6 +71,9 @@
       </div>
       <canvas id="radar" width="300" height="300"></canvas>
       <canvas id="strip" width="1120" height="120"></canvas>
+      <div id="repair" class="glass hidden">
+        <b></b><small></small><i><u></u></i>
+      </div>
       <div id="msg"></div>
       <div id="warn"></div>
       <div id="svc" class="hidden"></div>
@@ -87,7 +90,10 @@
       <div id="help" class="glass hidden">
         <kbd>W</kbd><kbd>S</kbd> throttle · <kbd>↓</kbd><kbd>↑</kbd> pull up /
         push down<br />
-        <kbd>Space</kbd> guns · <kbd>B</kbd> bomb · <kbd>C</kbd> camera<br />
+        <kbd>Space</kbd> guns · <kbd>B</kbd> bomb · <kbd>C</kbd> camera (Free:
+        chase, hood, cockpit)<br />
+        <kbd>F</kbd> fix the plane in flight, once a flight ·
+        <kbd>T</kbd> weather<br />
         <kbd>&lt;</kbd><kbd>&gt;</kbd> or <kbd>1</kbd>–<kbd>4</kbd> change
         plane, stopped on your runway<br />
         Classic: <kbd>←</kbd><kbd>→</kbd> flip · Free: <kbd>←</kbd
@@ -95,7 +101,7 @@
         Free: <kbd>Shift</kbd> hold or <kbd>Caps Lock</kbd> on: aim down the
         sights<br />
         Free: hold the sights on a plane 3 s to lock, <kbd>R</kbd> missile<br />
-        <kbd>I</kbd> invert · <kbd>M</kbd> sound · <kbd>F</kbd> fullscreen ·
+        <kbd>I</kbd> invert · <kbd>M</kbd> sound · <kbd>G</kbd> fullscreen ·
         <kbd>P</kbd> pause<br />
         <kbd>-</kbd><kbd>=</kbd> game speed (one player only)
       </div>
@@ -113,6 +119,8 @@
       <button id="bFlip" class="tbtn">FLIP</button>
       <button id="bAim" class="tbtn">AIM</button>
       <button id="bMsl" class="tbtn">MSL</button>
+      <button id="bFix" class="mini hidden">FIX</button>
+      <button id="bWx" class="mini" aria-label="Weather: Sunny">SUN</button>
       <button id="bCam" class="mini">CAM</button>
       <button id="bPause" class="mini" aria-label="Pause">II</button>
     </div>
@@ -202,6 +210,8 @@
           ><button id="bInvert" class="ghost"><i>Pitch</i> normal</button>
           <span>Game speed <i>(one player)</i></span
           ><button id="bSpeed" class="ghost"><i>Speed</i> 100%</button>
+          <span>Enemy <i>(1 easiest, 5 hardest)</i></span
+          ><button id="bLevel" class="ghost"><i>Difficulty</i> 2 Easy</button>
           <span>Sound</span
           ><button id="bMute" class="ghost"><i>Sound</i> on</button>
           <span class="updRow hidden">Check for updates</span
@@ -266,6 +276,16 @@
             >Free: missile, once the sights have held a plane for 3 s
             <i>(not on the Kite)</i></span
           >
+          <b><kbd>F</kbd></b
+          ><span
+            >Fix a damaged plane in flight, once a flight: press the numbers
+            shown, 1.75 s each <i>(no one can shoot you meanwhile)</i></span
+          >
+          <b><kbd>C</kbd><kbd>T</kbd></b
+          ><span
+            >Camera <i>(Free: chase, hood, cockpit)</i> · weather: sunny, foggy,
+            stormy, snowy</span
+          >
           <b><kbd>-</kbd><kbd>=</kbd></b
           ><span>Game speed: slower / faster</span> <b>Landing</b
           ><span
@@ -283,7 +303,13 @@
           ><span>FIRE · BOMB · FLIP · AIM, then MSL once locked</span>
           <b>Planes</b
           ><span>Stopped on your runway, swipe or tap ‹ › to change</span>
-          <b>Landing</b
+          <b>FIX</b
+          ><span
+            >Damaged in the air: once a flight, follow the moves shown with the
+            phone, 3 s each (shake up and down, back and forth, side to side, or
+            turn it)</span
+          >
+          <b>SUN · CAM</b><span>Weather · camera</span> <b>Landing</b
           ><span
             >Line up with the cyan runway, wings level, sink gently, then roll
             to a stop to refuel</span
@@ -394,6 +420,12 @@
           <span>Slow the game down while you learn to fly.</span>
           <button id="bSpeedPause" class="ghost"><i>Speed</i> 100%</button>
         </div>
+        <div class="foot">
+          <span>How hard the enemy flies and shoots.</span>
+          <button id="bLevelPause" class="ghost">
+            <i>Difficulty</i> 2 Easy
+          </button>
+        </div>
       </div>
     </section>
 
@@ -449,7 +481,9 @@
           ></div>
           <div class="pick">
             <select id="onLayout" aria-label="Teams"></select
-            ><button id="onFF"><i>Friendly fire</i> off</button>
+            ><button id="onFF"><i>Friendly fire</i> off</button
+            ><button id="onWeather"><i>Weather</i> sunny</button
+            ><button id="onLevel"><i>Difficulty</i> 2 Easy</button>
           </div>
           <p id="onDesc" class="pickNote"></p>
           <p id="onRules" class="pickNote"></p>
@@ -508,6 +542,14 @@
           <span
             ><span class="aboutLabel">Support:</span>
             <a href="mailto:hippoherd@gmail.com">hippoherd@gmail.com</a></span
+          ><span class="aboutDot" aria-hidden="true">·</span
+          ><!-- In every shell: the App Store wants it in the app (5.1.1). The
+            page is web/public/privacy.html, published there by make site. --><a
+            id="aboutPrivacy"
+            href="https://hippoherd.com/duelhippo/privacy.html"
+            target="_blank"
+            rel="noopener noreferrer"
+            >Privacy</a
           ><span id="aboutDonateDot" class="aboutDot" aria-hidden="true">·</span
           ><a
             id="aboutDonate"
